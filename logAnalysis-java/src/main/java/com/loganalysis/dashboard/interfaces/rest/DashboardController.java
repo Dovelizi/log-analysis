@@ -45,11 +45,12 @@ public class DashboardController {
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
             @RequestParam(value = "sort_field", required = false) String sortField,
-            @RequestParam(value = "sort_order", defaultValue = "desc") String sortOrder) {
+            @RequestParam(value = "sort_order", defaultValue = "desc") String sortOrder,
+            @RequestParam(value = "granularity", defaultValue = "1h") String granularity) {
         DateRange dr = dashboard.parseDateRange(s, e);
         return runOrNotFound(() -> dashboard.hitchStatistics(
                 "control_hitch_error_mothod", InsertRecordService.LOG_FROM_CONTROL_HITCH,
-                dr, page, pageSize, sortField, sortOrder));
+                dr, page, pageSize, sortField, sortOrder, granularity));
     }
 
     @GetMapping("/control-hitch/aggregation")
@@ -68,11 +69,12 @@ public class DashboardController {
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
             @RequestParam(value = "sort_field", required = false) String sortField,
-            @RequestParam(value = "sort_order", defaultValue = "desc") String sortOrder) {
+            @RequestParam(value = "sort_order", defaultValue = "desc") String sortOrder,
+            @RequestParam(value = "granularity", defaultValue = "1h") String granularity) {
         DateRange dr = dashboard.parseDateRange(s, e);
         return runOrNotFound(() -> dashboard.hitchStatistics(
                 "gw_hitch_error_mothod", InsertRecordService.LOG_FROM_GW_HITCH,
-                dr, page, pageSize, sortField, sortOrder));
+                dr, page, pageSize, sortField, sortOrder, granularity));
     }
 
     @GetMapping("/gw-hitch/aggregation")
@@ -103,9 +105,10 @@ public class DashboardController {
             @RequestParam(value = "start_date", required = false) String s,
             @RequestParam(value = "end_date", required = false) String e,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "page_size", defaultValue = "10") int pageSize) {
+            @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
+            @RequestParam(value = "granularity", defaultValue = "1h") String granularity) {
         DateRange dr = dashboard.parseDateRange(s, e);
-        return runOrNotFound(() -> dashboard.supplierSpStatistics(dr, page, pageSize));
+        return runOrNotFound(() -> dashboard.supplierSpStatistics(dr, page, pageSize, granularity));
     }
 
     @GetMapping("/hitch-supplier-error-sp/aggregation")
@@ -129,9 +132,10 @@ public class DashboardController {
             @RequestParam(value = "start_date", required = false) String s,
             @RequestParam(value = "end_date", required = false) String e,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "page_size", defaultValue = "10") int pageSize) {
+            @RequestParam(value = "page_size", defaultValue = "10") int pageSize,
+            @RequestParam(value = "granularity", defaultValue = "1h") String granularity) {
         DateRange dr = dashboard.parseDateRange(s, e);
-        return runOrNotFound(() -> dashboard.supplierTotalStatistics(dr, page, pageSize));
+        return runOrNotFound(() -> dashboard.supplierTotalStatistics(dr, page, pageSize, granularity));
     }
 
     @GetMapping("/hitch-supplier-error-total/aggregation")

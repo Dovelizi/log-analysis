@@ -130,6 +130,13 @@ public class DashboardService {
     public Map<String, Object> hitchStatistics(String table, int logFrom, DateRange dr,
                                                int page, int pageSize,
                                                String sortField, String sortOrder) {
+        return hitchStatistics(table, logFrom, dr, page, pageSize, sortField, sortOrder, "1h");
+    }
+
+    public Map<String, Object> hitchStatistics(String table, int logFrom, DateRange dr,
+                                               int page, int pageSize,
+                                               String sortField, String sortOrder,
+                                               String granularity) {
         if (!tableExists(table)) throw new TableMissingException(table);
 
         Map<String, Object> result = new LinkedHashMap<>();
@@ -179,9 +186,9 @@ public class DashboardService {
                 " GROUP BY method_name ORDER BY count DESC LIMIT 10",
                 dr.startTime, dr.endTime));
 
-        // 小时趋势来自 hitch_error_log_insert_record，按 log_from 筛选
+        // 时间趋势按 log_from 筛选，粒度由 granularity 决定（10m / 1h / 1d）
         result.put("trend_hourly", jdbc.queryForList(
-                "SELECT DATE_FORMAT(create_time, '%Y-%m-%d %H:00:00') as time_bucket, SUM(count) as count " +
+                "SELECT " + buildTimeBucketSql(granularity) + " as time_bucket, SUM(count) as count " +
                 "FROM hitch_error_log_insert_record WHERE log_from = ? AND create_time BETWEEN ? AND ? " +
                 "GROUP BY time_bucket ORDER BY time_bucket",
                 logFrom, dr.startTime, dr.endTime));
@@ -281,6 +288,10 @@ public class DashboardService {
 
     /* ========== Supplier SP statistics ========== */
     public Map<String, Object> supplierSpStatistics(DateRange dr, int page, int pageSize) {
+        return supplierSpStatistics(dr, page, pageSize, "1h");
+    }
+
+    public Map<String, Object> supplierSpStatistics(DateRange dr, int page, int pageSize, String granularity) {
         String table = "hitch_supplier_error_sp";
         if (!tableExists(table)) throw new TableMissingException(table);
 
@@ -312,7 +323,7 @@ public class DashboardService {
                 dr.startTime, dr.endTime));
 
         result.put("trend_hourly", jdbc.queryForList(
-                "SELECT sp_id, DATE_FORMAT(create_time, '%Y-%m-%d %H:00:00') as time_bucket, SUM(count) as count " +
+                "SELECT sp_id, " + buildTimeBucketSql(granularity) + " as time_bucket, SUM(count) as count " +
                 "FROM hitch_error_log_insert_record WHERE log_from = 3 AND create_time BETWEEN ? AND ? " +
                 "GROUP BY sp_id, time_bucket ORDER BY time_bucket",
                 dr.startTime, dr.endTime));
@@ -330,6 +341,10 @@ public class DashboardService {
 
     /* ========== Supplier Total statistics ========== */
     public Map<String, Object> supplierTotalStatistics(DateRange dr, int page, int pageSize) {
+        return supplierTotalStatistics(dr, page, pageSize, "1h");
+    }
+
+    public Map<String, Object> supplierTotalStatistics(DateRange dr, int page, int pageSize, String granularity) {
         String table = "hitch_supplier_error_total";
         if (!tableExists(table)) throw new TableMissingException(table);
 
@@ -361,7 +376,7 @@ public class DashboardService {
                 dr.startTime, dr.endTime));
 
         result.put("hourly_trend", jdbc.queryForList(
-                "SELECT sp_id, DATE_FORMAT(create_time, '%Y-%m-%d %H:00:00') as time_bucket, SUM(count) as count " +
+                "SELECT sp_id, " + buildTimeBucketSql(granularity) + " as time_bucket, SUM(count) as count " +
                 "FROM hitch_error_log_insert_record WHERE log_from = 4 AND create_time BETWEEN ? AND ? " +
                 "GROUP BY sp_id, time_bucket ORDER BY time_bucket",
                 dr.startTime, dr.endTime));
@@ -519,6 +534,35 @@ public class DashboardService {
     private long totalPages(Long total, int pageSize) {
         if (total == null || total <= 0) return 1L;
         return (total + pageSize - 1) / pageSize;
+    }
+
+    /**
+     * 根据 granularity 生成时间桶 SQL 表达式（二期：图表粒度切换）。
+     *
+     * 安全性：SQL 拼接，granularity 必须严格白名单校验，不可接受任意用户输入。
+     *
+     * 粒度返回的 time_bucket 字符串格式：
+     *   "10m" → "yyyy-MM-dd HH:mm:00"（10 分钟桶，如 "2026-04-25 14:10:00"）
+     *   "1h"  → "yyyy-MM-dd HH:00:00"（小时桶，默认，保持一期兼容）
+     *   "1d"  → "yyyy-MM-dd"（天桶）
+     *
+     * 10 分钟桶用 DATE_SUB(create_time, INTERVAL MINUTE(create_time) % 10 MINUTE)
+     * 将分钟向下对齐到 10 的倍数，再 DATE_FORMAT 到分钟精度。
+     */
+    private static String buildTimeBucketSql(String granularity) {
+        String g = granularity == null ? "1h" : granularity.trim().toLowerCase();
+        switch (g) {
+            case "10m":
+                return "DATE_FORMAT(" +
+                       "DATE_SUB(create_time, INTERVAL MINUTE(create_time) % 10 MINUTE), " +
+                       "'%Y-%m-%d %H:%i:00')";
+            case "1d":
+                return "DATE_FORMAT(create_time, '%Y-%m-%d')";
+            case "1h":
+            default:
+                // 1h 是默认值，未知 granularity 也退化到 1h（安全默认）
+                return "DATE_FORMAT(create_time, '%Y-%m-%d %H:00:00')";
+        }
     }
 
     private static boolean isEmpty(String s) { return s == null || s.isEmpty(); }

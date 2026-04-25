@@ -72,7 +72,7 @@ class DashboardControllerTest {
         when(dashboard.parseDateRange(isNull(), isNull())).thenReturn(dr);
         when(dashboard.hitchStatistics(
                 eq("control_hitch_error_mothod"), eq(1),
-                any(DateRange.class), anyInt(), anyInt(), any(), anyString()))
+                any(DateRange.class), anyInt(), anyInt(), any(), anyString(), anyString()))
                 .thenThrow(new TableMissingException("control_hitch_error_mothod"));
 
         mvc.perform(get("/api/dashboard/control-hitch/statistics"))
