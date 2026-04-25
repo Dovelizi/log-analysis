@@ -19,6 +19,11 @@
     <properties>
         <java.version>11</java.version>
         <mybatis-spring-boot.version>2.3.2</mybatis-spring-boot.version>
+        <mybatis-plus.version>3.5.7</mybatis-plus.version>
+        <redisson.version>3.27.2</redisson.version>
+        <hutool.version>5.8.27</hutool.version>
+        <guava.version>32.1.3-jre</guava.version>
+        <clickhouse-jdbc.version>0.6.0</clickhouse-jdbc.version>
         <tencentcloud-sdk.version>3.1.1451</tencentcloud-sdk.version>
         <playwright.version>1.40.0</playwright.version>
     </properties>
@@ -37,17 +42,85 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- MyBatis：承载原 PyMySQL 手写 SQL -->
+        <!-- MyBatis：承载原 PyMySQL 手写 SQL（P2a 起与 MyBatis-Plus 并存） -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>${mybatis-spring-boot.version}</version>
+        </dependency>
+        <!-- MyBatis-Plus：P2b 起用于 5 个 Processor 的业务表写入简化；配置类 Service 仍用 JdbcTemplate -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
+            <exclusions>
+                <!-- 排除 MP 自带 mybatis-spring-boot-starter，避免与现有 2.3.2 版本冲突 -->
+                <exclusion>
+                    <groupId>org.mybatis.spring.boot</groupId>
+                    <artifactId>mybatis-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Redisson：P2c 起替换 Spring Data Redis 用于聚合缓存 + 后续分布式锁 -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>${redisson.version}</version>
+            <exclusions>
+                <!-- Redisson 自带一份 spring-data-redis，用项目 Spring Boot 管理的版本 -->
+                <exclusion>
+                    <groupId>org.springframework.data</groupId>
+                    <artifactId>spring-data-redis</artifactId>
+                </exclusion>
+                <!-- 默认的 redisson-spring-data-32 是给 spring-data-redis 3.x 用的，与本项目 2.7.x 不兼容 -->
+                <exclusion>
+                    <groupId>org.redisson</groupId>
+                    <artifactId>redisson-spring-data-32</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- 匹配 spring-data-redis 2.7.x 的 Redisson 适配器 -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-data-27</artifactId>
+            <version>${redisson.version}</version>
+        </dependency>
+
+        <!-- Hutool：P2d 起按需引入（WecomPushService 等场景），不批量替换 commons-lang3 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+
+        <!-- Guava：本地缓存等场景按需使用 -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <!-- ClickHouse JDBC：P3 起用于 Dashboard 聚合查询和 5 张业务表的 OLAP 双写；
+             本项目只在 loganalysis.clickhouse.enabled=true 时激活 -->
+        <dependency>
+            <groupId>com.clickhouse</groupId>
+            <artifactId>clickhouse-jdbc</artifactId>
+            <version>${clickhouse-jdbc.version}</version>
+            <classifier>all</classifier>
+            <exclusions>
+                <!-- 避免 ClickHouse jdbc 自带的 slf4j 实现干扰 Spring Boot 的 logback -->
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- 腾讯云 CLS Java SDK -->
