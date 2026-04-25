@@ -1244,6 +1244,31 @@
                                             {{ dateOption.label }}
                                         </option>
                                     </select>
+                                    <span class="text-sm text-gray-400 ml-2">时间范围:</span>
+                                    <select
+                                        v-model="dashboardTimeRange"
+                                        @change="applyDashboardDateRange"
+                                        class="form-select text-sm py-1 px-3 w-36"
+                                    >
+                                        <option value="all">全天</option>
+                                        <option value="last_1h">最近 1 小时</option>
+                                        <option value="last_6h">最近 6 小时</option>
+                                        <option value="last_24h">最近 24 小时</option>
+                                        <option value="custom">自定义</option>
+                                    </select>
+                                    <template v-if="dashboardTimeRange === 'custom'">
+                                        <input type="time" step="1"
+                                               v-model="dashboardCustomStart"
+                                               @change="applyDashboardDateRange"
+                                               class="form-input text-sm py-1 px-2 w-28"
+                                               title="开始时间" />
+                                        <span class="text-gray-400">~</span>
+                                        <input type="time" step="1"
+                                               v-model="dashboardCustomEnd"
+                                               @change="applyDashboardDateRange"
+                                               class="form-input text-sm py-1 px-2 w-28"
+                                               title="结束时间" />
+                                    </template>
 
                                 </div>
                                 <div class="border-l border-gray-600 h-6 mx-2"></div>
@@ -1331,7 +1356,7 @@
                                 <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
                                     <span>
                                         <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
-                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ chartPrefs.time_chart.granularity === '10m' ? '10分钟' : chartPrefs.time_chart.granularity === '1d' ? '按天' : '小时' }}）</span>
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
                                     </span>
                                     <div class="relative inline-block">
                                         <button @click="openChartSettings = (openChartSettings === 'controlHitchTrendChart' ? null : 'controlHitchTrendChart')"
@@ -1340,28 +1365,20 @@
                                         </button>
                                         <div v-if="openChartSettings === 'controlHitchTrendChart'"
                                              class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
-                                            <div class="mb-2">
-                                                <label class="text-xs text-gray-500 block mb-1">时间粒度</label>
+                                            <div>
+                                                <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
                                                 <select :value="chartPrefs.time_chart.granularity"
                                                         @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
                                                         class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
                                                     <option value="10m">10 分钟</option>
-                                                    <option value="1h">小时</option>
-                                                    <option value="1d">按天</option>
-                                                </select>
-                                            </div>
-                                            <div class="mb-2">
-                                                <label class="text-xs text-gray-500 block mb-1">图表类型</label>
-                                                <select :value="chartPrefs.time_chart.chart_type"
-                                                        @change="saveChartPref('time_chart', { chart_type: $event.target.value }); refreshDashboardData && refreshDashboardData();"
-                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
-                                                    <option value="line">折线</option>
-                                                    <option value="area">面积</option>
-                                                    <option value="bar">柱状</option>
+                                                    <option value="30m">30 分钟</option>
+                                                    <option value="1h">1 小时</option>
+                                                    <option value="2h">2 小时</option>
+                                                    <option value="3h">3 小时</option>
                                                 </select>
                                             </div>
                                             <div class="text-[10px] text-gray-500 mt-2">
-                                                柱状/面积仅在非小时粒度生效
+                                                数据统计维度跟随粒度变化
                                             </div>
                                         </div>
                                     </div>
@@ -1533,7 +1550,7 @@
                                 <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
                                     <span>
                                         <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
-                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ chartPrefs.time_chart.granularity === '10m' ? '10分钟' : chartPrefs.time_chart.granularity === '1d' ? '按天' : '小时' }}）</span>
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
                                     </span>
                                     <div class="relative inline-block">
                                         <button @click="openChartSettings = (openChartSettings === 'gwHitchTrendChart' ? null : 'gwHitchTrendChart')"
@@ -1542,28 +1559,20 @@
                                         </button>
                                         <div v-if="openChartSettings === 'gwHitchTrendChart'"
                                              class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
-                                            <div class="mb-2">
-                                                <label class="text-xs text-gray-500 block mb-1">时间粒度</label>
+                                            <div>
+                                                <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
                                                 <select :value="chartPrefs.time_chart.granularity"
                                                         @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
                                                         class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
                                                     <option value="10m">10 分钟</option>
-                                                    <option value="1h">小时</option>
-                                                    <option value="1d">按天</option>
-                                                </select>
-                                            </div>
-                                            <div class="mb-2">
-                                                <label class="text-xs text-gray-500 block mb-1">图表类型</label>
-                                                <select :value="chartPrefs.time_chart.chart_type"
-                                                        @change="saveChartPref('time_chart', { chart_type: $event.target.value }); refreshDashboardData && refreshDashboardData();"
-                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
-                                                    <option value="line">折线</option>
-                                                    <option value="area">面积</option>
-                                                    <option value="bar">柱状</option>
+                                                    <option value="30m">30 分钟</option>
+                                                    <option value="1h">1 小时</option>
+                                                    <option value="2h">2 小时</option>
+                                                    <option value="3h">3 小时</option>
                                                 </select>
                                             </div>
                                             <div class="text-[10px] text-gray-500 mt-2">
-                                                柱状/面积仅在非小时粒度生效
+                                                数据统计维度跟随粒度变化
                                             </div>
                                         </div>
                                     </div>
@@ -2318,7 +2327,7 @@
                                 <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
                                     <span>
                                         <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
-                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ chartPrefs.time_chart.granularity === '10m' ? '10分钟' : chartPrefs.time_chart.granularity === '1d' ? '按天' : '小时' }}）</span>
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
                                     </span>
                                     <div class="relative inline-block">
                                         <button @click="openChartSettings = (openChartSettings === 'reportErrorTrendChart' ? null : 'reportErrorTrendChart')"
@@ -2327,28 +2336,20 @@
                                         </button>
                                         <div v-if="openChartSettings === 'reportErrorTrendChart'"
                                              class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
-                                            <div class="mb-2">
-                                                <label class="text-xs text-gray-500 block mb-1">时间粒度</label>
+                                            <div>
+                                                <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
                                                 <select :value="chartPrefs.time_chart.granularity"
                                                         @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
                                                         class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
                                                     <option value="10m">10 分钟</option>
-                                                    <option value="1h">小时</option>
-                                                    <option value="1d">按天</option>
-                                                </select>
-                                            </div>
-                                            <div class="mb-2">
-                                                <label class="text-xs text-gray-500 block mb-1">图表类型</label>
-                                                <select :value="chartPrefs.time_chart.chart_type"
-                                                        @change="saveChartPref('time_chart', { chart_type: $event.target.value }); refreshDashboardData && refreshDashboardData();"
-                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
-                                                    <option value="line">折线</option>
-                                                    <option value="area">面积</option>
-                                                    <option value="bar">柱状</option>
+                                                    <option value="30m">30 分钟</option>
+                                                    <option value="1h">1 小时</option>
+                                                    <option value="2h">2 小时</option>
+                                                    <option value="3h">3 小时</option>
                                                 </select>
                                             </div>
                                             <div class="text-[10px] text-gray-500 mt-2">
-                                                柱状/面积仅在非小时粒度生效
+                                                数据统计维度跟随粒度变化
                                             </div>
                                         </div>
                                     </div>
@@ -5750,6 +5751,12 @@
                 const todayStr = getLocalDateString();
                 // 单日期选择（默认今天）
                 const dashboardSelectedDate = ref(todayStr);
+                // 二期：Dashboard 时间范围快捷选择（配合 dashboardSelectedDate 一起过滤）
+                // 取值：'all' | 'last_1h' | 'last_6h' | 'last_24h' | 'custom'
+                const dashboardTimeRange = ref('all');
+                // 自定义时间的起止（仅当 dashboardTimeRange='custom' 时生效）
+                const dashboardCustomStart = ref('00:00:00');
+                const dashboardCustomEnd = ref('23:59:59');
                 
                 // 报表汇总相关
                 const reportData = ref({});
@@ -6765,10 +6772,51 @@
 
                 
                 // ==================== Dashboard数据概览方法 ====================
-                
-                // 获取Dashboard日期参数（单日期，start_date和end_date相同）
+
+                /**
+                 * 获取 Dashboard 日期 + 时间范围参数（二期：支持快捷时间选择）
+                 * 返回：{ start_date, end_date }，可能带时间（yyyy-MM-dd HH:mm:ss）
+                 *
+                 * 逻辑：
+                 *   dashboardTimeRange = 'all' → 纯日期（00:00:00 ~ 23:59:59，后端默认）
+                 *   dashboardTimeRange = 'last_1h'|'last_6h'|'last_24h' → 从 now 回推
+                 *   dashboardTimeRange = 'custom' → 用 dashboardCustomStart / End
+                 */
                 const getDashboardDateParams = () => {
-                    // 通用分页组件逻辑
+                    const baseDate = dashboardSelectedDate.value;
+                    const tr = dashboardTimeRange.value;
+                    // 快捷选项：相对当前时间
+                    if (tr === 'last_1h' || tr === 'last_6h' || tr === 'last_24h') {
+                        const hours = { last_1h: 1, last_6h: 6, last_24h: 24 }[tr];
+                        const now = new Date();
+                        const start = new Date(now.getTime() - hours * 3600 * 1000);
+                        return {
+                            start_date: formatDt(start),
+                            end_date: formatDt(now)
+                        };
+                    }
+                    // 自定义
+                    if (tr === 'custom') {
+                        return {
+                            start_date: `${baseDate} ${dashboardCustomStart.value || '00:00:00'}`,
+                            end_date:   `${baseDate} ${dashboardCustomEnd.value   || '23:59:59'}`
+                        };
+                    }
+                    // 默认（all = 全天）：为了兼容性仍返回纯日期，后端自动补 00:00:00/23:59:59
+                    return {
+                        start_date: baseDate,
+                        end_date: baseDate
+                    };
+                };
+
+                // 把 Date 格式化为 yyyy-MM-dd HH:mm:ss（本地时区）
+                const formatDt = (d) => {
+                    const pad = (n) => String(n).padStart(2, '0');
+                    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
+                           `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+                };
+
+                // 通用分页组件逻辑
                 const createPagination = (initialPageSize = 10) => {
                     const pagination = ref({
                         current_page: 1,
@@ -6935,15 +6983,7 @@
                     };
                 };
 
-                return {
-                        start_date: dashboardSelectedDate.value,
-                        end_date: dashboardSelectedDate.value
-                    };
 
-                };
-
-
-                
                 // 应用日期查询
                 const applyDashboardDateRange = async () => {
                     await refreshDashboardData();
@@ -7361,13 +7401,10 @@
                         return;
                     }
 
-                    const granularity = options.granularity || '1h';
-                    const chartType = options.chartType || 'line';
-                    const legendPos = (chartPrefs.__global__?.legend_position) || 'bottom';
-
-                    // —— 新路径：10m / 1d 粒度时直接用后端 time_bucket 作为 x 轴 ——
-                    if (granularity !== '1h') {
-                        // 按 time_bucket 聚合（同一时间桶的多条记录相加，防御性处理）
+                    // 二期：显式传 granularity 时走新路径（直接用后端 time_bucket 作为 x 轴）
+                    if (options.granularity) {
+                        const granularity = options.granularity;
+                        // 按 time_bucket 聚合（同一时间桶的多条记录相加，防御性）
                         const bucketMap = {};
                         data.forEach(d => {
                             const key = d.time_bucket || d.date || '';
@@ -7375,60 +7412,34 @@
                         });
                         const labels = Object.keys(bucketMap).sort();
                         const values = labels.map(k => bucketMap[k]);
-                        // 10m 粒度：只展示时分；1d 粒度：展示 MM-DD
+                        // 根据粒度决定 x 轴 label 格式
                         const formatLabel = (s) => {
-                            if (granularity === '10m') {
-                                // "2026-04-25 14:10:00" → "14:10"
-                                const parts = s.split(' ');
-                                return (parts[1] || s).substring(0, 5);
-                            }
-                            if (granularity === '1d') {
-                                // "2026-04-25" → "04-25"
-                                return s.length >= 10 ? s.substring(5, 10) : s;
-                            }
-                            return s;
+                            // "2026-04-25 14:10:00" → 分钟粒度显示 "14:10"；小时粒度显示 "14:00"
+                            const parts = s.split(' ');
+                            if (parts.length < 2) return s;
+                            return parts[1].substring(0, 5);
                         };
-                        const seriesCommon = {
-                            data: values,
-                            smooth: true,
-                            symbol: 'circle',
-                            symbolSize: 6,
-                            lineStyle: { color: '#58a6ff', width: 2 },
-                            itemStyle: { color: '#58a6ff' }
-                        };
-                        let series;
-                        if (chartType === 'bar') {
-                            series = [{ ...seriesCommon, type: 'bar' }];
-                        } else if (chartType === 'area') {
-                            series = [{ ...seriesCommon, type: 'line',
-                                areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                    { offset: 0, color: 'rgba(88, 166, 255, 0.5)' },
-                                    { offset: 1, color: 'rgba(88, 166, 255, 0.08)' }]) }
-                            }];
-                        } else {
-                            // line（默认）
-                            series = [{ ...seriesCommon, type: 'line',
-                                areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                    { offset: 0, color: 'rgba(88, 166, 255, 0.3)' },
-                                    { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }]) }
-                            }];
-                        }
                         chart.setOption({
                             tooltip: { ...chartTooltip, trigger: 'axis' },
                             grid: { left: '3%', right: '4%', bottom: '14%', top: '10%', containLabel: true },
-                            legend: { show: false, ...{ bottom: legendPos === 'bottom' ? 0 : null, top: legendPos === 'top' ? 0 : null, left: legendPos === 'left' ? 0 : null, right: legendPos === 'right' ? 0 : null } },
                             xAxis: { type: 'category', data: labels.map(formatLabel), ...chartAxisStyle,
                                 name: xAxisName, nameLocation: 'middle', nameGap: 25,
                                 nameTextStyle: { color: '#8b949e', fontSize: 12 } },
                             yAxis: { type: 'value', ...chartAxisStyle,
                                 name: yAxisName, nameLocation: 'middle', nameGap: 35,
                                 nameTextStyle: { color: '#8b949e', fontSize: 12 } },
-                            series
+                            series: [{
+                                data: values, type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
+                                lineStyle: { color: '#58a6ff', width: 2 }, itemStyle: { color: '#58a6ff' },
+                                areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(88, 166, 255, 0.3)' },
+                                    { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }]) }
+                            }]
                         });
                         return;
                     }
 
-                    // —— 旧路径：按小时聚合 + 波动识别（保持一期行为） ——
+                    // —— 旧路径：按小时聚合 + 波动识别（未传 granularity 时兜底，保持一期行为） ——
                     // 判断是当天数据还是历史数据
                     const isToday = isDataFromToday(data);
                     const currentHour = new Date().getHours();
@@ -10021,6 +10032,7 @@
                     controlHitchSort, gwHitchSort, supplierSpAggSort, supplierTotalAggSort, toggleSort, getSortIcon,
                     // Dashboard日期选择
                     dashboardSelectedDate, dashboardDateOptions, availableDates, availableDatesLoading,
+                    dashboardTimeRange, dashboardCustomStart, dashboardCustomEnd,
                     applyDashboardDateRange, loadAvailableDates,
                     loadSupplierSpStats, loadSupplierTotalStats, loadSupplierSpAggregation, loadSupplierTotalAggregation,
                     loadControlHitchStats, loadControlHitchAggregation, loadGwHitchStats, loadGwHitchAggregation, loadCostTimeStats,

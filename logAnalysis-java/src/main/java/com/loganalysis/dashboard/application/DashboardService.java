@@ -43,12 +43,26 @@ public class DashboardService {
     @Autowired
     private DashboardQueryExecutor jdbc;
 
-    /** 解析日期范围参数，返回 {startDate, endDate, startTime, endTime} */
+    /**
+     * 解析日期范围参数，返回 {startDate, endDate, startTime, endTime}。
+     *
+     * 支持两种输入格式：
+     *   1. YYYY-MM-DD                 —— 默认补齐 00:00:00 / 23:59:59，受 7 天限制
+     *   2. YYYY-MM-DD HH:mm:ss        —— 直接作为 startTime/endTime；
+     *       startDate/endDate 字段取日期部分；受 7 天限制基于 DATE(start) 到 DATE(end)
+     *
+     * 引入时间格式支持是为了前端「时间范围快捷下拉」功能（二期）。
+     */
     public DateRange parseDateRange(String startDate, String endDate) {
         if (isEmpty(startDate) || isEmpty(endDate)) {
             String today = LocalDate.now().format(D);
             return new DateRange(today, today, today + " 00:00:00", today + " 23:59:59");
         }
+        // 优先尝试带时间格式
+        if (startDate.length() > 10 || endDate.length() > 10) {
+            return parseDateTimeRange(startDate, endDate);
+        }
+        // 纯日期格式（一期行为）
         LocalDate s, e;
         try {
             s = LocalDate.parse(startDate, D);
@@ -62,6 +76,29 @@ public class DashboardService {
             throw new IllegalArgumentException("日期范围不能超过" + MAX_DATE_RANGE_DAYS + "天");
         }
         return new DateRange(startDate, endDate, startDate + " 00:00:00", endDate + " 23:59:59");
+    }
+
+    /** 带时间格式：YYYY-MM-DD HH:mm:ss */
+    private DateRange parseDateTimeRange(String startDt, String endDt) {
+        java.time.format.DateTimeFormatter dtf =
+                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        java.time.LocalDateTime s, e;
+        try {
+            s = java.time.LocalDateTime.parse(startDt, dtf);
+            e = java.time.LocalDateTime.parse(endDt, dtf);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("日期时间格式错误，请使用 YYYY-MM-DD HH:mm:ss");
+        }
+        if (s.isAfter(e)) throw new IllegalArgumentException("开始时间不能晚于结束时间");
+        long days = java.time.temporal.ChronoUnit.DAYS.between(s.toLocalDate(), e.toLocalDate());
+        if (days >= MAX_DATE_RANGE_DAYS) {
+            throw new IllegalArgumentException("日期范围不能超过" + MAX_DATE_RANGE_DAYS + "天");
+        }
+        return new DateRange(
+                s.toLocalDate().format(D),
+                e.toLocalDate().format(D),
+                startDt,
+                endDt);
     }
 
     /** 检查表是否存在（由 QueryExecutor 按数据源方言实现） */
@@ -537,17 +574,20 @@ public class DashboardService {
     }
 
     /**
-     * 根据 granularity 生成时间桶 SQL 表达式（二期：图表粒度切换）。
+     * 根据 granularity 生成时间桶 SQL 表达式（二期图表粒度切换）。
      *
-     * 安全性：SQL 拼接，granularity 必须严格白名单校验，不可接受任意用户输入。
+     * 安全性：SQL 拼接，granularity 必须严格白名单化，不可接受任意用户输入。
      *
-     * 粒度返回的 time_bucket 字符串格式：
-     *   "10m" → "yyyy-MM-dd HH:mm:00"（10 分钟桶，如 "2026-04-25 14:10:00"）
-     *   "1h"  → "yyyy-MM-dd HH:00:00"（小时桶，默认，保持一期兼容）
-     *   "1d"  → "yyyy-MM-dd"（天桶）
+     * 支持的粒度：
+     *   "10m" → 10 分钟桶（yyyy-MM-dd HH:mm:00）
+     *   "30m" → 30 分钟桶
+     *   "1h"  → 小时桶（默认，向后兼容；格式 yyyy-MM-dd HH:00:00）
+     *   "2h"  → 2 小时桶
+     *   "3h"  → 3 小时桶
      *
-     * 10 分钟桶用 DATE_SUB(create_time, INTERVAL MINUTE(create_time) % 10 MINUTE)
-     * 将分钟向下对齐到 10 的倍数，再 DATE_FORMAT 到分钟精度。
+     * 分钟桶用 DATE_SUB(create_time, INTERVAL MINUTE(create_time) % N MINUTE) 对齐；
+     * 小时桶用 FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(create_time) / (N*3600)) * N * 3600)
+     * 做 N 小时对齐，避免 DATE_FORMAT 只能到小时精度的限制。
      */
     private static String buildTimeBucketSql(String granularity) {
         String g = granularity == null ? "1h" : granularity.trim().toLowerCase();
@@ -556,11 +596,19 @@ public class DashboardService {
                 return "DATE_FORMAT(" +
                        "DATE_SUB(create_time, INTERVAL MINUTE(create_time) % 10 MINUTE), " +
                        "'%Y-%m-%d %H:%i:00')";
-            case "1d":
-                return "DATE_FORMAT(create_time, '%Y-%m-%d')";
+            case "30m":
+                return "DATE_FORMAT(" +
+                       "DATE_SUB(create_time, INTERVAL MINUTE(create_time) % 30 MINUTE), " +
+                       "'%Y-%m-%d %H:%i:00')";
+            case "2h":
+                return "FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(create_time) / 7200) * 7200, " +
+                       "'%Y-%m-%d %H:00:00')";
+            case "3h":
+                return "FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(create_time) / 10800) * 10800, " +
+                       "'%Y-%m-%d %H:00:00')";
             case "1h":
             default:
-                // 1h 是默认值，未知 granularity 也退化到 1h（安全默认）
+                // 1h 是默认，未知粒度也退化到 1h（安全默认）
                 return "DATE_FORMAT(create_time, '%Y-%m-%d %H:00:00')";
         }
     }
