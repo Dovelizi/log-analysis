@@ -1176,6 +1176,40 @@
                             <i class="far fa-calendar-alt mr-1"></i>
                             {{ currentDate }}
                         </span>
+                        <!-- 二期：图表外观偏好（全局）-->
+                        <div class="relative">
+                            <button @click="showPrefsDropdown = !showPrefsDropdown"
+                                    class="btn btn-secondary" title="图表外观偏好">
+                                <i class="fas fa-palette"></i>
+                            </button>
+                            <div v-if="showPrefsDropdown"
+                                 class="absolute right-0 mt-2 w-64 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[60] p-4">
+                                <div class="text-xs text-gray-400 mb-3 font-semibold">全局图表外观</div>
+                                <div class="mb-3">
+                                    <label class="text-xs text-gray-500 block mb-1">主题</label>
+                                    <select :value="chartPrefs.__global__.theme"
+                                            @change="saveChartPref('__global__', { theme: $event.target.value })"
+                                            class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-sm">
+                                        <option value="light">浅色</option>
+                                        <option value="dark">深色</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500 block mb-1">图例位置</label>
+                                    <select :value="chartPrefs.__global__.legend_position"
+                                            @change="saveChartPref('__global__', { legend_position: $event.target.value })"
+                                            class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-sm">
+                                        <option value="top">顶部</option>
+                                        <option value="bottom">底部</option>
+                                        <option value="left">左侧</option>
+                                        <option value="right">右侧</option>
+                                    </select>
+                                </div>
+                                <div class="mt-3 pt-3 border-t border-[#30363d] text-xs text-gray-500">
+                                    修改实时生效；保存到浏览器本地 + 后端。
+                                </div>
+                            </div>
+                        </div>
                         <button @click="refreshAllData" class="btn btn-secondary">
                             <i class="fas fa-sync-alt"></i>刷新数据
                         </button>
@@ -1294,8 +1328,43 @@
                         
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             <div class="card p-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-3">
-                                    <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势（近24小时/按天）
+                                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
+                                    <span>
+                                        <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ chartPrefs.time_chart.granularity === '10m' ? '10分钟' : chartPrefs.time_chart.granularity === '1d' ? '按天' : '小时' }}）</span>
+                                    </span>
+                                    <div class="relative inline-block">
+                                        <button @click="openChartSettings = (openChartSettings === 'controlHitchTrendChart' ? null : 'controlHitchTrendChart')"
+                                                class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <div v-if="openChartSettings === 'controlHitchTrendChart'"
+                                             class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
+                                            <div class="mb-2">
+                                                <label class="text-xs text-gray-500 block mb-1">时间粒度</label>
+                                                <select :value="chartPrefs.time_chart.granularity"
+                                                        @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
+                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
+                                                    <option value="10m">10 分钟</option>
+                                                    <option value="1h">小时</option>
+                                                    <option value="1d">按天</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="text-xs text-gray-500 block mb-1">图表类型</label>
+                                                <select :value="chartPrefs.time_chart.chart_type"
+                                                        @change="saveChartPref('time_chart', { chart_type: $event.target.value }); refreshDashboardData && refreshDashboardData();"
+                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
+                                                    <option value="line">折线</option>
+                                                    <option value="area">面积</option>
+                                                    <option value="bar">柱状</option>
+                                                </select>
+                                            </div>
+                                            <div class="text-[10px] text-gray-500 mt-2">
+                                                柱状/面积仅在非小时粒度生效
+                                            </div>
+                                        </div>
+                                    </div>
                                 </h4>
                                 <div id="controlHitchTrendChart" style="height: 200px;"></div>
                             </div>
@@ -1461,8 +1530,43 @@
                         
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             <div class="card p-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-3">
-                                    <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势（近24小时/按天）
+                                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
+                                    <span>
+                                        <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ chartPrefs.time_chart.granularity === '10m' ? '10分钟' : chartPrefs.time_chart.granularity === '1d' ? '按天' : '小时' }}）</span>
+                                    </span>
+                                    <div class="relative inline-block">
+                                        <button @click="openChartSettings = (openChartSettings === 'gwHitchTrendChart' ? null : 'gwHitchTrendChart')"
+                                                class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <div v-if="openChartSettings === 'gwHitchTrendChart'"
+                                             class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
+                                            <div class="mb-2">
+                                                <label class="text-xs text-gray-500 block mb-1">时间粒度</label>
+                                                <select :value="chartPrefs.time_chart.granularity"
+                                                        @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
+                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
+                                                    <option value="10m">10 分钟</option>
+                                                    <option value="1h">小时</option>
+                                                    <option value="1d">按天</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="text-xs text-gray-500 block mb-1">图表类型</label>
+                                                <select :value="chartPrefs.time_chart.chart_type"
+                                                        @change="saveChartPref('time_chart', { chart_type: $event.target.value }); refreshDashboardData && refreshDashboardData();"
+                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
+                                                    <option value="line">折线</option>
+                                                    <option value="area">面积</option>
+                                                    <option value="bar">柱状</option>
+                                                </select>
+                                            </div>
+                                            <div class="text-[10px] text-gray-500 mt-2">
+                                                柱状/面积仅在非小时粒度生效
+                                            </div>
+                                        </div>
+                                    </div>
                                 </h4>
                                 <div id="gwHitchTrendChart" style="height: 200px;"></div>
                             </div>
@@ -2211,8 +2315,43 @@
                         <!-- 图表区域 -->
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             <div class="card p-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-3">
-                                    <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势（近24小时/按天）
+                                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
+                                    <span>
+                                        <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ chartPrefs.time_chart.granularity === '10m' ? '10分钟' : chartPrefs.time_chart.granularity === '1d' ? '按天' : '小时' }}）</span>
+                                    </span>
+                                    <div class="relative inline-block">
+                                        <button @click="openChartSettings = (openChartSettings === 'reportErrorTrendChart' ? null : 'reportErrorTrendChart')"
+                                                class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <div v-if="openChartSettings === 'reportErrorTrendChart'"
+                                             class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
+                                            <div class="mb-2">
+                                                <label class="text-xs text-gray-500 block mb-1">时间粒度</label>
+                                                <select :value="chartPrefs.time_chart.granularity"
+                                                        @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
+                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
+                                                    <option value="10m">10 分钟</option>
+                                                    <option value="1h">小时</option>
+                                                    <option value="1d">按天</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="text-xs text-gray-500 block mb-1">图表类型</label>
+                                                <select :value="chartPrefs.time_chart.chart_type"
+                                                        @change="saveChartPref('time_chart', { chart_type: $event.target.value }); refreshDashboardData && refreshDashboardData();"
+                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
+                                                    <option value="line">折线</option>
+                                                    <option value="area">面积</option>
+                                                    <option value="bar">柱状</option>
+                                                </select>
+                                            </div>
+                                            <div class="text-[10px] text-gray-500 mt-2">
+                                                柱状/面积仅在非小时粒度生效
+                                            </div>
+                                        </div>
+                                    </div>
                                 </h4>
                                 <div id="reportErrorTrendChart" style="height: 200px;"></div>
                             </div>
@@ -5516,6 +5655,72 @@
                     verifying: false,
                     result: null
                 });
+
+                // ==================== 图表偏好配置（二期功能）====================
+                // 数据流：后端默认（chart_preferences 表）→ localStorage 覆盖 → chartPrefs 响应式状态
+                // 变更流：用户改动 → 写 localStorage + 调 PUT /api/chart-preferences/{chartId}
+                const CHART_PREF_LOCAL_KEY = 'loganalysis_chart_prefs_v1';
+                const DEFAULT_CHART_PREFS = {
+                    __global__:      { theme: 'light', legend_position: 'bottom' },
+                    time_chart:      { granularity: '1h', chart_type: 'line', top_n: 10 },
+                    topic_chart:     { chart_type: 'pie', top_n: 10 },
+                    dashboard_chart: { chart_type: 'bar', top_n: 10 }
+                };
+                const chartPrefs = reactive(JSON.parse(JSON.stringify(DEFAULT_CHART_PREFS)));
+                const chartPrefsLoaded = ref(false);
+                // 顶部偏好下拉开关
+                const showPrefsDropdown = ref(false);
+                // 每个图表的齿轮 Popover 开关（key 为 chart_id）
+                const openChartSettings = ref(null);
+
+                // 合并后端默认 + localStorage 覆盖到响应式 chartPrefs
+                const loadChartPrefs = async () => {
+                    // 1. 先从后端拉全局默认
+                    let serverDefaults = {};
+                    try {
+                        const res = await axios.get('/api/chart-preferences');
+                        serverDefaults = res.data?.preferences || {};
+                    } catch (e) {
+                        console.warn('拉取后端图表默认配置失败，使用前端硬编码默认', e);
+                    }
+                    // 2. 读 localStorage 用户覆盖
+                    let localOverride = {};
+                    try {
+                        const raw = localStorage.getItem(CHART_PREF_LOCAL_KEY);
+                        if (raw) localOverride = JSON.parse(raw) || {};
+                    } catch (e) {
+                        console.warn('本地图表偏好配置损坏，已忽略', e);
+                    }
+                    // 3. 合并：硬编码默认 < 后端默认 < localStorage
+                    Object.keys(DEFAULT_CHART_PREFS).forEach(chartId => {
+                        Object.assign(chartPrefs[chartId],
+                            DEFAULT_CHART_PREFS[chartId],
+                            serverDefaults[chartId] || {},
+                            localOverride[chartId] || {});
+                    });
+                    chartPrefsLoaded.value = true;
+                };
+
+                // 保存单个图表的配置（写 localStorage + 调后端 PUT）
+                const saveChartPref = async (chartId, partialSettings) => {
+                    // 1. 合并到响应式 state
+                    Object.assign(chartPrefs[chartId], partialSettings);
+                    // 2. 更新 localStorage
+                    try {
+                        const raw = localStorage.getItem(CHART_PREF_LOCAL_KEY);
+                        const store = raw ? JSON.parse(raw) : {};
+                        store[chartId] = { ...(store[chartId] || {}), ...partialSettings };
+                        localStorage.setItem(CHART_PREF_LOCAL_KEY, JSON.stringify(store));
+                    } catch (e) {
+                        console.warn('写入 localStorage 失败', e);
+                    }
+                    // 3. 异步写后端（全局默认），失败不阻断本地生效
+                    try {
+                        await axios.put(`/api/chart-preferences/${chartId}`, chartPrefs[chartId]);
+                    } catch (e) {
+                        console.warn('同步图表偏好到后端失败（本地已生效）', e);
+                    }
+                };
                 
                 // Dashboard数据概览相关
                 const dashboardTabs = [
@@ -6828,6 +7033,8 @@
                             params.sort_field = controlHitchSort.value.field;
                             params.sort_order = controlHitchSort.value.order;
                         }
+                        // 图表偏好：时间粒度（二期）
+                        params.granularity = chartPrefs.time_chart.granularity || '1h';
                         const res = await axios.get('/api/dashboard/control-hitch/statistics', { params });
                         controlHitchStats.value = res.data;
                         
@@ -6864,6 +7071,8 @@
                             params.sort_field = gwHitchSort.value.field;
                             params.sort_order = gwHitchSort.value.order;
                         }
+                        // 图表偏好：时间粒度（二期）
+                        params.granularity = chartPrefs.time_chart.granularity || '1h';
                         const res = await axios.get('/api/dashboard/gw-hitch/statistics', { params });
                         gwHitchStats.value = res.data;
                         
@@ -7134,10 +7343,13 @@
                 };
 
                 
-                const renderTrendChart = (domId, data, xAxisName = '时间', yAxisName = '数量') => {
+                const renderTrendChart = (domId, data, xAxisName = '时间', yAxisName = '数量',
+                                          options = {}) => {
+                    // options 二期新增：{ granularity: '10m'|'1h'|'1d', chartType: 'line'|'bar'|'area' }
+                    // 未传或 granularity='1h' 时走原按小时聚合逻辑（旧行为保持不变）
                     const chart = initChart(domId);
                     if (!chart) return;
-                    
+
                     // 如果没有数据，显示空状态
                     if (!data || data.length === 0) {
                         chart.setOption({
@@ -7148,7 +7360,75 @@
                         });
                         return;
                     }
-                    
+
+                    const granularity = options.granularity || '1h';
+                    const chartType = options.chartType || 'line';
+                    const legendPos = (chartPrefs.__global__?.legend_position) || 'bottom';
+
+                    // —— 新路径：10m / 1d 粒度时直接用后端 time_bucket 作为 x 轴 ——
+                    if (granularity !== '1h') {
+                        // 按 time_bucket 聚合（同一时间桶的多条记录相加，防御性处理）
+                        const bucketMap = {};
+                        data.forEach(d => {
+                            const key = d.time_bucket || d.date || '';
+                            bucketMap[key] = (bucketMap[key] || 0) + (d.count || 0);
+                        });
+                        const labels = Object.keys(bucketMap).sort();
+                        const values = labels.map(k => bucketMap[k]);
+                        // 10m 粒度：只展示时分；1d 粒度：展示 MM-DD
+                        const formatLabel = (s) => {
+                            if (granularity === '10m') {
+                                // "2026-04-25 14:10:00" → "14:10"
+                                const parts = s.split(' ');
+                                return (parts[1] || s).substring(0, 5);
+                            }
+                            if (granularity === '1d') {
+                                // "2026-04-25" → "04-25"
+                                return s.length >= 10 ? s.substring(5, 10) : s;
+                            }
+                            return s;
+                        };
+                        const seriesCommon = {
+                            data: values,
+                            smooth: true,
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            lineStyle: { color: '#58a6ff', width: 2 },
+                            itemStyle: { color: '#58a6ff' }
+                        };
+                        let series;
+                        if (chartType === 'bar') {
+                            series = [{ ...seriesCommon, type: 'bar' }];
+                        } else if (chartType === 'area') {
+                            series = [{ ...seriesCommon, type: 'line',
+                                areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(88, 166, 255, 0.5)' },
+                                    { offset: 1, color: 'rgba(88, 166, 255, 0.08)' }]) }
+                            }];
+                        } else {
+                            // line（默认）
+                            series = [{ ...seriesCommon, type: 'line',
+                                areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(88, 166, 255, 0.3)' },
+                                    { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }]) }
+                            }];
+                        }
+                        chart.setOption({
+                            tooltip: { ...chartTooltip, trigger: 'axis' },
+                            grid: { left: '3%', right: '4%', bottom: '14%', top: '10%', containLabel: true },
+                            legend: { show: false, ...{ bottom: legendPos === 'bottom' ? 0 : null, top: legendPos === 'top' ? 0 : null, left: legendPos === 'left' ? 0 : null, right: legendPos === 'right' ? 0 : null } },
+                            xAxis: { type: 'category', data: labels.map(formatLabel), ...chartAxisStyle,
+                                name: xAxisName, nameLocation: 'middle', nameGap: 25,
+                                nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                            yAxis: { type: 'value', ...chartAxisStyle,
+                                name: yAxisName, nameLocation: 'middle', nameGap: 35,
+                                nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                            series
+                        });
+                        return;
+                    }
+
+                    // —— 旧路径：按小时聚合 + 波动识别（保持一期行为） ——
                     // 判断是当天数据还是历史数据
                     const isToday = isDataFromToday(data);
                     const currentHour = new Date().getHours();
@@ -8565,7 +8845,8 @@
                     if (!data) return;
                     
                     // 错误趋势图
-                    renderTrendChart('reportErrorTrendChart', data.control_error_trend || [], '时间', '错误数');
+                    renderTrendChart('reportErrorTrendChart', data.control_error_trend || [], '时间', '错误数',
+                        { granularity: chartPrefs.time_chart.granularity, chartType: chartPrefs.time_chart.chart_type });
                     
                     // 错误码分布
                     renderBarChart('reportErrorCodeChart', data.control_error_code_top10 || [], 'error_code', 'count', false, '错误码', '数量');
@@ -9483,7 +9764,10 @@
                         // 设置初始hash
                         window.history.replaceState({ page: 'dashboard' }, '', '#dashboard');
                     }
-                    
+
+                    // 图表偏好配置加载（二期功能，失败不阻断主流程）
+                    loadChartPrefs();
+
                     loadCredentials();
                     loadTopics();
                     loadQueryConfigs();
@@ -9789,7 +10073,10 @@
                     goToTopicsPage, prevTopicsPage, nextTopicsPage, changeTopicsPageSize,
                     goToQueryConfigsPage, prevQueryConfigsPage, nextQueryConfigsPage, changeQueryConfigsPageSize,
                     // 通用分页组件
-                    createPagination, createPaginationTemplate
+                    createPagination, createPaginationTemplate,
+                    // 图表偏好配置（二期）
+                    chartPrefs, chartPrefsLoaded, showPrefsDropdown, openChartSettings,
+                    saveChartPref, loadChartPrefs
                 };
 
 

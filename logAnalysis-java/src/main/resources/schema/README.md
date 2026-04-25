@@ -23,6 +23,7 @@ done
 | `hitch_control_cost_time.sql` | 控制层方法耗时表 |
 | `report_push_config.sql` | 推送配置 + 推送日志 + 错误日志插入记录表（3 张表） |
 | `ch_writeback_queue.sql` | **二期新增**：ClickHouse 双写补偿队列（仅 `CLICKHOUSE_ENABLED=true` 时使用） |
+| `chart_preferences.sql` | **二期新增**：图表偏好配置表（前端齿轮 / 顶部外观下拉持久化） |
 
 ## ClickHouse 文件清单（`clickhouse/` 子目录）
 

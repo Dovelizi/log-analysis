@@ -233,6 +233,31 @@ bash start_java.sh restart
 - 读：`DashboardQueryExecutor` 接口 + 两个实现（MySQL / ClickHouse）按 `read-source` 自动切换
 - 降级：CH 查询失败 → 静默回退到 MySQL（前端无感）
 
+### 6. 图表偏好配置（前端 + 后端全局生效）
+
+**后端**（`chart_preferences` 表 + 2 个 API）：
+- `GET /api/chart-preferences`：返回所有 global 配置（前端 `onMounted` 调一次）
+- `PUT /api/chart-preferences/{chartId}`：更新单个图表的 global 配置
+- 表结构见 `schema/chart_preferences.sql`，业务唯一键 `(scope_type, scope_id, chart_id)`
+
+**时间粒度参数**（Dashboard 聚合接口）：
+- 4 个 statistics 接口新增可选参数 `?granularity=10m|1h|1d`（默认 `1h` 向后兼容）
+- 白名单校验，未知值退化到 `1h`（SQL 注入防护）
+- 10m 用 `DATE_SUB + DATE_FORMAT` 做 10 分钟对齐桶
+
+**前端**（Vue 3 CDN + localStorage 覆盖）：
+- 顶部导航🎨按钮：全局外观（主题 / 图例位置）
+- 每个趋势图右上角⚙️按钮：时间粒度（10分钟/小时/按天）+ 图表类型（折线/面积/柱状）
+- 用户变更 → 写 localStorage + 调后端 PUT → 下次打开自动恢复
+- 加载顺序：前端硬编码默认 ← 后端 global 默认 ← localStorage 覆盖
+
+**图表作用范围**：
+- `time_chart`：Dashboard 的 `controlHitchTrendChart` / `gwHitchTrendChart` / `reportErrorTrendChart`
+- `__global__`：全站外观（theme / legend_position）
+- `topic_chart` / `dashboard_chart`：种子已就位，前端 UI 后续扩展
+
+**限制**：图表类型（柱状/面积）仅在非小时粒度（10m / 1d）生效；小时粒度保留一期的"波动识别 + 降采样"折线行为。
+
 ### 6. 自定义 Transform DSL（一期遗留，依然对齐 Python 版）
 
 ```
