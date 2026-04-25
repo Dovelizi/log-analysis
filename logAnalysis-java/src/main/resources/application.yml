@@ -19,6 +19,7 @@ spring:
   redis:
     host: ${REDIS_HOST:127.0.0.1}
     port: ${REDIS_PORT:6379}
+    # 空字符串由 RedissonConfig.blankToNull 兜底转 null，避免对无密码实例发 AUTH
     password: ${REDIS_PASSWORD:}
     database: ${REDIS_DB:0}
     timeout: 5000ms
