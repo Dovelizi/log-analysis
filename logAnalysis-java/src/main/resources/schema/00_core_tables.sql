@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS log_records (
     log_json LONGTEXT,
     source VARCHAR(255),
     collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_qcid_logtime (query_config_id, log_time),
+    KEY idx_logtime (log_time),
     FOREIGN KEY (query_config_id) REFERENCES query_configs(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

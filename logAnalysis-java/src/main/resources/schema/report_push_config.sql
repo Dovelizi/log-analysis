@@ -48,7 +48,6 @@ CREATE TABLE IF NOT EXISTS hitch_error_log_insert_record (
     update_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     KEY idx_mn (method_name),
-    -- 二期新增：Dashboard 的 trend_hourly 按 create_time 区间 + GROUP BY 小时桶，
-    -- 全表扫描在 600w+ 行数据量下会到 6s，此索引把耗时压到 <500ms
-    KEY idx_ct (create_time)
+    KEY idx_ct (create_time),
+    KEY idx_logfrom_ct (log_from, create_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='顺风车错误日志新增记录表';

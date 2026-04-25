@@ -11,5 +11,8 @@ CREATE TABLE IF NOT EXISTS hitch_supplier_error_total (
     create_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录首次创建时间',
     update_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '记录最后更新时间',
     PRIMARY KEY (id),
-    KEY idx_create_time (create_time)
+    KEY idx_create_time (create_time),
+    KEY idx_ct_sp (create_time, sp_id),
+    KEY idx_ct_errcode (create_time, error_code),
+    KEY idx_sp_ct (sp_id, create_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='顺风车供应商维度错误聚合统计表';

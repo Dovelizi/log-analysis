@@ -11,5 +11,7 @@ CREATE TABLE IF NOT EXISTS control_hitch_error_mothod (
     update_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '记录最后更新时间',
     PRIMARY KEY (id),
     KEY idx_ct (create_time),
-    KEY idx_ut (update_time)
+    KEY idx_ut (update_time),
+    KEY idx_ct_method (create_time, method_name),
+    KEY idx_ct_errcode (create_time, error_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='顺风车错误方法监控表';

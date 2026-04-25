@@ -885,58 +885,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 
                 <!-- 日志查询 -->
                 <div class="nav-group">
@@ -951,58 +899,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 
                 <!-- 查询配置 -->
                 <div class="nav-group">
@@ -1014,58 +910,6 @@
                     <div class="nav-item" :class="{ active: currentPage === 'queries' || currentPage === 'query-config-edit' }" @click="currentPage = 'queries'">
                         <i class="fas fa-database"></i>
                         <span>查询配置</span>
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -1084,58 +928,6 @@
                     <div class="nav-item" :class="{ active: currentPage === 'collection-logs' }" @click="currentPage = 'collection-logs'">
                         <i class="fas fa-history"></i>
                         <span>采集日志</span>
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -1176,40 +968,6 @@
                             <i class="far fa-calendar-alt mr-1"></i>
                             {{ currentDate }}
                         </span>
-                        <!-- 二期：图表外观偏好（全局）-->
-                        <div class="relative">
-                            <button @click="showPrefsDropdown = !showPrefsDropdown"
-                                    class="btn btn-secondary" title="图表外观偏好">
-                                <i class="fas fa-palette"></i>
-                            </button>
-                            <div v-if="showPrefsDropdown"
-                                 class="absolute right-0 mt-2 w-64 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[60] p-4">
-                                <div class="text-xs text-gray-400 mb-3 font-semibold">全局图表外观</div>
-                                <div class="mb-3">
-                                    <label class="text-xs text-gray-500 block mb-1">主题</label>
-                                    <select :value="chartPrefs.__global__.theme"
-                                            @change="saveChartPref('__global__', { theme: $event.target.value })"
-                                            class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-sm">
-                                        <option value="light">浅色</option>
-                                        <option value="dark">深色</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="text-xs text-gray-500 block mb-1">图例位置</label>
-                                    <select :value="chartPrefs.__global__.legend_position"
-                                            @change="saveChartPref('__global__', { legend_position: $event.target.value })"
-                                            class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-sm">
-                                        <option value="top">顶部</option>
-                                        <option value="bottom">底部</option>
-                                        <option value="left">左侧</option>
-                                        <option value="right">右侧</option>
-                                    </select>
-                                </div>
-                                <div class="mt-3 pt-3 border-t border-[#30363d] text-xs text-gray-500">
-                                    修改实时生效；保存到浏览器本地 + 后端。
-                                </div>
-                            </div>
-                        </div>
                         <button @click="refreshAllData" class="btn btn-secondary">
                             <i class="fas fa-sync-alt"></i>刷新数据
                         </button>
@@ -1244,32 +1002,25 @@
                                             {{ dateOption.label }}
                                         </option>
                                     </select>
-                                    <span class="text-sm text-gray-400 ml-2">时间范围:</span>
-                                    <select
-                                        v-model="dashboardTimeRange"
-                                        @change="applyDashboardDateRange"
-                                        class="form-select text-sm py-1 px-3 w-36"
-                                    >
-                                        <option value="all">全天</option>
-                                        <option value="last_1h">最近 1 小时</option>
-                                        <option value="last_6h">最近 6 小时</option>
-                                        <option value="last_24h">最近 24 小时</option>
-                                        <option value="custom">自定义</option>
-                                    </select>
-                                    <template v-if="dashboardTimeRange === 'custom'">
-                                        <input type="time" step="1"
-                                               v-model="dashboardCustomStart"
-                                               @change="applyDashboardDateRange"
-                                               class="form-input text-sm py-1 px-2 w-28"
-                                               title="开始时间" />
-                                        <span class="text-gray-400">~</span>
-                                        <input type="time" step="1"
-                                               v-model="dashboardCustomEnd"
-                                               @change="applyDashboardDateRange"
-                                               class="form-input text-sm py-1 px-2 w-28"
-                                               title="结束时间" />
-                                    </template>
 
+                                </div>
+                                <!-- 时间区间（默认 00:00 ~ 23:59） -->
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-gray-400">时间区间:</span>
+                                    <input type="time" step="1"
+                                        v-model="dashboardStartTime"
+                                        @change="applyDashboardDateRange"
+                                        class="form-input text-sm py-1 px-2 w-28"
+                                        title="开始时间">
+                                    <span class="text-gray-500">~</span>
+                                    <input type="time" step="1"
+                                        v-model="dashboardEndTime"
+                                        @change="applyDashboardDateRange"
+                                        class="form-input text-sm py-1 px-2 w-28"
+                                        title="结束时间">
+                                    <button @click="resetDashboardTimeRange" class="btn btn-secondary btn-sm" title="重置为全天 00:00:00 ~ 23:59:59">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
                                 </div>
                                 <div class="border-l border-gray-600 h-6 mx-2"></div>
                                 <label class="flex items-center gap-2 text-sm text-gray-400">
@@ -1353,35 +1104,8 @@
                         
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             <div class="card p-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
-                                    <span>
-                                        <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
-                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
-                                    </span>
-                                    <div class="relative inline-block">
-                                        <button @click="openChartSettings = (openChartSettings === 'controlHitchTrendChart' ? null : 'controlHitchTrendChart')"
-                                                class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
-                                            <i class="fas fa-cog"></i>
-                                        </button>
-                                        <div v-if="openChartSettings === 'controlHitchTrendChart'"
-                                             class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
-                                            <div>
-                                                <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
-                                                <select :value="chartPrefs.time_chart.granularity"
-                                                        @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
-                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
-                                                    <option value="10m">10 分钟</option>
-                                                    <option value="30m">30 分钟</option>
-                                                    <option value="1h">1 小时</option>
-                                                    <option value="2h">2 小时</option>
-                                                    <option value="3h">3 小时</option>
-                                                </select>
-                                            </div>
-                                            <div class="text-[10px] text-gray-500 mt-2">
-                                                数据统计维度跟随粒度变化
-                                            </div>
-                                        </div>
-                                    </div>
+                                <h4 class="text-sm font-semibold text-gray-300 mb-3">
+                                    <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势（近24小时/按天）
                                 </h4>
                                 <div id="controlHitchTrendChart" style="height: 200px;"></div>
                             </div>
@@ -1547,35 +1271,8 @@
                         
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             <div class="card p-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
-                                    <span>
-                                        <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
-                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
-                                    </span>
-                                    <div class="relative inline-block">
-                                        <button @click="openChartSettings = (openChartSettings === 'gwHitchTrendChart' ? null : 'gwHitchTrendChart')"
-                                                class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
-                                            <i class="fas fa-cog"></i>
-                                        </button>
-                                        <div v-if="openChartSettings === 'gwHitchTrendChart'"
-                                             class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
-                                            <div>
-                                                <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
-                                                <select :value="chartPrefs.time_chart.granularity"
-                                                        @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
-                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
-                                                    <option value="10m">10 分钟</option>
-                                                    <option value="30m">30 分钟</option>
-                                                    <option value="1h">1 小时</option>
-                                                    <option value="2h">2 小时</option>
-                                                    <option value="3h">3 小时</option>
-                                                </select>
-                                            </div>
-                                            <div class="text-[10px] text-gray-500 mt-2">
-                                                数据统计维度跟随粒度变化
-                                            </div>
-                                        </div>
-                                    </div>
+                                <h4 class="text-sm font-semibold text-gray-300 mb-3">
+                                    <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势（近24小时/按天）
                                 </h4>
                                 <div id="gwHitchTrendChart" style="height: 200px;"></div>
                             </div>
@@ -2182,58 +1879,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 
                 <!-- 报表汇总页面 -->
                 <div v-if="currentPage === 'report'" id="reportContainer">
@@ -2251,6 +1896,24 @@
                                         {{ dateOption.label }}
                                     </option>
                                 </select>
+                            </div>
+                            <!-- 时间区间（默认 00:00 ~ 23:59） -->
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-gray-400">时间区间:</span>
+                                <input type="time" step="1"
+                                    v-model="reportStartTime"
+                                    @change="loadReportData"
+                                    class="form-input text-sm py-1 px-2 w-28"
+                                    title="开始时间">
+                                <span class="text-gray-500">~</span>
+                                <input type="time" step="1"
+                                    v-model="reportEndTime"
+                                    @change="loadReportData"
+                                    class="form-input text-sm py-1 px-2 w-28"
+                                    title="结束时间">
+                                <button @click="resetReportTimeRange" class="btn btn-secondary btn-sm" title="重置为全天 00:00:00 ~ 23:59:59">
+                                    <i class="fas fa-undo"></i>
+                                </button>
                             </div>
                             <button @click="loadReportData" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-sync-alt" :class="{'animate-spin': reportLoading}"></i>刷新
@@ -2324,35 +1987,8 @@
                         <!-- 图表区域 -->
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             <div class="card p-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
-                                    <span>
-                                        <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
-                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
-                                    </span>
-                                    <div class="relative inline-block">
-                                        <button @click="openChartSettings = (openChartSettings === 'reportErrorTrendChart' ? null : 'reportErrorTrendChart')"
-                                                class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
-                                            <i class="fas fa-cog"></i>
-                                        </button>
-                                        <div v-if="openChartSettings === 'reportErrorTrendChart'"
-                                             class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
-                                            <div>
-                                                <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
-                                                <select :value="chartPrefs.time_chart.granularity"
-                                                        @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
-                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
-                                                    <option value="10m">10 分钟</option>
-                                                    <option value="30m">30 分钟</option>
-                                                    <option value="1h">1 小时</option>
-                                                    <option value="2h">2 小时</option>
-                                                    <option value="3h">3 小时</option>
-                                                </select>
-                                            </div>
-                                            <div class="text-[10px] text-gray-500 mt-2">
-                                                数据统计维度跟随粒度变化
-                                            </div>
-                                        </div>
-                                    </div>
+                                <h4 class="text-sm font-semibold text-gray-300 mb-3">
+                                    <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势（近24小时/按天）
                                 </h4>
                                 <div id="reportErrorTrendChart" style="height: 200px;"></div>
                             </div>
@@ -2445,58 +2081,6 @@
                         </div>
                         
                         <!-- 推送配置列表 - 移至数据推送页面 -->
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -2711,58 +2295,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 
                 <!-- 推送配置模态框 -->
                 <div v-if="showPushConfigModal" class="modal-overlay" @click.self="showPushConfigModal = false">
@@ -2900,58 +2432,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 
                 <!-- 推送记录详情模态框 -->
                 <div v-if="showPushLogModal" class="modal-overlay" @click.self="showPushLogModal = false">
@@ -3029,58 +2509,6 @@
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" @click="showPushLogModal = false">关闭</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -3205,58 +2633,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 
                 <!-- Topic配置页面 -->
                 <div v-if="currentPage === 'topics'">
@@ -3366,58 +2742,6 @@
                                 <p>暂无Topic配置</p>
                                 <p class="text-sm mt-2">请先添加API密钥，然后配置日志Topic</p>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -3552,58 +2876,6 @@
                                 <p>暂无查询配置</p>
                                 <p class="text-sm mt-2">创建查询配置以快速执行常用的日志查询</p>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -3925,58 +3197,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 
                 <!-- 日志查询页面 -->
                 <div v-if="currentPage === 'search'">
@@ -4153,58 +3373,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 
                 <!-- 日志记录页面 -->
                 <div v-if="currentPage === 'logs'">
@@ -4362,58 +3530,6 @@
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -4778,58 +3894,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 
                 <div class="card" v-if="tableDataBrowser.data">
                     <div class="p-4 border-b border-[#30363d] flex justify-between items-center">
@@ -4957,7 +4021,59 @@
 
             </div>
         </main>
-        
+
+        <!-- 推送日期选择模态框 -->
+        <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>选择推送日期</h3>
+                    <button class="modal-close" @click="showPushDateModal = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>快速选择:</label>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
+                            <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>T-N格式 (例: T-1, T-7):</label>
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                v-model="tnFormatInput" 
+                                @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
+                                placeholder="T-1" 
+                                class="form-input"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>自定义日期:</label>
+                        <input 
+                            type="date" 
+                            v-model="customPushDate" 
+                            class="form-input"
+                        >
+                    </div>
+                    
+                    <div v-if="selectedPushDate" class="form-group">
+                        <label>已选择日期:</label>
+                        <div class="alert alert-info">{{ selectedPushDate }}</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
+                    <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
+                        确认推送
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- 密钥编辑模态框 -->
         <div class="modal-overlay" v-if="showCredentialModal" @click.self="showCredentialModal = false">
             <div class="modal">
@@ -4982,58 +4098,6 @@
                         <label class="form-label">Secret Key <span class="text-red-500">*</span></label>
                         <input type="password" class="form-input" v-model="credentialForm.secret_key" placeholder="腾讯云 SecretKey">
                         <p class="text-xs text-gray-500 mt-1" v-if="editingCredential">留空则保持原Secret Key不变</p>
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -5129,58 +4193,6 @@
                     <div>
                         <label class="form-label">描述</label>
                         <textarea class="form-textarea" v-model="topicForm.description" placeholder="Topic描述信息" rows="3"></textarea>
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -5317,58 +4329,6 @@
                     </div>
                 </div>
 
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="modal-footer">
                     <button class="btn btn-secondary" @click="showMappingModal = false">取消</button>
                     <button class="btn btn-primary" @click="saveMappingConfig" :disabled="savingMapping">
@@ -5434,58 +4394,6 @@
                     <div class="mb-4">
                         <label class="form-label">返回条数</label>
                         <input type="number" class="form-input" v-model="collectForm.limit" min="1" max="1000">
-                    </div>
-                </div>
-
-                <!-- 推送日期选择模态框 -->
-                <div v-if="showPushDateModal" class="modal-overlay" @click.self="showPushDateModal = false">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>选择推送日期</h3>
-                            <button class="modal-close" @click="showPushDateModal = false">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>快速选择:</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('today')">今天</button>
-                                    <button class="btn btn-outline-primary btn-sm" @click="selectPushDate('yesterday')">昨天</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>T-N格式 (例: T-1, T-7):</label>
-                                <div class="input-group">
-                                    <input 
-                                        type="text" 
-                                        v-model="tnFormatInput" 
-                                        @input="isValidTnFormat(tnFormatInput) && selectPushDate(tnFormatInput)"
-                                        placeholder="T-1" 
-                                        class="form-input"
-                                    >
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>自定义日期:</label>
-                                <input 
-                                    type="date" 
-                                    v-model="customPushDate" 
-                                    class="form-input"
-                                >
-                            </div>
-                            
-                            <div v-if="selectedPushDate" class="form-group">
-                                <label>已选择日期:</label>
-                                <div class="alert alert-info">{{ selectedPushDate }}</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="showPushDateModal = false">取消</button>
-                            <button class="btn btn-primary" @click="confirmPushWithDate" :disabled="!selectedPushDate">
-                                确认推送
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -5656,72 +4564,6 @@
                     verifying: false,
                     result: null
                 });
-
-                // ==================== 图表偏好配置（二期功能）====================
-                // 数据流：后端默认（chart_preferences 表）→ localStorage 覆盖 → chartPrefs 响应式状态
-                // 变更流：用户改动 → 写 localStorage + 调 PUT /api/chart-preferences/{chartId}
-                const CHART_PREF_LOCAL_KEY = 'loganalysis_chart_prefs_v1';
-                const DEFAULT_CHART_PREFS = {
-                    __global__:      { theme: 'light', legend_position: 'bottom' },
-                    time_chart:      { granularity: '1h', chart_type: 'line', top_n: 10 },
-                    topic_chart:     { chart_type: 'pie', top_n: 10 },
-                    dashboard_chart: { chart_type: 'bar', top_n: 10 }
-                };
-                const chartPrefs = reactive(JSON.parse(JSON.stringify(DEFAULT_CHART_PREFS)));
-                const chartPrefsLoaded = ref(false);
-                // 顶部偏好下拉开关
-                const showPrefsDropdown = ref(false);
-                // 每个图表的齿轮 Popover 开关（key 为 chart_id）
-                const openChartSettings = ref(null);
-
-                // 合并后端默认 + localStorage 覆盖到响应式 chartPrefs
-                const loadChartPrefs = async () => {
-                    // 1. 先从后端拉全局默认
-                    let serverDefaults = {};
-                    try {
-                        const res = await axios.get('/api/chart-preferences');
-                        serverDefaults = res.data?.preferences || {};
-                    } catch (e) {
-                        console.warn('拉取后端图表默认配置失败，使用前端硬编码默认', e);
-                    }
-                    // 2. 读 localStorage 用户覆盖
-                    let localOverride = {};
-                    try {
-                        const raw = localStorage.getItem(CHART_PREF_LOCAL_KEY);
-                        if (raw) localOverride = JSON.parse(raw) || {};
-                    } catch (e) {
-                        console.warn('本地图表偏好配置损坏，已忽略', e);
-                    }
-                    // 3. 合并：硬编码默认 < 后端默认 < localStorage
-                    Object.keys(DEFAULT_CHART_PREFS).forEach(chartId => {
-                        Object.assign(chartPrefs[chartId],
-                            DEFAULT_CHART_PREFS[chartId],
-                            serverDefaults[chartId] || {},
-                            localOverride[chartId] || {});
-                    });
-                    chartPrefsLoaded.value = true;
-                };
-
-                // 保存单个图表的配置（写 localStorage + 调后端 PUT）
-                const saveChartPref = async (chartId, partialSettings) => {
-                    // 1. 合并到响应式 state
-                    Object.assign(chartPrefs[chartId], partialSettings);
-                    // 2. 更新 localStorage
-                    try {
-                        const raw = localStorage.getItem(CHART_PREF_LOCAL_KEY);
-                        const store = raw ? JSON.parse(raw) : {};
-                        store[chartId] = { ...(store[chartId] || {}), ...partialSettings };
-                        localStorage.setItem(CHART_PREF_LOCAL_KEY, JSON.stringify(store));
-                    } catch (e) {
-                        console.warn('写入 localStorage 失败', e);
-                    }
-                    // 3. 异步写后端（全局默认），失败不阻断本地生效
-                    try {
-                        await axios.put(`/api/chart-preferences/${chartId}`, chartPrefs[chartId]);
-                    } catch (e) {
-                        console.warn('同步图表偏好到后端失败（本地已生效）', e);
-                    }
-                };
                 
                 // Dashboard数据概览相关
                 const dashboardTabs = [
@@ -5751,17 +4593,26 @@
                 const todayStr = getLocalDateString();
                 // 单日期选择（默认今天）
                 const dashboardSelectedDate = ref(todayStr);
-                // 二期：Dashboard 时间范围快捷选择（配合 dashboardSelectedDate 一起过滤）
-                // 取值：'all' | 'last_1h' | 'last_6h' | 'last_24h' | 'custom'
-                const dashboardTimeRange = ref('all');
-                // 自定义时间的起止（仅当 dashboardTimeRange='custom' 时生效）
-                const dashboardCustomStart = ref('00:00:00');
-                const dashboardCustomEnd = ref('23:59:59');
+                // 时间区间（默认全天）
+                const dashboardStartTime = ref('00:00:00');
+                const dashboardEndTime = ref('23:59:59');
+                const resetDashboardTimeRange = () => {
+                    dashboardStartTime.value = '00:00:00';
+                    dashboardEndTime.value = '23:59:59';
+                    applyDashboardDateRange();
+                };
                 
                 // 报表汇总相关
                 const reportData = ref({});
                 const reportLoading = ref(false);
                 const reportSelectedDate = ref(todayStr);
+                const reportStartTime = ref('00:00:00');
+                const reportEndTime = ref('23:59:59');
+                const resetReportTimeRange = () => {
+                    reportStartTime.value = '00:00:00';
+                    reportEndTime.value = '23:59:59';
+                    loadReportData();
+                };
                 const weeklyNewErrors = ref({ daily_new_errors: [] });
                 const weeklyNewErrorsLoading = ref(false);
                 const pushConfigs = ref([]);
@@ -6772,51 +5623,10 @@
 
                 
                 // ==================== Dashboard数据概览方法 ====================
-
-                /**
-                 * 获取 Dashboard 日期 + 时间范围参数（二期：支持快捷时间选择）
-                 * 返回：{ start_date, end_date }，可能带时间（yyyy-MM-dd HH:mm:ss）
-                 *
-                 * 逻辑：
-                 *   dashboardTimeRange = 'all' → 纯日期（00:00:00 ~ 23:59:59，后端默认）
-                 *   dashboardTimeRange = 'last_1h'|'last_6h'|'last_24h' → 从 now 回推
-                 *   dashboardTimeRange = 'custom' → 用 dashboardCustomStart / End
-                 */
+                
+                // 获取Dashboard日期参数（单日期，start_date和end_date相同）
                 const getDashboardDateParams = () => {
-                    const baseDate = dashboardSelectedDate.value;
-                    const tr = dashboardTimeRange.value;
-                    // 快捷选项：相对当前时间
-                    if (tr === 'last_1h' || tr === 'last_6h' || tr === 'last_24h') {
-                        const hours = { last_1h: 1, last_6h: 6, last_24h: 24 }[tr];
-                        const now = new Date();
-                        const start = new Date(now.getTime() - hours * 3600 * 1000);
-                        return {
-                            start_date: formatDt(start),
-                            end_date: formatDt(now)
-                        };
-                    }
-                    // 自定义
-                    if (tr === 'custom') {
-                        return {
-                            start_date: `${baseDate} ${dashboardCustomStart.value || '00:00:00'}`,
-                            end_date:   `${baseDate} ${dashboardCustomEnd.value   || '23:59:59'}`
-                        };
-                    }
-                    // 默认（all = 全天）：为了兼容性仍返回纯日期，后端自动补 00:00:00/23:59:59
-                    return {
-                        start_date: baseDate,
-                        end_date: baseDate
-                    };
-                };
-
-                // 把 Date 格式化为 yyyy-MM-dd HH:mm:ss（本地时区）
-                const formatDt = (d) => {
-                    const pad = (n) => String(n).padStart(2, '0');
-                    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
-                           `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-                };
-
-                // 通用分页组件逻辑
+                    // 通用分页组件逻辑
                 const createPagination = (initialPageSize = 10) => {
                     const pagination = ref({
                         current_page: 1,
@@ -6983,7 +5793,17 @@
                     };
                 };
 
+                return {
+                        start_date: dashboardSelectedDate.value,
+                        end_date: dashboardSelectedDate.value,
+                        start_time: dashboardStartTime.value,
+                        end_time: dashboardEndTime.value
+                    };
 
+                };
+
+
+                
                 // 应用日期查询
                 const applyDashboardDateRange = async () => {
                     await refreshDashboardData();
@@ -7073,8 +5893,6 @@
                             params.sort_field = controlHitchSort.value.field;
                             params.sort_order = controlHitchSort.value.order;
                         }
-                        // 图表偏好：时间粒度（二期）
-                        params.granularity = chartPrefs.time_chart.granularity || '1h';
                         const res = await axios.get('/api/dashboard/control-hitch/statistics', { params });
                         controlHitchStats.value = res.data;
                         
@@ -7111,8 +5929,6 @@
                             params.sort_field = gwHitchSort.value.field;
                             params.sort_order = gwHitchSort.value.order;
                         }
-                        // 图表偏好：时间粒度（二期）
-                        params.granularity = chartPrefs.time_chart.granularity || '1h';
                         const res = await axios.get('/api/dashboard/gw-hitch/statistics', { params });
                         gwHitchStats.value = res.data;
                         
@@ -7383,13 +6199,10 @@
                 };
 
                 
-                const renderTrendChart = (domId, data, xAxisName = '时间', yAxisName = '数量',
-                                          options = {}) => {
-                    // options 二期新增：{ granularity: '10m'|'1h'|'1d', chartType: 'line'|'bar'|'area' }
-                    // 未传或 granularity='1h' 时走原按小时聚合逻辑（旧行为保持不变）
+                const renderTrendChart = (domId, data, xAxisName = '时间', yAxisName = '数量') => {
                     const chart = initChart(domId);
                     if (!chart) return;
-
+                    
                     // 如果没有数据，显示空状态
                     if (!data || data.length === 0) {
                         chart.setOption({
@@ -7400,46 +6213,7 @@
                         });
                         return;
                     }
-
-                    // 二期：显式传 granularity 时走新路径（直接用后端 time_bucket 作为 x 轴）
-                    if (options.granularity) {
-                        const granularity = options.granularity;
-                        // 按 time_bucket 聚合（同一时间桶的多条记录相加，防御性）
-                        const bucketMap = {};
-                        data.forEach(d => {
-                            const key = d.time_bucket || d.date || '';
-                            bucketMap[key] = (bucketMap[key] || 0) + (d.count || 0);
-                        });
-                        const labels = Object.keys(bucketMap).sort();
-                        const values = labels.map(k => bucketMap[k]);
-                        // 根据粒度决定 x 轴 label 格式
-                        const formatLabel = (s) => {
-                            // "2026-04-25 14:10:00" → 分钟粒度显示 "14:10"；小时粒度显示 "14:00"
-                            const parts = s.split(' ');
-                            if (parts.length < 2) return s;
-                            return parts[1].substring(0, 5);
-                        };
-                        chart.setOption({
-                            tooltip: { ...chartTooltip, trigger: 'axis' },
-                            grid: { left: '3%', right: '4%', bottom: '14%', top: '10%', containLabel: true },
-                            xAxis: { type: 'category', data: labels.map(formatLabel), ...chartAxisStyle,
-                                name: xAxisName, nameLocation: 'middle', nameGap: 25,
-                                nameTextStyle: { color: '#8b949e', fontSize: 12 } },
-                            yAxis: { type: 'value', ...chartAxisStyle,
-                                name: yAxisName, nameLocation: 'middle', nameGap: 35,
-                                nameTextStyle: { color: '#8b949e', fontSize: 12 } },
-                            series: [{
-                                data: values, type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
-                                lineStyle: { color: '#58a6ff', width: 2 }, itemStyle: { color: '#58a6ff' },
-                                areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                    { offset: 0, color: 'rgba(88, 166, 255, 0.3)' },
-                                    { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }]) }
-                            }]
-                        });
-                        return;
-                    }
-
-                    // —— 旧路径：按小时聚合 + 波动识别（未传 granularity 时兜底，保持一期行为） ——
+                    
                     // 判断是当天数据还是历史数据
                     const isToday = isDataFromToday(data);
                     const currentHour = new Date().getHours();
@@ -7851,19 +6625,25 @@
                     reportLoading.value = true;
                     try {
                         const dateParam = reportSelectedDate.value;
+                        const commonParams = {
+                            start_date: dateParam,
+                            end_date: dateParam,
+                            start_time: reportStartTime.value,
+                            end_time: reportEndTime.value
+                        };
                         // 复用数据概览的现有API接口
                         const [controlRes, gwRes, costTimeRes, supplierRes] = await Promise.all([
                             axios.get('/api/dashboard/control-hitch/statistics', {
-                                params: { start_date: dateParam, end_date: dateParam }
+                                params: commonParams
                             }),
                             axios.get('/api/dashboard/gw-hitch/statistics', {
-                                params: { start_date: dateParam, end_date: dateParam }
+                                params: commonParams
                             }),
                             axios.get('/api/dashboard/hitch-control-cost-time/statistics', {
-                                params: { start_date: dateParam, end_date: dateParam }
+                                params: commonParams
                             }),
                             axios.get('/api/dashboard/hitch-supplier-error-sp/statistics', {
-                                params: { start_date: dateParam, end_date: dateParam }
+                                params: commonParams
                             })
                         ]);
                         
@@ -8856,8 +7636,7 @@
                     if (!data) return;
                     
                     // 错误趋势图
-                    renderTrendChart('reportErrorTrendChart', data.control_error_trend || [], '时间', '错误数',
-                        { granularity: chartPrefs.time_chart.granularity, chartType: chartPrefs.time_chart.chart_type });
+                    renderTrendChart('reportErrorTrendChart', data.control_error_trend || [], '时间', '错误数');
                     
                     // 错误码分布
                     renderBarChart('reportErrorCodeChart', data.control_error_code_top10 || [], 'error_code', 'count', false, '错误码', '数量');
@@ -9775,10 +8554,7 @@
                         // 设置初始hash
                         window.history.replaceState({ page: 'dashboard' }, '', '#dashboard');
                     }
-
-                    // 图表偏好配置加载（二期功能，失败不阻断主流程）
-                    loadChartPrefs();
-
+                    
                     loadCredentials();
                     loadTopics();
                     loadQueryConfigs();
@@ -10032,7 +8808,7 @@
                     controlHitchSort, gwHitchSort, supplierSpAggSort, supplierTotalAggSort, toggleSort, getSortIcon,
                     // Dashboard日期选择
                     dashboardSelectedDate, dashboardDateOptions, availableDates, availableDatesLoading,
-                    dashboardTimeRange, dashboardCustomStart, dashboardCustomEnd,
+                    dashboardStartTime, dashboardEndTime, resetDashboardTimeRange,
                     applyDashboardDateRange, loadAvailableDates,
                     loadSupplierSpStats, loadSupplierTotalStats, loadSupplierSpAggregation, loadSupplierTotalAggregation,
                     loadControlHitchStats, loadControlHitchAggregation, loadGwHitchStats, loadGwHitchAggregation, loadCostTimeStats,
@@ -10060,6 +8836,7 @@
                     openCollectModal, setCollectTimeRange, clearCollectFromTime, clearCollectToTime, doCollectData,
                     // 报表汇总相关
                     reportData, reportLoading, reportSelectedDate, weeklyNewErrors, weeklyNewErrorsLoading,
+                    reportStartTime, reportEndTime, resetReportTimeRange,
                     pushConfigs, showPushConfigModal, editingPushConfig, pushConfigForm, pushing, exporting,
                     pushLogs, showPushLogModal, currentPushLog,
                     // 推送相关变量和函数
@@ -10085,10 +8862,7 @@
                     goToTopicsPage, prevTopicsPage, nextTopicsPage, changeTopicsPageSize,
                     goToQueryConfigsPage, prevQueryConfigsPage, nextQueryConfigsPage, changeQueryConfigsPageSize,
                     // 通用分页组件
-                    createPagination, createPaginationTemplate,
-                    // 图表偏好配置（二期）
-                    chartPrefs, chartPrefsLoaded, showPrefsDropdown, openChartSettings,
-                    saveChartPref, loadChartPrefs
+                    createPagination, createPaginationTemplate
                 };
 
 

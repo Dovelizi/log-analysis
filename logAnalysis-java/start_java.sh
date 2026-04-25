@@ -39,7 +39,8 @@ get_pid() {
             return 0
         fi
     fi
-    local pid=$(pgrep -f "loganalysis.jar" | head -1)
+    # 严格匹配当前目录下的 JAR 绝对路径，避免跨目录同名 jar 误识别
+    local pid=$(pgrep -f "$JAR_FILE" | head -1)
     if [ -n "$pid" ]; then
         echo "$pid"
         return 0
@@ -181,6 +182,16 @@ init_db() {
             return 1
         }
     done
+    # 增量迁移脚本（幂等，重复执行安全）
+    if [ -d "$schema_dir/migrations" ]; then
+        for f in $(ls "$schema_dir/migrations"/*.sql 2>/dev/null | sort); do
+            echo -e "${YELLOW}应用迁移 $f${NC}"
+            mysql $mysql_args < "$f" || {
+                echo -e "${RED}$f 执行失败${NC}"
+                return 1
+            }
+        done
+    fi
     echo -e "${GREEN}数据库初始化完成${NC}"
 }
 

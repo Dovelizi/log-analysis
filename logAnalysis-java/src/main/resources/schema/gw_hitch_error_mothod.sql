@@ -12,5 +12,7 @@ CREATE TABLE IF NOT EXISTS gw_hitch_error_mothod (
     PRIMARY KEY (id),
     KEY idx_ct (create_time),
     KEY idx_ut (update_time),
-    KEY idx_error_code (error_code)
+    KEY idx_error_code (error_code),
+    KEY idx_ct_method (create_time, method_name),
+    KEY idx_ct_errcode (create_time, error_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='网关顺风车业务错误方法聚合监控表';

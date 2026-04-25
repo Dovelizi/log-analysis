@@ -10,8 +10,8 @@ spring:
     password: ${MYSQL_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: 20
-      minimum-idle: 5
+      maximum-pool-size: 30
+      minimum-idle: 10
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
@@ -19,7 +19,6 @@ spring:
   redis:
     host: ${REDIS_HOST:127.0.0.1}
     port: ${REDIS_PORT:6379}
-    # 空字符串由 RedissonConfig.blankToNull 兜底转 null，避免对无密码实例发 AUTH
     password: ${REDIS_PASSWORD:}
     database: ${REDIS_DB:0}
     timeout: 5000ms
@@ -63,45 +62,6 @@ loganalysis:
     check-interval-seconds: 10
     # 调度器内部自调用的 base url
     base-url: http://127.0.0.1:8080
-  # ============================== ClickHouse（OLAP 读路径 + 双写） ==============================
-  # 默认 enabled=false：所有 CH 相关 bean 不激活，行为完全等同于未引入 CH（P2 末状态）。
-  # 生产灰度启用时：
-  #   1. 先把 enabled=true + read-source=mysql + dual-write=true，积累 CH 数据
-  #   2. 确认 CH 数据正确后，read-source=clickhouse 切流
-  #   3. 稳定一周后 dual-write=false（MySQL 业务表可逐步下线）
-  clickhouse:
-    enabled: ${CLICKHOUSE_ENABLED:false}
-    # 查询来源：clickhouse | mysql（灰度期可切回）
-    # read-source=clickhouse 且 CH 请求失败时，按方案自动降级到 MySQL 路径（静默）
-    read-source: ${CLICKHOUSE_READ_SOURCE:mysql}
-    # 是否同步双写 MySQL + ClickHouse（enabled 开启后仍可独立开关）
-    dual-write: ${CLICKHOUSE_DUAL_WRITE:true}
-    # JDBC 连接（enabled=true 时必填）
-    url: ${CLICKHOUSE_URL:jdbc:clickhouse://127.0.0.1:8123/cls_logs_ch}
-    username: ${CLICKHOUSE_USER:default}
-    password: ${CLICKHOUSE_PASSWORD:}
-    # HikariCP 参数
-    pool:
-      maximum-pool-size: 10
-      minimum-idle: 2
-      connection-timeout: 5000
-      idle-timeout: 600000
-    # 异步双写线程池
-    async-write:
-      core-pool-size: 4
-      max-pool-size: 8
-      queue-capacity: 1000
-      # 超时丢弃策略：满了之后新任务走补偿队列而不是抛异常
-      reject-to-writeback-queue: true
-    # 补偿任务（CH 写失败 → ch_writeback_queue → 定时重放）
-    writeback:
-      enabled: true
-      # 重放间隔（秒）
-      replay-interval-seconds: 30
-      # 单批次重放上限
-      batch-size: 200
-      # 积压告警阈值（队列行数）
-      alert-threshold: 100
 
 logging:
   config: classpath:logback-spring.xml
