@@ -1,0 +1,70 @@
+server:
+  port: 8080          # 与原 Flask 版本 (app.py 第 1940 行) 保持一致
+
+spring:
+  application:
+    name: loganalysis
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:cls_logs}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: HikariCP-LogAnalysis
+  redis:
+    host: ${REDIS_HOST:127.0.0.1}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: ${REDIS_DB:0}
+    timeout: 5000ms
+    lettuce:
+      pool:
+        max-active: 16
+        max-idle: 8
+        min-idle: 2
+        max-wait: 3000ms
+  jackson:
+    # 使用 ISO 8601 格式（带 T 分隔符），对齐 Python datetime.isoformat()
+    date-format: "yyyy-MM-dd'T'HH:mm:ss"
+    time-zone: Asia/Shanghai
+    # 输出所有字段（包括 null），对齐 Python jsonify 行为
+    default-property-inclusion: always
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.loganalysis.model
+  configuration:
+    map-underscore-to-camel-case: true
+    jdbc-type-for-null: NULL
+
+# 腾讯云 CLS（对齐原 tencent_cloud_api.py，实际凭证走 api_credentials 表）
+tencent:
+  cloud:
+    cls:
+      # 默认使用内网 endpoint，与 Python 原实现 cls.internal.tencentcloudapi.com 对齐
+      endpoint: cls.internal.tencentcloudapi.com
+      default-region: ap-guangzhou
+
+# 应用自定义配置
+loganalysis:
+  encryption:
+    # Fernet 密钥文件路径（与原 .encryption_key 对齐）
+    key-file: ${ENCRYPTION_KEY_FILE:.encryption_key}
+    # 生产上线前务必设为 true：防止 Java 启动时自动生成新密钥导致历史加密数据解不开
+    forbid-auto-generate: ${ENCRYPTION_FORBID_AUTO_GEN:false}
+  scheduler:
+    # 定时查询轮询间隔（秒），对齐 scheduler.py 的 time.sleep(10)
+    check-interval-seconds: 10
+    # 调度器内部自调用的 base url
+    base-url: http://127.0.0.1:8080
+
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    root: INFO
+    com.loganalysis: DEBUG

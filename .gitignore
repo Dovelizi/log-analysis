@@ -1,0 +1,58 @@
+# 仓库级兜底规则（子项目各自有自己的 .gitignore，这里是双重保险）
+
+# 敏感密钥（绝对不能提交）
+.encryption_key
+.encryption_key.*
+**/.encryption_key
+**/.encryption_key.*
+.env
+**/.env
+!**/.env.example
+
+# 构建产物
+target/
+**/target/
+*.jar
+*.class
+
+# Python 产物
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+venv/
+.venv/
+
+# 日志和运行时
+logs/
+**/logs/
+*.log
+nohup.out
+.app.pid
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE / 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# 归档包
+*.tar.gz
+*.zip
+
+# OS
+.DS_Store

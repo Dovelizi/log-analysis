@@ -1,0 +1,52 @@
+# ==================== 构建产物 ====================
+target/
+*.jar
+!docker/*.jar
+dependency-reduced-pom.xml
+
+# ==================== IDE ====================
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+
+# ==================== 运行时产物 ====================
+logs/
+*.log
+.app.pid
+*.pid
+
+# ==================== 🔴 敏感数据（绝不能入库）====================
+.encryption_key
+.encryption_key.*
+*.pem
+*.key
+application-local.yml
+application-prod.yml
+application-*.secret.yml
+.env
+.env.*
+
+# ==================== OS / 临时 ====================
+.DS_Store
+Thumbs.db
+~$*
+*.bak
+*.tmp
+*.orig
+
+# ==================== Maven ====================
+.mvn/wrapper/maven-wrapper.jar
+
+# ==================== 测试报告 ====================
+target/surefire-reports/
+target/site/
+*.hprof
+
+# ==================== Python 工具副作用 ====================
+tools/__pycache__/
+*.pyc

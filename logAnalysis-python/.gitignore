@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+.eggs/
+*.egg-info/
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-*
+
+# 日志
+*.log
+nohup.out
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 敏感配置
+.encryption_key
+.env
+*.pem
+*.key
+deploy/.env
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# 导出文件
+*.pdf
+
+# PID文件
+.app.pid

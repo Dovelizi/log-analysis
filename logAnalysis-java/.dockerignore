@@ -1,0 +1,10 @@
+target/
+logs/
+.encryption_key*
+.git/
+.idea/
+*.iml
+.DS_Store
+*.log
+tools/
+MIGRATION_PLAN.md

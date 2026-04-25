@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据表映射管理 - CLS日志分析系统</title>
+    <script>
+        // 此页面已迁移到主页面，自动重定向
+        window.location.replace('/#table-mappings');
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Flatpickr 时间选择器 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #0f1419;
+            color: #e6edf3;
+        }
+        .card {
+            background: #161b22;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: 1px solid #30363d;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #e6edf3;
+            font-size: 0.875rem;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #e6edf3;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .btn i { margin-right: 0.5rem; }
+        .btn-primary { background: #238636; color: white; }
+        .btn-primary:hover { background: #2ea043; }
+        .btn-secondary { background: #21262d; color: #c9d1d9; border-color: #30363d; }
+        .btn-secondary:hover { background: #30363d; }
+        .btn-danger { background: #da3633; color: white; }
+        .btn-danger:hover { background: #f85149; }
+        .btn-info { background: #1f6feb; color: white; }
+        .btn-info:hover { background: #388bfd; }
+        .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #8b949e;
+            text-transform: uppercase;
+            background: #0d1117;
+            border-bottom: 1px solid #30363d;
+        }
+        .data-table td {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: #c9d1d9;
+            border-bottom: 1px solid #21262d;
+        }
+        .data-table tr:hover td { background: #161b22; }
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .tag-success { background: rgba(46, 160, 67, 0.2); color: #3fb950; }
+        .tag-info { background: rgba(56, 139, 253, 0.2); color: #58a6ff; }
+        .tag-warning { background: rgba(210, 153, 34, 0.2); color: #d29922; }
+        .tag-danger { background: rgba(248, 81, 73, 0.2); color: #f85149; }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        .modal {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 720px;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0d1117;
+        }
+        .modal-title { font-size: 1rem; font-weight: 600; color: #e6edf3; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+        .modal-body { padding: 1.25rem; max-height: 60vh; overflow-y: auto; }
+        .modal-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid #30363d;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            background: #0d1117;
+        }
+        .toast {
+            position: fixed;
+            top: 1.25rem;
+            right: 1.25rem;
+            padding: 0.875rem 1.25rem;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            z-index: 2000;
+            animation: toastSlideIn 0.3s ease;
+        }
+        .toast-success { background: #238636; }
+        .toast-error { background: #da3633; }
+        @keyframes toastSlideIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .empty-state { text-align: center; padding: 3rem 2rem; color: #8b949e; }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+        .field-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+            padding: 0.75rem;
+            background: #0d1117;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        .field-row .form-input, .field-row .form-select {
+            padding: 0.5rem 0.625rem;
+            font-size: 0.8125rem;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0d1117; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: #8b949e;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { color: #e6edf3; }
+        .tab-btn.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+        .sidebar {
+            background: #161b22;
+            border-right: 1px solid #30363d;
+            width: 240px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+        .sidebar-header { padding: 1.25rem; border-bottom: 1px solid #30363d; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            color: #8b949e;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            text-decoration: none;
+        }
+        .nav-item:hover { background: #21262d; color: #e6edf3; }
+        .nav-item.active { background: rgba(88, 166, 255, 0.1); color: #58a6ff; border-left-color: #58a6ff; }
+        .nav-item i { width: 20px; margin-right: 12px; text-align: center; }
+        .main-content { margin-left: 240px; min-height: 100vh; }
+        
+        /* 时间选择器样式优化 */
+        .datetime-picker-wrapper {
+            position: relative;
+        }
+        /* Flatpickr 深色主题定制 */
+        .flatpickr-calendar {
+            background: #161b22 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+            font-family: inherit !important;
+        }
+        .flatpickr-calendar.arrowTop:before,
+        .flatpickr-calendar.arrowTop:after {
+            border-bottom-color: #30363d !important;
+        }
+        .flatpickr-months {
+            background: #0d1117 !important;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 8px 0 !important;
+        }
+        .flatpickr-months .flatpickr-month {
+            background: transparent !important;
+            color: #e6edf3 !important;
+            height: 36px !important;
+        }
+        .flatpickr-current-month {
+            color: #e6edf3 !important;
+            font-weight: 600 !important;
+        }
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: #21262d !important;
+            color: #e6edf3 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 6px !important;
+        }
+        .flatpickr-current-month input.cur-year {
+            color: #e6edf3 !important;
+            background: transparent !important;
+        }
+        .flatpickr-months .flatpickr-prev-month,
+        .flatpickr-months .flatpickr-next-month {
+            color: #8b949e !important;
+            fill: #8b949e !important;
+            padding: 8px 12px !important;
+        }
+        .flatpickr-months .flatpickr-prev-month:hover,
+        .flatpickr-months .flatpickr-next-month:hover {
+            color: #58a6ff !important;
+            fill: #58a6ff !important;
+            background: rgba(88, 166, 255, 0.1) !important;
+            border-radius: 6px !important;
+        }
+        .flatpickr-months .flatpickr-prev-month svg,
+        .flatpickr-months .flatpickr-next-month svg {
+            fill: currentColor !important;
+        }
+        .flatpickr-innerContainer {
+            background: #161b22 !important;
+        }
+        .flatpickr-weekdays {
+            background: #161b22 !important;
+        }
+        .flatpickr-weekday {
+            color: #8b949e !important;
+            font-weight: 500 !important;
+            font-size: 0.75rem !important;
+        }
+        .flatpickr-days {
+            background: #161b22 !important;
+            border: none !important;
+        }
+        .dayContainer {
+            background: #161b22 !important;
+        }
+        .flatpickr-day {
+            color: #c9d1d9 !important;
+            border-radius: 6px !important;
+            border: none !important;
+            font-size: 0.875rem !important;
+        }
+        .flatpickr-day:hover {
+            background: #21262d !important;
+            border-color: transparent !important;
+        }
+        .flatpickr-day.today {
+            border: 1px solid #58a6ff !important;
+            background: transparent !important;
+        }
+        .flatpickr-day.today:hover {
+            background: rgba(88, 166, 255, 0.1) !important;
+        }
+        .flatpickr-day.selected,
+        .flatpickr-day.startRange,
+        .flatpickr-day.endRange {
+            background: #238636 !important;
+            border-color: #238636 !important;
+            color: white !important;
+        }
+        .flatpickr-day.selected:hover,
+        .flatpickr-day.startRange:hover,
+        .flatpickr-day.endRange:hover {
+            background: #2ea043 !important;
+            border-color: #2ea043 !important;
+        }
+        .flatpickr-day.inRange {
+            background: rgba(35, 134, 54, 0.2) !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+        }
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
+            color: #484f58 !important;
+        }
+        .flatpickr-day.disabled {
+            color: #30363d !important;
+        }
+        .flatpickr-time {
+            background: #0d1117 !important;
+            border-top: 1px solid #30363d !important;
+            border-radius: 0 0 12px 12px !important;
+        }
+        .flatpickr-time input {
+            color: #e6edf3 !important;
+            background: #21262d !important;
+            border: 1px solid #30363d !important;
+            border-radius: 6px !important;
+            font-size: 0.875rem !important;
+        }
+        .flatpickr-time input:hover,
+        .flatpickr-time input:focus {
+            background: #30363d !important;
+            border-color: #58a6ff !important;
+        }
+        .flatpickr-time .flatpickr-time-separator,
+        .flatpickr-time .flatpickr-am-pm {
+            color: #8b949e !important;
+        }
+        .flatpickr-time .flatpickr-am-pm {
+            background: #21262d !important;
+            border: 1px solid #30363d !important;
+            border-radius: 6px !important;
+        }
+        .flatpickr-time .flatpickr-am-pm:hover {
+            background: #30363d !important;
+            border-color: #58a6ff !important;
+        }
+        .numInputWrapper span {
+            border-color: #30363d !important;
+        }
+        .numInputWrapper span:hover {
+            background: rgba(88, 166, 255, 0.1) !important;
+        }
+        .numInputWrapper span svg path {
+            fill: #8b949e !important;
+        }
+        .numInputWrapper span:hover svg path {
+            fill: #58a6ff !important;
+        }
+        
+        /* 时间选择器输入框样式 */
+        .datetime-picker-wrapper {
+            position: relative;
+        }
+        .datetime-picker-wrapper .form-input {
+            padding-left: 2.5rem;
+            cursor: pointer;
+        }
+        .datetime-picker-wrapper .datetime-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #58a6ff;
+            pointer-events: none;
+            font-size: 0.875rem;
+            z-index: 1;
+        }
+        .datetime-picker-wrapper .clear-btn {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #8b949e;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            opacity: 0;
+            transition: all 0.2s;
+            z-index: 1;
+        }
+        .datetime-picker-wrapper:hover .clear-btn {
+            opacity: 1;
+        }
+        .datetime-picker-wrapper .clear-btn:hover {
+            color: #f85149;
+            background: rgba(248, 81, 73, 0.1);
+        }
+        
+        /* 快捷时间选择按钮 */
+        .time-shortcuts {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .time-shortcut-btn {
+            padding: 0.25rem 0.625rem;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #8b949e;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .time-shortcut-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="flex items-center">
+                    <i class="fas fa-database text-2xl text-indigo-400 mr-3"></i>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-100">数据表映射</h1>
+                        <p class="text-xs text-gray-500">Topic关联表管理</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="py-4">
+                <div class="nav-item" :class="{ active: currentTab === 'mappings' }" @click="currentTab = 'mappings'">
+                    <i class="fas fa-link"></i>
+                    <span>映射配置</span>
+                </div>
+                <div class="nav-item" :class="{ active: currentTab === 'data' }" @click="currentTab = 'data'">
+                    <i class="fas fa-table"></i>
+                    <span>数据浏览</span>
+                </div>
+                <div class="nav-item" :class="{ active: currentTab === 'logs' }" @click="currentTab = 'logs'">
+                    <i class="fas fa-history"></i>
+                    <span>采集日志</span>
+                </div>
+                <a href="/" class="nav-item">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>返回主页</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部导航 -->
+            <nav class="bg-[#161b22] border-b border-[#30363d] sticky top-0 z-50">
+                <div class="px-6 py-4 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-100">{{ tabTitle }}</h2>
+                        <p class="text-sm text-gray-500 mt-0.5">{{ tabSubtitle }}</p>
+                    </div>
+                    <button @click="refreshData" class="btn btn-secondary">
+                        <i class="fas fa-sync-alt"></i>刷新数据
+                    </button>
+                </div>
+            </nav>
+            
+            <!-- Toast消息 -->
+            <div v-if="toast.show" class="toast" :class="'toast-' + toast.type">
+                <i :class="toast.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'" class="mr-2"></i>
+                {{ toast.message }}
+            </div>
+            
+            <div class="p-6">
+                <!-- 映射配置页面 -->
+                <div v-if="currentTab === 'mappings'">
+                    <div class="card">
+                        <div class="p-4 border-b border-[#30363d] flex justify-between items-center">
+                            <h3 class="font-semibold text-gray-100">
+                                <i class="fas fa-list mr-2 text-gray-500"></i>映射配置列表
+                            </h3>
+                            <button class="btn btn-primary" @click="openCreateModal">
+                                <i class="fas fa-plus"></i>新建映射
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="data-table" v-if="mappings.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>表名</th>
+                                        <th>显示名称</th>
+                                        <th>关联Topic</th>
+                                        <th>字段数</th>
+                                        <th>入库条件</th>
+                                        <th>自动采集</th>
+                                        <th>状态</th>
+                                        <th>创建时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="mapping in mappings" :key="mapping.id">
+                                        <td>
+                                            <code class="text-xs bg-[#0d1117] px-2 py-1 rounded text-green-400">{{ mapping.table_name }}</code>
+                                        </td>
+                                        <td>{{ mapping.table_display_name || '-' }}</td>
+                                        <td>
+                                            <span class="tag tag-info">{{ mapping.topic_name || mapping.cls_topic_id }}</span>
+                                        </td>
+                                        <td>{{ mapping.field_config?.length || 0 }}</td>
+                                        <td>
+                                            <span v-if="mapping.filter_config?.enabled" class="tag tag-warning" :title="getFilterSummary(mapping.filter_config)">
+                                                <i class="fas fa-filter mr-1"></i>{{ mapping.filter_config.conditions?.length || 0 }}条
+                                            </span>
+                                            <span v-else class="text-gray-500">-</span>
+                                        </td>
+                                        <td>
+                                            <span :class="mapping.auto_collect ? 'tag tag-success' : 'tag tag-warning'">
+                                                {{ mapping.auto_collect ? '是' : '否' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span :class="mapping.status ? 'tag tag-success' : 'tag tag-danger'">
+                                                {{ mapping.status ? '启用' : '禁用' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ formatDate(mapping.created_at) }}</td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="btn btn-info btn-sm" @click="collectData(mapping.id)" title="采集数据">
+                                                    <i class="fas fa-download mr-0"></i>
+                                                </button>
+                                                <button class="btn btn-secondary btn-sm" @click="viewData(mapping)" title="查看数据">
+                                                    <i class="fas fa-eye mr-0"></i>
+                                                </button>
+                                                <button class="btn btn-secondary btn-sm" @click="editMapping(mapping)" title="编辑">
+                                                    <i class="fas fa-edit mr-0"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm" @click="deleteMapping(mapping.id)" title="删除">
+                                                    <i class="fas fa-trash mr-0"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-else class="empty-state">
+                                <i class="fas fa-link"></i>
+                                <p>暂无映射配置</p>
+                                <p class="text-sm mt-2">点击"新建映射"创建Topic与数据表的关联</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据浏览页面 -->
+                <div v-if="currentTab === 'data'">
+                    <div class="card mb-6">
+                        <div class="p-4 border-b border-[#30363d]">
+                            <h3 class="font-semibold text-gray-100">
+                                <i class="fas fa-filter mr-2 text-gray-500"></i>选择数据表
+                            </h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex gap-4 items-end">
+                                <div class="flex-1">
+                                    <label class="form-label">选择映射配置</label>
+                                    <select class="form-select" v-model="selectedMappingId" @change="loadTableData">
+                                        <option value="">-- 请选择 --</option>
+                                        <option v-for="m in mappings" :key="m.id" :value="m.id">
+                                            {{ m.table_display_name || m.table_name }} ({{ m.table_name }})
+                                        </option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-info" @click="loadTableData" :disabled="!selectedMappingId">
+                                    <i class="fas fa-search"></i>查询
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" v-if="tableData.data">
+                        <div class="p-4 border-b border-[#30363d] flex justify-between items-center">
+                            <h3 class="font-semibold text-gray-100">
+                                <i class="fas fa-table mr-2 text-gray-500"></i>数据列表
+                                <span class="tag tag-info ml-2">共 {{ tableData.total }} 条</span>
+                            </h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="data-table" v-if="tableData.data.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th v-for="col in tableData.columns" :key="col">{{ col }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(row, idx) in tableData.data" :key="idx">
+                                        <td v-for="col in tableData.columns" :key="col">
+                                            <span v-if="col === 'collected_at' || col === 'create_time' || col === 'log_time'" class="text-gray-500">{{ formatDate(row[col]) }}</span>
+                                            <code v-else-if="typeof row[col] === 'object'" class="text-xs text-green-400">{{ JSON.stringify(row[col]) }}</code>
+                                            <span v-else>{{ row[col] ?? '-' }}</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-else class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>暂无数据</p>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-[#30363d] flex justify-between items-center" v-if="tableData.total > 0">
+                            <span class="text-sm text-gray-500">
+                                显示 {{ tableData.offset + 1 }} - {{ Math.min(tableData.offset + tableData.limit, tableData.total) }} 条，共 {{ tableData.total }} 条
+                            </span>
+                            <div class="flex gap-2 items-center">
+                                <button class="btn btn-secondary btn-sm" @click="tableData.offset = 0; loadTableData()" :disabled="tableData.offset === 0" title="首页">
+                                    <i class="fas fa-angle-double-left mr-0"></i>
+                                </button>
+                                <button class="btn btn-secondary btn-sm" @click="prevPage" :disabled="tableData.offset === 0" title="上一页">
+                                    <i class="fas fa-chevron-left mr-0"></i>
+                                </button>
+                                <span class="px-2 text-sm text-gray-400">
+                                    第 {{ Math.floor(tableData.offset / tableData.limit) + 1 }} / {{ Math.ceil(tableData.total / tableData.limit) }} 页
+                                </span>
+                                <button class="btn btn-secondary btn-sm" @click="nextPage" :disabled="tableData.offset + tableData.limit >= tableData.total" title="下一页">
+                                    <i class="fas fa-chevron-right mr-0"></i>
+                                </button>
+                                <button class="btn btn-secondary btn-sm" @click="tableData.offset = (Math.ceil(tableData.total / tableData.limit) - 1) * tableData.limit; loadTableData()" :disabled="tableData.offset + tableData.limit >= tableData.total" title="末页">
+                                    <i class="fas fa-angle-double-right mr-0"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 采集日志页面 -->
+                <div v-if="currentTab === 'logs'">
+                    <div class="card">
+                        <div class="p-4 border-b border-[#30363d] flex justify-between items-center">
+                            <h3 class="font-semibold text-gray-100">
+                                <i class="fas fa-history mr-2 text-gray-500"></i>采集日志
+                                <span class="tag tag-info ml-2" v-if="collectionLogs.total > 0">共 {{ collectionLogs.total }} 条</span>
+                            </h3>
+                            <button class="btn btn-secondary" @click="collectionLogs.offset = 0; loadCollectionLogs()">
+                                <i class="fas fa-sync-alt"></i>刷新
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="data-table" v-if="collectionLogs.data && collectionLogs.data.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>数据表</th>
+                                        <th>采集数量</th>
+                                        <th>成功数</th>
+                                        <th>失败数</th>
+                                        <th>完成时间</th>
+                                        <th>错误信息</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="log in collectionLogs.data" :key="log.id">
+                                        <td>
+                                            <code class="text-xs bg-[#0d1117] px-2 py-1 rounded">{{ log.table_name }}</code>
+                                        </td>
+                                        <td>{{ log.collected_count }}</td>
+                                        <td><span class="text-green-400">{{ log.success_count }}</span></td>
+                                        <td><span :class="log.error_count > 0 ? 'text-red-400' : ''">{{ log.error_count }}</span></td>
+                                        <td>{{ formatDate(log.finished_at) }}</td>
+                                        <td>
+                                            <span v-if="log.error_message" class="text-red-400 text-xs">{{ truncate(log.error_message, 50) }}</span>
+                                            <span v-else class="text-gray-500">-</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-else class="empty-state">
+                                <i class="fas fa-history"></i>
+                                <p>暂无采集日志</p>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-[#30363d] flex justify-between items-center" v-if="collectionLogs.total > collectionLogs.limit">
+                            <span class="text-sm text-gray-500">
+                                显示 {{ collectionLogs.offset + 1 }} - {{ Math.min(collectionLogs.offset + collectionLogs.limit, collectionLogs.total) }} 条
+                            </span>
+                            <div class="flex gap-2 items-center">
+                                <button class="btn btn-secondary btn-sm" @click="collectionLogs.offset = 0; loadCollectionLogs()" :disabled="collectionLogs.offset === 0" title="首页">
+                                    <i class="fas fa-angle-double-left mr-0"></i>
+                                </button>
+                                <button class="btn btn-secondary btn-sm" @click="collectionLogs.offset -= collectionLogs.limit; loadCollectionLogs()" :disabled="collectionLogs.offset === 0" title="上一页">
+                                    <i class="fas fa-chevron-left mr-0"></i>
+                                </button>
+                                <span class="px-2 text-sm text-gray-400">
+                                    第 {{ Math.floor(collectionLogs.offset / collectionLogs.limit) + 1 }} / {{ Math.ceil(collectionLogs.total / collectionLogs.limit) }} 页
+                                </span>
+                                <button class="btn btn-secondary btn-sm" @click="collectionLogs.offset += collectionLogs.limit; loadCollectionLogs()" :disabled="collectionLogs.offset + collectionLogs.limit >= collectionLogs.total" title="下一页">
+                                    <i class="fas fa-chevron-right mr-0"></i>
+                                </button>
+                                <button class="btn btn-secondary btn-sm" @click="collectionLogs.offset = (Math.ceil(collectionLogs.total / collectionLogs.limit) - 1) * collectionLogs.limit; loadCollectionLogs()" :disabled="collectionLogs.offset + collectionLogs.limit >= collectionLogs.total" title="末页">
+                                    <i class="fas fa-angle-double-right mr-0"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </main>
+        
+        <!-- 创建/编辑映射模态框 -->
+        <div class="modal-overlay" v-if="showMappingModal" @click.self="showMappingModal = false">
+            <div class="modal" style="max-width: 800px;">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <i class="fas fa-link mr-2 text-blue-500"></i>
+                        {{ editingMapping ? '编辑映射配置' : '新建映射配置' }}
+                    </h3>
+                    <button class="modal-close" @click="showMappingModal = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="form-label">关联Topic <span class="text-red-500">*</span></label>
+                            <select class="form-select" v-model="mappingForm.topic_id" :disabled="editingMapping">
+                                <option value="">-- 请选择 --</option>
+                                <option v-for="topic in topics" :key="topic.id" :value="topic.id">
+                                    {{ topic.topic_name || topic.topic_id }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">数据表名 <span class="text-red-500">*</span></label>
+                            <input type="text" class="form-input" v-model="mappingForm.table_name" 
+                                placeholder="英文字母开头，如: error_logs" :disabled="editingMapping">
+                            <p class="text-xs text-gray-500 mt-1">只能包含字母、数字、下划线</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="form-label">显示名称</label>
+                            <input type="text" class="form-input" v-model="mappingForm.table_display_name" placeholder="便于识别的名称">
+                        </div>
+                        <div class="flex gap-4 items-center pt-6">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" v-model="mappingForm.auto_collect" class="mr-2">
+                                <span class="text-sm">自动采集</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer" v-if="editingMapping">
+                                <input type="checkbox" v-model="mappingForm.status" class="mr-2">
+                                <span class="text-sm">启用</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">描述</label>
+                        <textarea class="form-textarea" v-model="mappingForm.description" placeholder="映射配置描述" rows="2"></textarea>
+                    </div>
+                    
+                    <!-- 字段配置 - 新建时可编辑 -->
+                    <div class="mb-4" v-if="!editingMapping">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="form-label mb-0">字段配置 <span class="text-red-500">*</span></label>
+                            <button class="btn btn-secondary btn-sm" @click="addField">
+                                <i class="fas fa-plus"></i>添加字段
+                            </button>
+                        </div>
+                        <div class="bg-[#0d1117] rounded-lg p-3 mb-2">
+                            <div class="grid grid-cols-12 gap-2 text-xs text-gray-500 font-medium mb-2 px-2">
+                                <div class="col-span-5">字段名</div>
+                                <div class="col-span-5">数据类型</div>
+                                <div class="col-span-2"></div>
+                            </div>
+                            <div v-for="(field, index) in mappingForm.field_config" :key="index" class="field-row">
+                                <input type="text" class="form-input" v-model="field.name" placeholder="字段名" style="flex: 5;">
+                                <input type="text" class="form-input" v-model="field.type" list="fieldTypeList" placeholder="数据类型" style="flex: 5;">
+                                <button class="btn btn-danger btn-sm" @click="removeField(index)" style="flex: 2;">
+                                    <i class="fas fa-times mr-0"></i>
+                                </button>
+                            </div>
+                            <div v-if="mappingForm.field_config.length === 0" class="text-center text-gray-500 py-4">
+                                点击"添加字段"配置数据表字段
+                            </div>
+                            <!-- 数据类型下拉选项 -->
+                            <datalist id="fieldTypeList">
+                                <option v-for="t in fieldTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
+                            </datalist>
+                        </div>
+                        <p class="text-xs text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            数据类型支持手动输入，如 VARCHAR(100)、INT(11)、DECIMAL(10,2) 等。转换规则请在"查询配置"中设置。
+                        </p>
+                    </div>
+                    
+                    <!-- 字段配置 - 编辑时可新增列 -->
+                    <div class="mb-4" v-if="editingMapping && mappingForm.field_config.length > 0">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="form-label mb-0">
+                                字段配置
+                                <span class="text-xs text-gray-500 ml-2">(可新增列)</span>
+                            </label>
+                            <button class="btn btn-sm btn-success" @click="addFieldToEdit">
+                                <i class="fas fa-plus mr-1"></i>新增列
+                            </button>
+                        </div>
+                        <div class="bg-[#0d1117] rounded-lg p-3 mb-2">
+                            <div class="grid grid-cols-12 gap-2 text-xs text-gray-500 font-medium mb-2 px-2">
+                                <div class="col-span-5">数据库字段</div>
+                                <div class="col-span-5">类型</div>
+                                <div class="col-span-2">操作</div>
+                            </div>
+                            <div v-for="(field, index) in mappingForm.field_config" :key="index" class="field-row">
+                                <!-- 已有字段：字段名和类型只读 -->
+                                <template v-if="!field.isNew">
+                                    <div class="text-sm text-green-400 flex items-center" style="flex: 5;">
+                                        <code class="bg-[#161b22] px-2 py-1 rounded">{{ field.name }}</code>
+                                    </div>
+                                    <div class="text-sm text-blue-400 flex items-center" style="flex: 5;">
+                                        {{ field.type }}
+                                    </div>
+                                </template>
+                                <!-- 新增字段：字段名和类型可编辑 -->
+                                <template v-else>
+                                    <input type="text" class="form-input" v-model="field.name" placeholder="字段名" style="flex: 5;">
+                                    <input type="text" class="form-input" v-model="field.type" list="fieldTypeList" placeholder="数据类型" style="flex: 5;">
+                                </template>
+                                <div class="flex items-center justify-center" style="flex: 2;">
+                                    <button v-if="field.isNew" class="btn btn-danger btn-sm" @click="removeFieldFromEdit(index)" title="删除">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <span v-else class="text-gray-600 text-xs">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            转换规则请在"查询配置"中设置，每个查询可以配置独立的转换规则映射到此表。
+                        </p>
+                    </div>
+                    
+                    <!-- 入库条件配置 -->
+                    <div class="mb-4" v-if="editingMapping">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="form-label mb-0">
+                                <i class="fas fa-filter mr-1 text-yellow-500"></i>入库条件配置
+                                <span class="text-xs text-gray-500 ml-2">(可选)</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" v-model="mappingForm.filter_config.enabled" class="mr-2">
+                                <span class="text-sm">启用过滤</span>
+                            </label>
+                        </div>
+                        <div class="bg-[#0d1117] rounded-lg p-3" v-if="mappingForm.filter_config.enabled">
+                            <div class="mb-3">
+                                <label class="form-label text-xs">条件逻辑</label>
+                                <div class="flex gap-4">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" v-model="mappingForm.filter_config.logic" value="and" class="mr-2">
+                                        <span class="text-sm">全部满足 (AND)</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" v-model="mappingForm.filter_config.logic" value="or" class="mr-2">
+                                        <span class="text-sm">任一满足 (OR)</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="form-label text-xs mb-0">过滤条件</label>
+                                    <button class="btn btn-sm btn-secondary" @click="addFilterCondition">
+                                        <i class="fas fa-plus mr-1"></i>添加条件
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-12 gap-2 text-xs text-gray-500 font-medium mb-2 px-2" v-if="mappingForm.filter_config.conditions.length > 0">
+                                    <div class="col-span-4">字段路径</div>
+                                    <div class="col-span-3">操作符</div>
+                                    <div class="col-span-4">比较值</div>
+                                    <div class="col-span-1"></div>
+                                </div>
+                                <div v-for="(cond, index) in mappingForm.filter_config.conditions" :key="index" class="field-row">
+                                    <input type="text" class="form-input" v-model="cond.field" placeholder="字段路径，如 response_body.code" style="flex: 4;">
+                                    <select class="form-select" v-model="cond.operator" style="flex: 3;">
+                                        <option v-for="op in filterOperators" :key="op.value" :value="op.value">{{ op.label }}</option>
+                                    </select>
+                                    <input type="text" class="form-input" v-model="cond.value" placeholder="比较值" style="flex: 4;" :disabled="cond.operator === 'is_empty' || cond.operator === 'is_not_empty'">
+                                    <button class="btn btn-danger btn-sm" @click="removeFilterCondition(index)" style="flex: 1;">
+                                        <i class="fas fa-times mr-0"></i>
+                                    </button>
+                                </div>
+                                <div v-if="mappingForm.filter_config.conditions.length === 0" class="text-center text-gray-500 py-4 text-sm">
+                                    点击"添加条件"配置入库过滤规则
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            入库条件用于过滤数据，只有满足条件的数据才会被入库。字段路径支持嵌套，如 response_body.resData.code
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="showMappingModal = false">取消</button>
+                    <button class="btn btn-primary" @click="saveMapping" :disabled="saving">
+                        <i :class="saving ? 'fas fa-spinner fa-spin' : 'fas fa-save'"></i>
+                        {{ saving ? '保存中...' : '保存' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 采集数据模态框 -->
+        <div class="modal-overlay" v-if="showCollectModal" @click.self="showCollectModal = false">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <i class="fas fa-download mr-2 text-blue-500"></i>采集数据
+                    </h3>
+                    <button class="modal-close" @click="showCollectModal = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <label class="form-label">查询语句</label>
+                        <input type="text" class="form-input" v-model="collectForm.query" placeholder="CQL查询语句，默认 *">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="form-label">开始时间</label>
+                            <div class="datetime-picker-wrapper">
+                                <i class="fas fa-calendar-alt datetime-icon"></i>
+                                <input type="text" class="form-input flatpickr-input" ref="collectFromTimeInput" v-model="collectForm.from_time_str" placeholder="选择开始时间" readonly>
+                                <button type="button" class="clear-btn" @click="clearCollectFromTime" v-if="collectForm.from_time_str" title="清除">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">结束时间</label>
+                            <div class="datetime-picker-wrapper">
+                                <i class="fas fa-calendar-alt datetime-icon"></i>
+                                <input type="text" class="form-input flatpickr-input" ref="collectToTimeInput" v-model="collectForm.to_time_str" placeholder="选择结束时间" readonly>
+                                <button type="button" class="clear-btn" @click="clearCollectToTime" v-if="collectForm.to_time_str" title="清除">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 快捷时间选择 -->
+                    <div class="mb-4">
+                        <label class="form-label text-xs text-gray-500">快捷选择</label>
+                        <div class="time-shortcuts">
+                            <button type="button" class="time-shortcut-btn" @click="setCollectTimeRange(5)">最近5分钟</button>
+                            <button type="button" class="time-shortcut-btn" @click="setCollectTimeRange(15)">最近15分钟</button>
+                            <button type="button" class="time-shortcut-btn" @click="setCollectTimeRange(30)">最近30分钟</button>
+                            <button type="button" class="time-shortcut-btn" @click="setCollectTimeRange(60)">最近1小时</button>
+                            <button type="button" class="time-shortcut-btn" @click="setCollectTimeRange(180)">最近3小时</button>
+                            <button type="button" class="time-shortcut-btn" @click="setCollectTimeRange(360)">最近6小时</button>
+                            <button type="button" class="time-shortcut-btn" @click="setCollectTimeRange(1440)">最近24小时</button>
+                            <button type="button" class="time-shortcut-btn" @click="setCollectTimeRange(4320)">最近3天</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">返回条数</label>
+                        <input type="number" class="form-input" v-model="collectForm.limit" min="1" max="1000">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="showCollectModal = false">取消</button>
+                    <button class="btn btn-primary" @click="doCollect" :disabled="collecting">
+                        <i :class="collecting ? 'fas fa-spinner fa-spin' : 'fas fa-download'"></i>
+                        {{ collecting ? '采集中...' : '开始采集' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <script>
+        const { createApp, ref, reactive, computed, onMounted } = Vue;
+        
+        createApp({
+            setup() {
+                const currentTab = ref('mappings');
+                const toast = reactive({ show: false, type: 'success', message: '' });
+                
+                const mappings = ref([]);
+                const topics = ref([]);
+                const collectionLogs = reactive({ data: [], total: 0, limit: 20, offset: 0 });
+                const fieldTypes = ref([
+                    { value: 'TEXT', label: '文本(TEXT)' },
+                    { value: 'VARCHAR(255)', label: '字符串(VARCHAR)' },
+                    { value: 'INTEGER', label: '整数(INT)' },
+                    { value: 'BIGINT', label: '大整数(BIGINT)' },
+                    { value: 'REAL', label: '浮点数(DOUBLE)' },
+                    { value: 'DECIMAL(10,2)', label: '精确小数(DECIMAL)' },
+                    { value: 'TIMESTAMP', label: '时间戳(TIMESTAMP)' },
+                    { value: 'DATETIME', label: '日期时间(DATETIME)' },
+                    { value: 'JSON', label: 'JSON' },
+                    { value: 'BLOB', label: '二进制(BLOB)' }
+                ]);
+                
+                // 入库过滤操作符
+                const filterOperators = ref([
+                    { value: 'equals', label: '等于' },
+                    { value: 'not_equals', label: '不等于' },
+                    { value: 'contains', label: '包含' },
+                    { value: 'not_contains', label: '不包含' },
+                    { value: 'starts_with', label: '以...开头' },
+                    { value: 'ends_with', label: '以...结尾' },
+                    { value: 'gt', label: '大于' },
+                    { value: 'gte', label: '大于等于' },
+                    { value: 'lt', label: '小于' },
+                    { value: 'lte', label: '小于等于' },
+                    { value: 'in', label: '在列表中' },
+                    { value: 'not_in', label: '不在列表中' },
+                    { value: 'regex', label: '正则匹配' },
+                    { value: 'is_empty', label: '为空' },
+                    { value: 'is_not_empty', label: '不为空' }
+                ]);
+                
+                const showMappingModal = ref(false);
+                const showCollectModal = ref(false);
+                const editingMapping = ref(null);
+                const saving = ref(false);
+                const collecting = ref(false);
+                const collectMappingId = ref(null);
+                
+                const mappingForm = reactive({
+                    topic_id: '',
+                    table_name: '',
+                    table_display_name: '',
+                    description: '',
+                    auto_collect: true,
+                    status: true,
+                    field_config: [],
+                    filter_config: {
+                        enabled: false,
+                        logic: 'and',
+                        conditions: []
+                    }
+                });
+                
+                const collectForm = reactive({
+                    query: '*',
+                    from_time_str: '',
+                    to_time_str: '',
+                    limit: 100
+                });
+                
+                // Flatpickr 实例引用
+                const collectFromTimeInput = ref(null);
+                const collectToTimeInput = ref(null);
+                let collectFromTimePicker = null;
+                let collectToTimePicker = null;
+                
+                const selectedMappingId = ref('');
+                const tableData = reactive({
+                    columns: [],
+                    data: null,
+                    total: 0,
+                    limit: 50,
+                    offset: 0
+                });
+                
+                const tabTitle = computed(() => {
+                    const titles = { mappings: '映射配置', data: '数据浏览', logs: '采集日志' };
+                    return titles[currentTab.value] || '映射配置';
+                });
+                
+                const tabSubtitle = computed(() => {
+                    const subtitles = {
+                        mappings: '管理Topic与数据表的映射关系（表结构定义）',
+                        data: '浏览已采集的数据',
+                        logs: '查看数据采集历史记录'
+                    };
+                    return subtitles[currentTab.value] || '';
+                });
+                
+                const showToast = (message, type = 'success') => {
+                    toast.message = message;
+                    toast.type = type;
+                    toast.show = true;
+                    setTimeout(() => { toast.show = false; }, 3000);
+                };
+                
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return '-';
+                    return new Date(dateStr).toLocaleString('zh-CN');
+                };
+                
+                const truncate = (text, length) => {
+                    if (!text) return '';
+                    return text.length > length ? text.substring(0, length) + '...' : text;
+                };
+                
+                const getFieldTypeLabel = (type) => {
+                    const typeMap = {
+                        'TEXT': '文本',
+                        'VARCHAR': '字符串',
+                        'INTEGER': '整数',
+                        'INT': '整数',
+                        'BIGINT': '大整数',
+                        'REAL': '浮点数',
+                        'DOUBLE': '浮点数',
+                        'DECIMAL': '精确小数',
+                        'TIMESTAMP': '时间戳',
+                        'DATETIME': '日期时间',
+                        'JSON': 'JSON',
+                        'BLOB': '二进制'
+                    };
+                    // 支持带参数的类型，如 VARCHAR(255)
+                    const baseType = type ? type.split('(')[0].toUpperCase() : '';
+                    return typeMap[baseType] || type;
+                };
+                
+                const getTransformDescription = (transform) => {
+                    if (!transform) return '';
+                    
+                    if (transform === 'trim') return '去除首尾空白';
+                    if (transform === 'lower') return '转换为小写';
+                    if (transform === 'upper') return '转换为大写';
+                    
+                    if (transform.startsWith('json_path:')) {
+                        const path = transform.substring(10);
+                        return `从JSON中提取 ${path} 的值`;
+                    }
+                    if (transform.startsWith('regex:')) {
+                        const parts = transform.split(':');
+                        return `使用正则 ${parts[1]} 提取第 ${parts[2] || 0} 组`;
+                    }
+                    if (transform.startsWith('split:')) {
+                        const parts = transform.split(':');
+                        return `按 "${parts[1]}" 分割取第 ${parseInt(parts[2] || 0) + 1} 个`;
+                    }
+                    if (transform.startsWith('replace:')) {
+                        const parts = transform.split(':');
+                        return `将 "${parts[1]}" 替换为 "${parts[2] || ''}"`;
+                    }
+                    if (transform.startsWith('substring:')) {
+                        const parts = transform.split(':');
+                        return `截取第 ${parts[1]} 到 ${parts[2] || '末尾'} 位`;
+                    }
+                    
+                    return transform;
+                };
+                
+                // 获取过滤条件摘要
+                const getFilterSummary = (filterConfig) => {
+                    if (!filterConfig || !filterConfig.enabled) return '';
+                    const conditions = filterConfig.conditions || [];
+                    if (conditions.length === 0) return '无条件';
+                    
+                    const operatorLabels = {
+                        'equals': '=', 'not_equals': '≠', 'contains': '包含', 'not_contains': '不包含',
+                        'starts_with': '开头', 'ends_with': '结尾', 'gt': '>', 'gte': '≥', 'lt': '<', 'lte': '≤',
+                        'in': '在列表中', 'not_in': '不在列表中', 'regex': '正则', 'is_empty': '为空', 'is_not_empty': '不为空'
+                    };
+                    
+                    const logic = filterConfig.logic === 'or' ? ' 或 ' : ' 且 ';
+                    return conditions.map(c => `${c.field} ${operatorLabels[c.operator] || c.operator} ${c.value || ''}`).join(logic);
+                };
+                
+                const loadMappings = async () => {
+                    try {
+                        const res = await axios.get('/api/table-mappings');
+                        mappings.value = res.data;
+                    } catch (e) {
+                        showToast('加载映射配置失败', 'error');
+                    }
+                };
+                
+                const loadTopics = async () => {
+                    try {
+                        const res = await axios.get('/api/topics');
+                        topics.value = res.data;
+                    } catch (e) {
+                        showToast('加载Topic失败', 'error');
+                    }
+                };
+                
+                const loadCollectionLogs = async () => {
+                    try {
+                        const res = await axios.get('/api/table-mappings/collection-logs', {
+                            params: { limit: collectionLogs.limit, offset: collectionLogs.offset }
+                        });
+                        Object.assign(collectionLogs, res.data);
+                    } catch (e) {
+                        showToast('加载采集日志失败', 'error');
+                    }
+                };
+                
+                const loadTableData = async () => {
+                    if (!selectedMappingId.value) return;
+                    try {
+                        const res = await axios.get(`/api/table-mappings/${selectedMappingId.value}/data`, {
+                            params: { limit: tableData.limit, offset: tableData.offset }
+                        });
+                        Object.assign(tableData, res.data);
+                    } catch (e) {
+                        showToast('加载数据失败', 'error');
+                    }
+                };
+                
+                const refreshData = () => {
+                    loadMappings();
+                    loadTopics();
+                    if (currentTab.value === 'logs') loadCollectionLogs();
+                    if (currentTab.value === 'data' && selectedMappingId.value) loadTableData();
+                };
+                
+                const resetMappingForm = () => {
+                    Object.assign(mappingForm, {
+                        topic_id: '',
+                        table_name: '',
+                        table_display_name: '',
+                        description: '',
+                        auto_collect: true,
+                        status: true,
+                        field_config: [],
+                        filter_config: {
+                            enabled: false,
+                            logic: 'and',
+                            conditions: []
+                        }
+                    });
+                };
+                
+                const openCreateModal = () => {
+                    editingMapping.value = null;
+                    resetMappingForm();
+                    showMappingModal.value = true;
+                };
+                
+                const editMapping = (mapping) => {
+                    editingMapping.value = mapping;
+                    // 处理 filter_config，确保有默认结构
+                    let filterConfig = mapping.filter_config || {};
+                    if (!filterConfig.conditions) {
+                        filterConfig = {
+                            enabled: filterConfig.enabled || false,
+                            logic: filterConfig.logic || 'and',
+                            conditions: filterConfig.conditions || []
+                        };
+                    }
+                    Object.assign(mappingForm, {
+                        topic_id: mapping.topic_id,
+                        table_name: mapping.table_name,
+                        table_display_name: mapping.table_display_name || '',
+                        description: mapping.description || '',
+                        auto_collect: !!mapping.auto_collect,
+                        status: !!mapping.status,
+                        field_config: mapping.field_config || [],
+                        filter_config: filterConfig
+                    });
+                    showMappingModal.value = true;
+                };
+                
+                const addField = () => {
+                    mappingForm.field_config.push({
+                        name: '',
+                        type: 'TEXT'
+                    });
+                };
+                
+                const removeField = (index) => {
+                    mappingForm.field_config.splice(index, 1);
+                };
+                
+                // 添加入库过滤条件
+                const addFilterCondition = () => {
+                    mappingForm.filter_config.conditions.push({
+                        field: '',
+                        operator: 'equals',
+                        value: ''
+                    });
+                };
+                
+                // 删除入库过滤条件
+                const removeFilterCondition = (index) => {
+                    mappingForm.filter_config.conditions.splice(index, 1);
+                };
+                
+                // 编辑时新增列
+                const addFieldToEdit = () => {
+                    mappingForm.field_config.push({
+                        name: '',
+                        type: 'VARCHAR(255)',
+                        isNew: true  // 标记为新增字段
+                    });
+                };
+                
+                // 编辑时删除新增的列
+                const removeFieldFromEdit = (index) => {
+                    if (mappingForm.field_config[index].isNew) {
+                        mappingForm.field_config.splice(index, 1);
+                    }
+                };
+                
+                const saveMapping = async () => {
+                    if (!mappingForm.topic_id) {
+                        showToast('请选择关联Topic', 'error');
+                        return;
+                    }
+                    if (!mappingForm.table_name) {
+                        showToast('请输入数据表名', 'error');
+                        return;
+                    }
+                    if (!editingMapping.value && mappingForm.field_config.length === 0) {
+                        showToast('请至少添加一个字段', 'error');
+                        return;
+                    }
+                    
+                    saving.value = true;
+                    try {
+                        if (editingMapping.value) {
+                            await axios.put(`/api/table-mappings/${editingMapping.value.id}`, {
+                                table_display_name: mappingForm.table_display_name,
+                                description: mappingForm.description,
+                                auto_collect: mappingForm.auto_collect ? 1 : 0,
+                                status: mappingForm.status ? 1 : 0,
+                                field_config: mappingForm.field_config,
+                                filter_config: mappingForm.filter_config
+                            });
+                            showToast('更新成功');
+                        } else {
+                            await axios.post('/api/table-mappings', {
+                                topic_id: mappingForm.topic_id,
+                                table_name: mappingForm.table_name,
+                                table_display_name: mappingForm.table_display_name,
+                                description: mappingForm.description,
+                                auto_collect: mappingForm.auto_collect,
+                                field_config: mappingForm.field_config.filter(f => f.name),
+                                filter_config: mappingForm.filter_config
+                            });
+                            showToast('创建成功');
+                        }
+                        showMappingModal.value = false;
+                        loadMappings();
+                    } catch (e) {
+                        showToast(e.response?.data?.error || '保存失败', 'error');
+                    } finally {
+                        saving.value = false;
+                    }
+                };
+                
+                const deleteMapping = async (id) => {
+                    if (!confirm('确定要删除此映射配置吗？')) return;
+                    const dropTable = confirm('是否同时删除关联的数据表？');
+                    try {
+                        await axios.delete(`/api/table-mappings/${id}?drop_table=${dropTable}`);
+                        showToast('删除成功');
+                        loadMappings();
+                    } catch (e) {
+                        showToast(e.response?.data?.error || '删除失败', 'error');
+                    }
+                };
+                
+                const collectData = (mappingId) => {
+                    collectMappingId.value = mappingId;
+                    collectForm.query = '*';
+                    collectForm.limit = 100;
+                    showCollectModal.value = true;
+                    
+                    // 初始化 Flatpickr 时间选择器
+                    Vue.nextTick(() => {
+                        initCollectFlatpickr();
+                        // 设置默认时间为最近1小时
+                        setCollectTimeRange(60);
+                    });
+                };
+                
+                // 初始化采集模态框的 Flatpickr
+                const initCollectFlatpickr = () => {
+                    const commonConfig = {
+                        enableTime: true,
+                        time_24hr: true,
+                        dateFormat: 'Y-m-d H:i',
+                        locale: 'zh',
+                        allowInput: false,
+                        disableMobile: true
+                    };
+                    
+                    // 销毁已存在的实例
+                    if (collectFromTimePicker) collectFromTimePicker.destroy();
+                    if (collectToTimePicker) collectToTimePicker.destroy();
+                    
+                    if (collectFromTimeInput.value) {
+                        collectFromTimePicker = flatpickr(collectFromTimeInput.value, {
+                            ...commonConfig,
+                            onChange: (selectedDates, dateStr) => {
+                                collectForm.from_time_str = dateStr;
+                            }
+                        });
+                    }
+                    
+                    if (collectToTimeInput.value) {
+                        collectToTimePicker = flatpickr(collectToTimeInput.value, {
+                            ...commonConfig,
+                            onChange: (selectedDates, dateStr) => {
+                                collectForm.to_time_str = dateStr;
+                            }
+                        });
+                    }
+                };
+                
+                // 快捷时间范围设置 (采集模态框)
+                const setCollectTimeRange = (minutes) => {
+                    const now = new Date();
+                    const from = new Date(now.getTime() - minutes * 60 * 1000);
+                    
+                    // 格式化为 Flatpickr 需要的格式 (YYYY-MM-DD HH:mm)
+                    const formatDateTime = (date) => {
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const hours = String(date.getHours()).padStart(2, '0');
+                        const mins = String(date.getMinutes()).padStart(2, '0');
+                        return `${year}-${month}-${day} ${hours}:${mins}`;
+                    };
+                    
+                    collectForm.from_time_str = formatDateTime(from);
+                    collectForm.to_time_str = formatDateTime(now);
+                    
+                    // 同步更新 Flatpickr
+                    if (collectFromTimePicker) collectFromTimePicker.setDate(from, false);
+                    if (collectToTimePicker) collectToTimePicker.setDate(now, false);
+                };
+                
+                // 清除时间
+                const clearCollectFromTime = () => {
+                    collectForm.from_time_str = '';
+                    if (collectFromTimePicker) collectFromTimePicker.clear();
+                };
+                
+                const clearCollectToTime = () => {
+                    collectForm.to_time_str = '';
+                    if (collectToTimePicker) collectToTimePicker.clear();
+                };
+                
+                const doCollect = async () => {
+                    collecting.value = true;
+                    try {
+                        const fromTime = new Date(collectForm.from_time_str).getTime();
+                        const toTime = new Date(collectForm.to_time_str).getTime();
+                        
+                        const res = await axios.post(`/api/table-mappings/${collectMappingId.value}/collect`, {
+                            query: collectForm.query || '*',
+                            from_time: fromTime,
+                            to_time: toTime,
+                            limit: collectForm.limit
+                        });
+                        
+                        const result = res.data.result;
+                        showToast(`采集完成: 成功 ${result.success} 条, 失败 ${result.error} 条`);
+                        showCollectModal.value = false;
+                        loadCollectionLogs();
+                    } catch (e) {
+                        showToast(e.response?.data?.error || '采集失败', 'error');
+                    } finally {
+                        collecting.value = false;
+                    }
+                };
+                
+                const viewData = (mapping) => {
+                    selectedMappingId.value = mapping.id;
+                    tableData.offset = 0;
+                    currentTab.value = 'data';
+                    loadTableData();
+                };
+                
+                const prevPage = () => {
+                    if (tableData.offset > 0) {
+                        tableData.offset -= tableData.limit;
+                        loadTableData();
+                    }
+                };
+                
+                const nextPage = () => {
+                    if (tableData.offset + tableData.limit < tableData.total) {
+                        tableData.offset += tableData.limit;
+                        loadTableData();
+                    }
+                };
+                
+                onMounted(() => {
+                    // 根据 URL hash 切换 Tab
+                    const hash = window.location.hash.slice(1);
+                    if (['mappings', 'data', 'logs'].includes(hash)) {
+                        currentTab.value = hash;
+                    }
+                    
+                    loadMappings();
+                    loadTopics();
+                    loadCollectionLogs();
+                });
+                
+                return {
+                    currentTab, toast, mappings, topics, collectionLogs, fieldTypes, filterOperators,
+                    showMappingModal, showCollectModal, editingMapping, saving, collecting,
+                    mappingForm, collectForm, selectedMappingId, tableData,
+                    collectFromTimeInput, collectToTimeInput,
+                    tabTitle, tabSubtitle,
+                    formatDate, truncate, getFieldTypeLabel, getTransformDescription, getFilterSummary, refreshData,
+                    loadMappings, loadTopics, loadCollectionLogs, loadTableData,
+                    openCreateModal, editMapping, addField, removeField, addFieldToEdit, removeFieldFromEdit, 
+                    addFilterCondition, removeFilterCondition, saveMapping, deleteMapping,
+                    collectData, doCollect, viewData, prevPage, nextPage, 
+                    setCollectTimeRange, clearCollectFromTime, clearCollectToTime
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

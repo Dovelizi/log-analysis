@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+.eggs/
+*.egg-info/
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 测试和调试
+debug_*.py
+test_*.py
+*.test.py
+
+# 日志和数据库
+*.log
+*.db
+*.sqlite
+nohup.out
+
+# 部署相关
+deploy/
+*.pdf
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# 敏感文件
+.encryption_key
+.env
+*.pem
+*.key

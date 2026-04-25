@@ -1,0 +1,123 @@
+# 日志分析系统 Docker Compose 配置
+# 使用方法: docker-compose up -d
+
+version: '3.8'
+
+services:
+  # 应用服务
+  app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: loganalysis-app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_TYPE=mysql
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=loganalysis
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-loganalysis123}
+      - MYSQL_DATABASE=cls_logs
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_DB=0
+      - REDIS_ERROR_LIST_DB=1
+      - REDIS_DASHBOARD_DB=2
+      - FLASK_ENV=production
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - app-logs:/app/logs
+      - app-data:/app/data
+    networks:
+      - loganalysis-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: loganalysis-mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root123456}
+      - MYSQL_DATABASE=cls_logs
+      - MYSQL_USER=loganalysis
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-loganalysis123}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ../init_mysql.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - loganalysis-network
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root123456}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: loganalysis-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - loganalysis-network
+    command: redis-server --appendonly yes ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nginx反向代理（可选，用于生产环境）
+  nginx:
+    image: nginx:alpine
+    container_name: loganalysis-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      - app
+    networks:
+      - loganalysis-network
+    profiles:
+      - production
+
+networks:
+  loganalysis-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
+  app-logs:
+    driver: local
+  app-data:
+    driver: local
+  nginx-logs:
+    driver: local
