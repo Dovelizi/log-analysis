@@ -1,8 +1,9 @@
 # logAnalysis-java 重构方案（评审版 v1.0）
 
-> **文档状态**：待评审 · 未动代码
+> **文档状态**：✅ **已执行**（commit `c25ca48`，2026-04-25 23:42）
 > **作者**：AI 助手
-> **生成时间**：2026-04-25
+> **生成时间**：2026-04-25 22:00
+> **执行完成**：2026-04-25 23:42（约 1.7 小时净编码时间）
 > **前置决策**（已与用户确认）：
 > - Q1 性能：**ClickHouse（OLAP 聚合）+ MySQL（OLTP/配置）双存储**
 > - Q2 架构：**标准 DDD 四层**（interfaces / application / domain / infrastructure）
@@ -10,6 +11,35 @@
 > - Q4 节奏：**先出方案，评审通过再编码**
 
 > **零容忍声明**：本方案中所有"性能数据、慢接口清单、数据量"均为**未验证假设**，标注见各节。编码阶段必须先验证假设，才可按方案落地。
+
+---
+
+## 执行总结（追加于完成后）
+
+| 阶段 | 状态 | 完成时间 | 关键产出 |
+|---|---|---|---|
+| **P0 诊断** | ⚠️ **跳过**（用户选方案 Y） | — | 待用户补齐生产数据 |
+| **P1 DDD 重构** | ✅ 完成 | 22:23 | 60 文件 rename，零行为变更 |
+| **P2a 框架接入** | ✅ 完成 | 22:35 | pom + MybatisPlusConfig；Redisson/Hutool/Guava 依赖就绪 |
+| **P2b-1/2 5 Processor 迁 MP** | ✅ 完成 | 22:48 | 10 PO+Mapper（5 业务 + 5 跨域）；5 Processor 脱离 JdbcTemplate |
+| **P2b-3 配置类 Service 迁 MP** | ✅ 完成（修正版 C） | 23:07 | 10 PO+Mapper；5 Service 全切 MP |
+| **P2c Redisson 替换** | ✅ 完成 | 23:18 | RedisCacheService 重写；删除 RedisConfig |
+| **P2d Hutool 接入** | ✅ 完成 | 23:20 | WecomPushService 用 HttpUtil + SecureUtil |
+| **P3-1 CH 配置接入** | ✅ 完成 | 23:25 | ClickHouseConfig + Properties；条件装配 |
+| **P3-2 CH schema** | ✅ 完成 | 23:28 | 6 个 CH DDL + 补偿表 + 迁移脚本 |
+| **P3-3 Dashboard 读路径抽象** | ✅ 完成 | 23:32 | DashboardQueryExecutor + 2 实现；CH 失败降级 |
+| **P3-4/5 异步双写 + 补偿** | ✅ 完成 | 23:38 | ChDualWriter + ChWritebackRunner；5 Processor 加双写钩子 |
+| **P5 文档更新** | 🟡 进行中 | — | README / RUNBOOK / MIGRATION_PLAN 更新 |
+
+**累计验收**：148/148 测试全绿 × 12+ 验证门贯穿。
+
+**Commit 信息**：`c25ca48` — 108 文件 / +4091 / -942 行。
+
+**验收脱漏的工作（明确声明）**：
+- ❌ **未在本机启动 enabled=true 模式**（无 ClickHouse 实例可连）
+- ❌ **未跑 `tools/diff_py_vs_java.py`**（无 Python 实例并跑环境）
+- ❌ **未做 P0 性能诊断**（未拿到生产数据）
+- 这三项必须由用户在生产或预发环境验证
 
 ---
 

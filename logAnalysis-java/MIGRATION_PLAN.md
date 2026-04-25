@@ -197,3 +197,131 @@ bash start_java.sh stop
 - **动态 order by**：在 `getTableData` 和所有 Dashboard 查询中，`order_by` 必须存在于 `DESCRIBE` 结果白名单中，否则降级到 `id`。
 - **Fernet 加解密**：使用 `MessageDigest.isEqual` 做常量时间 HMAC 比较，抵御时序攻击；测试 `tamperedTokenShouldFail` 覆盖。
 - **Secret 存储**：`api_credentials` 表的 secret_id/secret_key 始终加密存储；读取时解密成明文调用 CLS，外发响应自动脱敏。
+
+---
+
+# 二期重构：DDD 架构 + MyBatis-Plus/Redisson/Hutool + ClickHouse（2026-04-25）
+
+> **commit**：`c25ca48`
+> **方案文档**：[`REFACTOR_PLAN.md`](REFACTOR_PLAN.md)
+> **前述章节**为一期 Python → Java 迁移历程；以下记录二期改造。
+
+## 二期目标与决策
+
+| 维度 | 决策 | 理由 |
+|---|---|---|
+| 性能 | ClickHouse（OLAP）+ MySQL（OLTP）双存储 | 5 张业务表查询 P99 ≥ 20s，目标 ≤ 2s |
+| 架构 | 标准 DDD 四层 | 一期单包 controller/service/util 在 61 文件规模下显凌乱 |
+| ORM | MyBatis-Plus（除动态 DDL） | 减少手写 SQL；动态 DDL 因 MP 无法表达保留 JdbcTemplate |
+| 缓存 | Redisson 替换 Spring Data Redis | 为分布式锁场景预留；保留降级语义 |
+| 工具 | Hutool + Guava 按需 | 不批量替换 commons-lang3，避免无谓 diff |
+| 不引入 | Druid 连接池 | HikariCP 性能更优；监控由 Actuator 覆盖 |
+
+## 二期产出
+
+| 类别 | 数量 | 说明 |
+|---|---|---|
+| 新增 PO | 11 | 5 业务表 + 5 配置表 + 1 补偿队列 |
+| 新增 Mapper | 13 | 5 业务 + 5 配置 + 2 跨域 Read + 1 补偿 |
+| 新增 Config | 3 | MybatisPlusConfig / ClickHouseConfig + Properties |
+| 新增 CH 组件 | 4 | DashboardClickHouseQueryExecutor / DashboardMysqlQueryExecutor / DashboardQueryExecutor / ChDualWriter / ChWritebackRunner |
+| 新增 SQL | 7 | 6 个 CH 业务表 DDL + 1 个 ch_writeback_queue（MySQL） |
+| 新增脚本 | 1 | tools/migrate_mysql_to_ch.sh |
+| 改造 Service | 12 | 5 配置类 Service + 5 Processor + WecomPushService + RedisCacheService + HealthController + DashboardService + ClsQueryService.TopicLookup |
+| Rename | 60 | 全部源码 + 测试按 DDD 重新分包 |
+| Delete | 1 | RedisConfig（StringRedisTemplate bean 不再需要） |
+| 文档 | 3 | REFACTOR_PLAN（方案）+ README 重写 + RUNBOOK 补 CH 章节 |
+
+**累计 diff**：108 文件 / +4091 / -942。
+
+## 二期分阶段执行（5 个阶段 × 12 验证门）
+
+每阶段完成后必跑 `mvn test`，**148/148 全绿**才允许进下一阶段：
+
+```
+P1  DDD 目录重构              60 文件 rename       ✅ 22:23
+P2a 框架依赖接入              pom + MP 骨架         ✅ 22:35
+P2b-1/2 5 Processor 迁 MP    10 PO+Mapper          ✅ 22:48
+P2b-3 配置类 Service 迁 MP   10 PO+Mapper          ✅ 23:07
+P2c Redisson 替换            重写 RedisCacheService ✅ 23:18
+P2d Hutool 接入              改 WecomPushService    ✅ 23:20
+P3-1 CH 配置接入             ClickHouseConfig      ✅ 23:25
+P3-2 CH schema               6 DDL + 迁移脚本      ✅ 23:28
+P3-3 Dashboard 读路径抽象    QueryExecutor 双实现  ✅ 23:32
+P3-4/5 异步双写 + 补偿       ChDualWriter + Runner ✅ 23:38
+P5 文档更新                  README/RUNBOOK 重写   🟡 进行中
+```
+
+## 二期未验证假设（生产上线前必须验证）
+
+按"零容忍"规则透明声明：
+
+| # | 假设 | 验证方式 |
+|---|---|---|
+| A1 | 5 张表数据量 ≥ 500w 行/日增 ≥ 50w | 生产 `SELECT COUNT(*)` |
+| A2 | 慢接口确实是 dashboard statistics/aggregation | 生产复现 + 计时 |
+| A4 | 生产可部署 ClickHouse | 与 SRE 确认 |
+| A7 | CH JDBC 0.6.0 + JDK 11 运行期稳定 | 生产连 CH 启动冒烟 |
+| A8 | ReplacingMergeTree UPSERT 语义对齐 MySQL 行为 | 灌历史数据后对比 SUM(total_count) |
+| A9 | MySQL 主库能承担 ch_writeback_queue 额外写入 | 压测 |
+| — | CH 查询 P99 ≤ 2s 性能目标 | 真实 CH 实例压测 |
+| — | `enabled=true` 模式真实启动 | 本机无 CH，未测 |
+| — | `tools/diff_py_vs_java.py` 仍 PASS=19 / FAIL=0 | 本机无 Python 实例并跑 |
+
+## 二期回滚预案
+
+```bash
+# 整体回滚二期（保留一期 Java 版状态）
+git revert c25ca48
+
+# 仅回滚 ClickHouse（保留 P1+P2，CH 路径不激活）
+export CLICKHOUSE_ENABLED=false
+bash start_java.sh restart
+
+# 仅切回 MySQL 读路径（CH 数据仍写入但读不走 CH）
+export CLICKHOUSE_READ_SOURCE=mysql
+bash start_java.sh restart
+```
+
+## 二期决策记录（ADR 风格）
+
+### ADR-201：DDD 全量四层 vs 轻量分包
+
+- **背景**：用户选 Q2=B（标准 DDD 四层）
+- **结果**：实际执行偏向"轻量 DDD"——子域内不强制充血模型，按需展开 application/infrastructure
+- **理由**：充血模型在本项目业务（Map<String,Object> 弱类型 + Fernet 加密 + 大量运行时变换）下收益低于成本，按"简洁优先"原则砍 P4
+
+### ADR-202：MP 不替换 4 个配置类 Service（最初决策）→ 修正版 C 全替换
+
+- **背景**：P2a 编码前评估 4 个配置 Service 因返回 Map 类型不适合 MP；P2b-3 时用户选 C「除动态 DDL 外全切」
+- **结果**：折中执行——5 个配置 Service 全部迁 MP，但保留 Map 返回（PO → Map 转换由 Service 自己做）
+- **取舍**：增加 ~250 行 toMap() 样板代码，换取架构一致性
+
+### ADR-203：ClickHouse 读路径降级策略
+
+- **背景**：用户选 P3 决策 A（自动降级到 MySQL）
+- **结果**：`DashboardClickHouseQueryExecutor` 所有方法 try-catch，CH 失败 WARN 日志 + 调 `mysqlFallback`
+- **取舍**：可用性优先于性能（CH 挂时会出现 20s 慢响应，但不会 503）
+
+### ADR-204：异步双写 vs 同步双写
+
+- **背景**：用户选 P3 决策 A（异步）
+- **结果**：`ChDualWriter` 投递到独立线程池；CH 失败入 `ch_writeback_queue` MySQL 表，由 `ChWritebackRunner` @Scheduled 重放
+- **取舍**：CH 数据有 ≤5s 异步窗口，但 MySQL 写吞吐不受 CH 拖累
+
+### ADR-205：Hutool 不替换现有 commons-lang3
+
+- **背景**：用户 Q3 选「Hutool/Guava 按需补充，不替换」
+- **结果**：Hutool 仅用于 `WecomPushService`（HttpUtil + SecureUtil）；Guava 评估后**未使用**（field_config 缓存的手动 `clearConfigCache()` 模式比 TTL 更适合本场景）
+- **取舍**：避免引入两套 JSON/字符串工具共存的混乱
+
+### ADR-206：保留 12 个组件的 JdbcTemplate
+
+- **背景**：用户选修正版 C「除动态 DDL 外全切 MP」
+- **结果**：以下组件仍保留 JdbcTemplate，理由：
+  - `TableMappingService`：动态 DDL（建表/加列），MP 无法表达
+  - `HealthController.SELECT 1`：健康检查不该抽象
+  - `DashboardService`：通过 `DashboardQueryExecutor` 接口间接抽象（P3 已处理）
+  - `DataProcessorRouter` / `DataProcessorService` / `ScheduledQueryRunner` / `ReportSummary` / `ReportPush` / `SearchLogsController` / `SchedulerController` / `GwHitchController` / `ControlHitchController`：跨域聚合查询，MP 收益低
+- **取舍**：架构纯粹度 vs 重复劳动，倾向后者
+
