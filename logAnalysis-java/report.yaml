@@ -1,0 +1,447 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: 
+      - generic [ref=e7]:
+        - heading "CLS日志分析" [level=1] [ref=e8]
+        - paragraph [ref=e9]: 腾讯云 · 日志服务
+    - navigation [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: 数据概览
+        - generic [ref=e13] [cursor=pointer]:
+          - generic [ref=e14]: 
+          - generic [ref=e15]: 数据概览
+        - generic [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]: 
+          - generic [ref=e18]: 报表详情
+        - generic [ref=e19] [cursor=pointer]:
+          - generic [ref=e20]: 
+          - generic [ref=e21]: 数据推送
+      - generic [ref=e22]:
+        - generic [ref=e23]: 日志查询
+        - generic [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: 
+          - generic [ref=e26]: 日志查询
+        - generic [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]: 
+          - generic [ref=e29]: 日志记录
+      - generic [ref=e30]:
+        - generic [ref=e31]: 查询配置
+        - generic [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: 
+          - generic [ref=e34]: Topic配置
+        - generic [ref=e35] [cursor=pointer]:
+          - generic [ref=e36]: 
+          - generic [ref=e37]: 查询配置
+      - generic [ref=e38]:
+        - generic [ref=e39]: 数据映射
+        - generic [ref=e40] [cursor=pointer]:
+          - generic [ref=e41]: 
+          - generic [ref=e42]: 映射配置
+        - generic [ref=e43] [cursor=pointer]:
+          - generic [ref=e44]: 
+          - generic [ref=e45]: 数据浏览
+        - generic [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: 
+          - generic [ref=e48]: 采集日志
+      - generic [ref=e49]:
+        - generic [ref=e50]: 系统设置
+        - generic [ref=e51] [cursor=pointer]:
+          - generic [ref=e52]: 
+          - generic [ref=e53]: 密钥管理
+        - generic [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: 
+          - generic [ref=e56]: 权限诊断
+    - generic [ref=e57]:
+      - generic [ref=e58]: LANNA · HERITAGE
+      - generic [ref=e59]: THE ROSE OF THE NORTH
+      - generic [ref=e60]: est. MMXXVI
+    - generic [ref=e62]:
+      - generic [ref=e63]: 
+      - text: 系统运行中
+  - main [ref=e64]:
+    - navigation [ref=e65]:
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - heading "报表汇总" [level=2] [ref=e159]
+          - paragraph [ref=e69]: 查看报表汇总、新增错误对比，支持导出和推送
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: 
+            - text: 2026年4月26日星期日
+          - button "" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: 
+          - button " 刷新数据" [ref=e76] [cursor=pointer]:
+            - generic [ref=e77]: 
+            - text: 刷新数据
+    - generic [ref=e160]:
+      - generic [ref=e161]:
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - generic [ref=e164]: "报表日期:"
+            - combobox [ref=e165]:
+              - option "2026-04-26 (今天)" [selected]
+              - option "2026-04-25 (昨天)"
+              - option "2026-04-24"
+              - option "2026-04-23"
+              - option "2026-04-22"
+              - option "2026-04-21"
+              - option "2026-04-20"
+          - button " 刷新" [ref=e166] [cursor=pointer]:
+            - generic [ref=e167]: 
+            - text: 刷新
+        - generic [ref=e168]:
+          - button " 导出图片" [ref=e169] [cursor=pointer]:
+            - generic [ref=e170]: 
+            - text: 导出图片
+          - button " 导出PDF" [ref=e171] [cursor=pointer]:
+            - generic [ref=e172]: 
+            - text: 导出PDF
+      - generic [ref=e173]:
+        - generic [ref=e174]:
+          - generic [ref=e176]:
+            - generic [ref=e177]:
+              - paragraph [ref=e178]: 顺风车接口报错数量
+              - heading "5679" [level=3] [ref=e179]
+            - generic [ref=e180]: 
+          - generic [ref=e182]:
+            - generic [ref=e183]:
+              - paragraph [ref=e184]: 顺风车接口错误码总数
+              - heading "36" [level=3] [ref=e185]
+            - generic [ref=e186]: 
+          - generic [ref=e188]:
+            - generic [ref=e189]:
+              - paragraph [ref=e190]: 网关错误数量
+              - heading "254529" [level=3] [ref=e191]
+            - generic [ref=e192]: 
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - paragraph [ref=e196]: 顺风车高耗时接口数量
+              - heading "296000" [level=3] [ref=e197]
+            - generic [ref=e198]: 
+        - generic [ref=e199]:
+          - heading " 错误趋势 （粒度：10分钟） " [level=4] [ref=e201]:
+            - generic [ref=e202]:
+              - generic [ref=e203]: 
+              - text: 错误趋势 （粒度：10分钟）
+            - button "" [ref=e205] [cursor=pointer]:
+              - generic [ref=e206]: 
+          - heading " 错误码分布 TOP10" [level=4] [ref=e211]:
+            - generic [ref=e212]: 
+            - text: 错误码分布 TOP10
+        - generic [ref=e216]:
+          - heading " 网关错误分布 TOP10" [level=4] [ref=e218]:
+            - generic [ref=e219]: 
+            - text: 网关错误分布 TOP10
+          - heading " 顺风车高耗时接口 TOP15" [level=4] [ref=e224]:
+            - generic [ref=e225]: 
+            - text: 顺风车高耗时接口 TOP15
+        - heading " 供应商错误当日趋势（按供应商） （粒度：10分钟） " [level=4] [ref=e231]:
+          - generic [ref=e232]:
+            - generic [ref=e233]: 
+            - text: 供应商错误当日趋势（按供应商） （粒度：10分钟）
+          - button "" [ref=e235] [cursor=pointer]:
+            - generic [ref=e236]: 
+        - generic [ref=e240]:
+          - generic [ref=e241]:
+            - heading " 最近一周每天新增错误" [level=4] [ref=e242]:
+              - generic [ref=e243]: 
+              - text: 最近一周每天新增错误
+            - button " 刷新" [ref=e244] [cursor=pointer]:
+              - generic [ref=e245]: 
+              - text: 刷新
+          - generic [ref=e247]:
+            - generic [ref=e248]:
+              - generic [ref=e249]:
+                - generic [ref=e250]: 2026-04-26 对比 2026-04-25
+                - generic [ref=e251]: 新增 3 个错误
+              - table [ref=e253]:
+                - rowgroup [ref=e254]:
+                  - row "方法名 错误码 错误信息 累计数量" [ref=e255]:
+                    - columnheader "方法名" [ref=e256]
+                    - columnheader "错误码" [ref=e257]
+                    - columnheader "错误信息" [ref=e258]
+                    - columnheader "累计数量" [ref=e259]
+                - rowgroup [ref=e260]:
+                  - row "queryRefundProcess 500 system_error 11" [ref=e261]:
+                    - cell "queryRefundProcess" [ref=e262]:
+                      - code [ref=e263]: queryRefundProcess
+                    - cell "500" [ref=e264]
+                    - cell "system_error" [ref=e265]
+                    - cell "11" [ref=e266]
+                  - row "createPaymentByBackend 2 type:business, code:502, msg:http client... 7" [ref=e267]:
+                    - cell "createPaymentByBackend" [ref=e268]:
+                      - code [ref=e269]: createPaymentByBackend
+                    - cell "2" [ref=e270]
+                    - cell "type:business, code:502, msg:http client..." [ref=e271]
+                    - cell "7" [ref=e272]
+                  - row "queryBill 500 system_error 2" [ref=e273]:
+                    - cell "queryBill" [ref=e274]:
+                      - code [ref=e275]: queryBill
+                    - cell "500" [ref=e276]
+                    - cell "system_error" [ref=e277]
+                    - cell "2" [ref=e278]
+            - generic [ref=e279]:
+              - generic [ref=e280]:
+                - generic [ref=e281]: 2026-04-25 对比 2026-04-24
+                - generic [ref=e282]: 新增 7 个错误
+              - generic [ref=e283]:
+                - table [ref=e284]:
+                  - rowgroup [ref=e285]:
+                    - row "方法名 错误码 错误信息 累计数量" [ref=e286]:
+                      - columnheader "方法名" [ref=e287]
+                      - columnheader "错误码" [ref=e288]
+                      - columnheader "错误信息" [ref=e289]
+                      - columnheader "累计数量" [ref=e290]
+                  - rowgroup [ref=e291]:
+                    - row "rejectDriver 26 服务商不匹配。 7" [ref=e292]:
+                      - cell "rejectDriver" [ref=e293]:
+                        - code [ref=e294]: rejectDriver
+                      - cell "26" [ref=e295]
+                      - cell "服务商不匹配。" [ref=e296]
+                      - cell "7" [ref=e297]
+                    - row "queryPayScorePermissions 500 system_error 4" [ref=e298]:
+                      - cell "queryPayScorePermissions" [ref=e299]:
+                        - code [ref=e300]: queryPayScorePermissions
+                      - cell "500" [ref=e301]
+                      - cell "system_error" [ref=e302]
+                      - cell "4" [ref=e303]
+                    - row "blameAmount 700000 请求过于频繁 3" [ref=e304]:
+                      - cell "blameAmount" [ref=e305]:
+                        - code [ref=e306]: blameAmount
+                      - cell "700000" [ref=e307]
+                      - cell "请求过于频繁" [ref=e308]
+                      - cell "3" [ref=e309]
+                    - row "spSendImMessage 500 timeout 2" [ref=e310]:
+                      - cell "spSendImMessage" [ref=e311]:
+                        - code [ref=e312]: spSendImMessage
+                      - cell "500" [ref=e313]
+                      - cell "timeout" [ref=e314]
+                      - cell "2" [ref=e315]
+                    - row "createPaymentByBackend 1003 订单已支付 2" [ref=e316]:
+                      - cell "createPaymentByBackend" [ref=e317]:
+                        - code [ref=e318]: createPaymentByBackend
+                      - cell "1003" [ref=e319]
+                      - cell "订单已支付" [ref=e320]
+                      - cell "2" [ref=e321]
+                - generic [ref=e322]: 还有 2 个新增错误...
+            - generic [ref=e323]:
+              - generic [ref=e324]:
+                - generic [ref=e325]: 2026-04-24 对比 2026-04-23
+                - generic [ref=e326]: 新增 12 个错误
+              - generic [ref=e327]:
+                - table [ref=e328]:
+                  - rowgroup [ref=e329]:
+                    - row "方法名 错误码 错误信息 累计数量" [ref=e330]:
+                      - columnheader "方法名" [ref=e331]
+                      - columnheader "错误码" [ref=e332]
+                      - columnheader "错误信息" [ref=e333]
+                      - columnheader "累计数量" [ref=e334]
+                  - rowgroup [ref=e335]:
+                    - row "cancelOrder 500 system_error 46" [ref=e336]:
+                      - cell "cancelOrder" [ref=e337]:
+                        - code [ref=e338]: cancelOrder
+                      - cell "500" [ref=e339]
+                      - cell "system_error" [ref=e340]
+                      - cell "46" [ref=e341]
+                    - row "riskRepoert 700000 请求过于频繁 17" [ref=e342]:
+                      - cell "riskRepoert" [ref=e343]:
+                        - code [ref=e344]: riskRepoert
+                      - cell "700000" [ref=e345]
+                      - cell "请求过于频繁" [ref=e346]
+                      - cell "17" [ref=e347]
+                    - row "getOff 500 system_error 14" [ref=e348]:
+                      - cell "getOff" [ref=e349]:
+                        - code [ref=e350]: getOff
+                      - cell "500" [ref=e351]
+                      - cell "system_error" [ref=e352]
+                      - cell "14" [ref=e353]
+                    - row "createPaymentByBackend 1002 订单已过期 9" [ref=e354]:
+                      - cell "createPaymentByBackend" [ref=e355]:
+                        - code [ref=e356]: createPaymentByBackend
+                      - cell "1002" [ref=e357]
+                      - cell "订单已过期" [ref=e358]
+                      - cell "9" [ref=e359]
+                    - row "payScoreAuthBuss 500 system_error 4" [ref=e360]:
+                      - cell "payScoreAuthBuss" [ref=e361]:
+                        - code [ref=e362]: payScoreAuthBuss
+                      - cell "500" [ref=e363]
+                      - cell "system_error" [ref=e364]
+                      - cell "4" [ref=e365]
+                - generic [ref=e366]: 还有 7 个新增错误...
+            - generic [ref=e367]:
+              - generic [ref=e368]:
+                - generic [ref=e369]: 2026-04-23 对比 2026-04-22
+                - generic [ref=e370]: 新增 9 个错误
+              - generic [ref=e371]:
+                - table [ref=e372]:
+                  - rowgroup [ref=e373]:
+                    - row "方法名 错误码 错误信息 累计数量" [ref=e374]:
+                      - columnheader "方法名" [ref=e375]
+                      - columnheader "错误码" [ref=e376]
+                      - columnheader "错误信息" [ref=e377]
+                      - columnheader "累计数量" [ref=e378]
+                  - rowgroup [ref=e379]:
+                    - row "getOn 500 system_error 28" [ref=e380]:
+                      - cell "getOn" [ref=e381]:
+                        - code [ref=e382]: getOn
+                      - cell "500" [ref=e383]
+                      - cell "system_error" [ref=e384]
+                      - cell "28" [ref=e385]
+                    - row "rejectDriver 160014 超过当日取消次数 21" [ref=e386]:
+                      - cell "rejectDriver" [ref=e387]:
+                        - code [ref=e388]: rejectDriver
+                      - cell "160014" [ref=e389]
+                      - cell "超过当日取消次数" [ref=e390]
+                      - cell "21" [ref=e391]
+                    - row "spReassign 700000 请求过于频繁 5" [ref=e392]:
+                      - cell "spReassign" [ref=e393]:
+                        - code [ref=e394]: spReassign
+                      - cell "700000" [ref=e395]
+                      - cell "请求过于频繁" [ref=e396]
+                      - cell "5" [ref=e397]
+                    - row "createPaymentByBackend 130021 支付中台请求失败 4" [ref=e398]:
+                      - cell "createPaymentByBackend" [ref=e399]:
+                        - code [ref=e400]: createPaymentByBackend
+                      - cell "130021" [ref=e401]
+                      - cell "支付中台请求失败" [ref=e402]
+                      - cell "4" [ref=e403]
+                    - row "spReassign 19 查询服务商订单详情失败 3" [ref=e404]:
+                      - cell "spReassign" [ref=e405]:
+                        - code [ref=e406]: spReassign
+                      - cell "19" [ref=e407]
+                      - cell "查询服务商订单详情失败" [ref=e408]
+                      - cell "3" [ref=e409]
+                - generic [ref=e410]: 还有 4 个新增错误...
+            - generic [ref=e411]:
+              - generic [ref=e412]:
+                - generic [ref=e413]: 2026-04-22 对比 2026-04-21
+                - generic [ref=e414]: 新增 13 个错误
+              - generic [ref=e415]:
+                - table [ref=e416]:
+                  - rowgroup [ref=e417]:
+                    - row "方法名 错误码 错误信息 累计数量" [ref=e418]:
+                      - columnheader "方法名" [ref=e419]
+                      - columnheader "错误码" [ref=e420]
+                      - columnheader "错误信息" [ref=e421]
+                      - columnheader "累计数量" [ref=e422]
+                  - rowgroup [ref=e423]:
+                    - row "userLocationReport 500 timeout 162" [ref=e424]:
+                      - cell "userLocationReport" [ref=e425]:
+                        - code [ref=e426]: userLocationReport
+                      - cell "500" [ref=e427]
+                      - cell "timeout" [ref=e428]
+                      - cell "162" [ref=e429]
+                    - row "orderAddition 150005 该服务商已经追加，不可重复追加 13" [ref=e430]:
+                      - cell "orderAddition" [ref=e431]:
+                        - code [ref=e432]: orderAddition
+                      - cell "150005" [ref=e433]
+                      - cell "该服务商已经追加，不可重复追加" [ref=e434]
+                      - cell "13" [ref=e435]
+                    - row "imList 500 timeout 12" [ref=e436]:
+                      - cell "imList" [ref=e437]:
+                        - code [ref=e438]: imList
+                      - cell "500" [ref=e439]
+                      - cell "timeout" [ref=e440]
+                      - cell "12" [ref=e441]
+                    - row "spReassign 500 system_error 10" [ref=e442]:
+                      - cell "spReassign" [ref=e443]:
+                        - code [ref=e444]: spReassign
+                      - cell "500" [ref=e445]
+                      - cell "system_error" [ref=e446]
+                      - cell "10" [ref=e447]
+                    - row "updateThanksFee 700000 请求过于频繁 7" [ref=e448]:
+                      - cell "updateThanksFee" [ref=e449]:
+                        - code [ref=e450]: updateThanksFee
+                      - cell "700000" [ref=e451]
+                      - cell "请求过于频繁" [ref=e452]
+                      - cell "7" [ref=e453]
+                - generic [ref=e454]: 还有 8 个新增错误...
+            - generic [ref=e455]:
+              - generic [ref=e456]:
+                - generic [ref=e457]: 2026-04-21 对比 2026-04-20
+                - generic [ref=e458]: 新增 8 个错误
+              - generic [ref=e459]:
+                - table [ref=e460]:
+                  - rowgroup [ref=e461]:
+                    - row "方法名 错误码 错误信息 累计数量" [ref=e462]:
+                      - columnheader "方法名" [ref=e463]
+                      - columnheader "错误码" [ref=e464]
+                      - columnheader "错误信息" [ref=e465]
+                      - columnheader "累计数量" [ref=e466]
+                  - rowgroup [ref=e467]:
+                    - row "spReassign 700000 请求过于频繁 13" [ref=e468]:
+                      - cell "spReassign" [ref=e469]:
+                        - code [ref=e470]: spReassign
+                      - cell "700000" [ref=e471]
+                      - cell "请求过于频繁" [ref=e472]
+                      - cell "13" [ref=e473]
+                    - row "reportWxNotifyCode 500 timeout 12" [ref=e474]:
+                      - cell "reportWxNotifyCode" [ref=e475]:
+                        - code [ref=e476]: reportWxNotifyCode
+                      - cell "500" [ref=e477]
+                      - cell "timeout" [ref=e478]
+                      - cell "12" [ref=e479]
+                    - row "spReassign 19 查询服务商订单详情失败 5" [ref=e480]:
+                      - cell "spReassign" [ref=e481]:
+                        - code [ref=e482]: spReassign
+                      - cell "19" [ref=e483]
+                      - cell "查询服务商订单详情失败" [ref=e484]
+                      - cell "5" [ref=e485]
+                    - row "queryFengniaoOrderDetail 1012 未找到下单或者改派事件 5" [ref=e486]:
+                      - cell "queryFengniaoOrderDetail" [ref=e487]:
+                        - code [ref=e488]: queryFengniaoOrderDetail
+                      - cell "1012" [ref=e489]
+                      - cell "未找到下单或者改派事件" [ref=e490]
+                      - cell "5" [ref=e491]
+                    - row "rejectDriver 160014 超过当日取消次数 4" [ref=e492]:
+                      - cell "rejectDriver" [ref=e493]:
+                        - code [ref=e494]: rejectDriver
+                      - cell "160014" [ref=e495]
+                      - cell "超过当日取消次数" [ref=e496]
+                      - cell "4" [ref=e497]
+                - generic [ref=e498]: 还有 3 个新增错误...
+            - generic [ref=e499]:
+              - generic [ref=e500]:
+                - generic [ref=e501]: 2026-04-20 对比 2026-04-19
+                - generic [ref=e502]: 新增 7 个错误
+              - generic [ref=e503]:
+                - table [ref=e504]:
+                  - rowgroup [ref=e505]:
+                    - row "方法名 错误码 错误信息 累计数量" [ref=e506]:
+                      - columnheader "方法名" [ref=e507]
+                      - columnheader "错误码" [ref=e508]
+                      - columnheader "错误信息" [ref=e509]
+                      - columnheader "累计数量" [ref=e510]
+                  - rowgroup [ref=e511]:
+                    - row "getOn 500 system_error 6" [ref=e512]:
+                      - cell "getOn" [ref=e513]:
+                        - code [ref=e514]: getOn
+                      - cell "500" [ref=e515]
+                      - cell "system_error" [ref=e516]
+                      - cell "6" [ref=e517]
+                    - row "controlCreateAlarmWorkOrder 700000 请求过于频繁 4" [ref=e518]:
+                      - cell "controlCreateAlarmWorkOrder" [ref=e519]:
+                        - code [ref=e520]: controlCreateAlarmWorkOrder
+                      - cell "700000" [ref=e521]
+                      - cell "请求过于频繁" [ref=e522]
+                      - cell "4" [ref=e523]
+                    - row "orderDynamicInfo 22 无效的订单ID 3" [ref=e524]:
+                      - cell "orderDynamicInfo" [ref=e525]:
+                        - code [ref=e526]: orderDynamicInfo
+                      - cell "22" [ref=e527]
+                      - cell "无效的订单ID" [ref=e528]
+                      - cell "3" [ref=e529]
+                    - row "cancelPk 500003 服务商返回结果异常 3" [ref=e530]:
+                      - cell "cancelPk" [ref=e531]:
+                        - code [ref=e532]: cancelPk
+                      - cell "500003" [ref=e533]
+                      - cell "服务商返回结果异常" [ref=e534]
+                      - cell "3" [ref=e535]
+                    - row "queryPayScorePermissions 500 system_error 2" [ref=e536]:
+                      - cell "queryPayScorePermissions" [ref=e537]:
+                        - code [ref=e538]: queryPayScorePermissions
+                      - cell "500" [ref=e539]
+                      - cell "system_error" [ref=e540]
+                      - cell "2" [ref=e541]
+                - generic [ref=e542]: 还有 2 个新增错误...

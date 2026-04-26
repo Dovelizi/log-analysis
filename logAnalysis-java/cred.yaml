@@ -1,0 +1,122 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: 
+      - generic [ref=e7]:
+        - heading "CLS日志分析" [level=1] [ref=e8]
+        - paragraph [ref=e9]: 腾讯云 · 日志服务
+    - navigation [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: 数据概览
+        - generic [ref=e13] [cursor=pointer]:
+          - generic [ref=e14]: 
+          - generic [ref=e15]: 数据概览
+        - generic [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]: 
+          - generic [ref=e18]: 报表详情
+        - generic [ref=e19] [cursor=pointer]:
+          - generic [ref=e20]: 
+          - generic [ref=e21]: 数据推送
+      - generic [ref=e22]:
+        - generic [ref=e23]: 日志查询
+        - generic [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: 
+          - generic [ref=e26]: 日志查询
+        - generic [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]: 
+          - generic [ref=e29]: 日志记录
+      - generic [ref=e30]:
+        - generic [ref=e31]: 查询配置
+        - generic [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: 
+          - generic [ref=e34]: Topic配置
+        - generic [ref=e35] [cursor=pointer]:
+          - generic [ref=e36]: 
+          - generic [ref=e37]: 查询配置
+      - generic [ref=e38]:
+        - generic [ref=e39]: 数据映射
+        - generic [ref=e40] [cursor=pointer]:
+          - generic [ref=e41]: 
+          - generic [ref=e42]: 映射配置
+        - generic [ref=e43] [cursor=pointer]:
+          - generic [ref=e44]: 
+          - generic [ref=e45]: 数据浏览
+        - generic [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: 
+          - generic [ref=e48]: 采集日志
+      - generic [ref=e49]:
+        - generic [ref=e50]: 系统设置
+        - generic [ref=e51] [cursor=pointer]:
+          - generic [ref=e52]: 
+          - generic [ref=e53]: 密钥管理
+        - generic [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: 
+          - generic [ref=e56]: 权限诊断
+    - generic [ref=e57]:
+      - generic [ref=e58]: LANNA · HERITAGE
+      - generic [ref=e59]: THE ROSE OF THE NORTH
+      - generic [ref=e60]: est. MMXXVI
+    - generic [ref=e62]:
+      - generic [ref=e63]: 
+      - text: 系统运行中
+  - main [ref=e64]:
+    - navigation [ref=e65]:
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - heading "API密钥管理" [level=2] [ref=e283]
+          - paragraph [ref=e69]: 管理腾讯云API访问凭证（SecretId/SecretKey）
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: 
+            - text: 2026年4月26日星期日
+          - button "" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: 
+          - button " 刷新数据" [ref=e76] [cursor=pointer]:
+            - generic [ref=e77]: 
+            - text: 刷新数据
+    - generic [ref=e285]:
+      - generic [ref=e286]:
+        - heading " 密钥列表" [level=3] [ref=e287]:
+          - generic [ref=e288]: 
+          - text: 密钥列表
+        - button "+ 添加密钥" [ref=e289] [cursor=pointer]:
+          - generic [ref=e290]: +
+          - text: 添加密钥
+      - generic [ref=e291]:
+        - table [ref=e292]:
+          - rowgroup [ref=e293]:
+            - row "名称 Secret ID Secret Key 创建时间 更新时间 操作" [ref=e294]:
+              - columnheader "名称" [ref=e295]
+              - columnheader "Secret ID" [ref=e296]
+              - columnheader "Secret Key" [ref=e297]
+              - columnheader "创建时间" [ref=e298]
+              - columnheader "更新时间" [ref=e299]
+              - columnheader "操作" [ref=e300]
+          - rowgroup [ref=e301]:
+            - row " 顺风车密钥 ******** ******** 2025/12/18 14:40:46 2026/4/26 02:56:55  " [ref=e302]:
+              - cell " 顺风车密钥" [ref=e303]:
+                - generic [ref=e304]:
+                  - generic [ref=e305]: 
+                  - text: 顺风车密钥
+              - cell "********" [ref=e306]:
+                - code [ref=e307]: "********"
+              - cell "********" [ref=e308]:
+                - code [ref=e309]: "********"
+              - cell "2025/12/18 14:40:46" [ref=e310]
+              - cell "2026/4/26 02:56:55" [ref=e311]
+              - cell " " [ref=e312]:
+                - generic [ref=e313]:
+                  - button "" [ref=e314] [cursor=pointer]:
+                    - generic [ref=e315]: 
+                  - button "" [ref=e316] [cursor=pointer]:
+                    - generic [ref=e317]: 
+        - generic [ref=e319]:
+          - generic [ref=e320]: 显示第 1 - 1 条， 共 1 条记录
+          - generic [ref=e321]:
+            - generic [ref=e322]: 每页显示
+            - combobox [ref=e323] [cursor=pointer]:
+              - option "10" [selected]
+              - option "20"
+              - option "50"
+              - option "100"
+            - generic [ref=e324]: 条

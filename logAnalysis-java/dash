@@ -1,0 +1,280 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: 
+      - generic [ref=e7]:
+        - heading "CLS日志分析" [level=1] [ref=e8]
+        - paragraph [ref=e9]: 腾讯云 · 日志服务
+    - navigation [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: 数据概览
+        - generic [ref=e13] [cursor=pointer]:
+          - generic [ref=e14]: 
+          - generic [ref=e15]: 数据概览
+        - generic [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]: 
+          - generic [ref=e18]: 报表详情
+        - generic [ref=e19] [cursor=pointer]:
+          - generic [ref=e20]: 
+          - generic [ref=e21]: 数据推送
+      - generic [ref=e22]:
+        - generic [ref=e23]: 日志查询
+        - generic [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: 
+          - generic [ref=e26]: 日志查询
+        - generic [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]: 
+          - generic [ref=e29]: 日志记录
+      - generic [ref=e30]:
+        - generic [ref=e31]: 查询配置
+        - generic [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: 
+          - generic [ref=e34]: Topic配置
+        - generic [ref=e35] [cursor=pointer]:
+          - generic [ref=e36]: 
+          - generic [ref=e37]: 查询配置
+      - generic [ref=e38]:
+        - generic [ref=e39]: 数据映射
+        - generic [ref=e40] [cursor=pointer]:
+          - generic [ref=e41]: 
+          - generic [ref=e42]: 映射配置
+        - generic [ref=e43] [cursor=pointer]:
+          - generic [ref=e44]: 
+          - generic [ref=e45]: 数据浏览
+        - generic [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: 
+          - generic [ref=e48]: 采集日志
+      - generic [ref=e49]:
+        - generic [ref=e50]: 系统设置
+        - generic [ref=e51] [cursor=pointer]:
+          - generic [ref=e52]: 
+          - generic [ref=e53]: 密钥管理
+        - generic [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: 
+          - generic [ref=e56]: 权限诊断
+    - generic [ref=e57]:
+      - generic [ref=e58]: LANNA · HERITAGE
+      - generic [ref=e59]: THE ROSE OF THE NORTH
+      - generic [ref=e60]: est. MMXXVI
+    - generic [ref=e62]:
+      - generic [ref=e63]: 
+      - text: 系统运行中
+  - main [ref=e64]:
+    - navigation [ref=e65]:
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - heading "数据概览" [level=2] [ref=e545]
+          - paragraph [ref=e69]: 查看系统整体运行状态和数据统计
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: 
+            - text: 2026年4月26日星期日
+          - button "" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: 
+          - button " 刷新数据" [ref=e76] [cursor=pointer]:
+            - generic [ref=e77]: 
+            - text: 刷新数据
+    - generic [ref=e546]:
+      - generic [ref=e547]:
+        - generic [ref=e548]:
+          - generic [ref=e549]:
+            - generic [ref=e550]:
+              - generic [ref=e551]: "查询日期:"
+              - combobox [ref=e552]:
+                - option "2026-04-26 (今天)" [selected]
+                - option "2026-04-25 (昨天)"
+                - option "2026-04-24"
+                - option "2026-04-23"
+                - option "2026-04-22"
+                - option "2026-04-21"
+                - option "2026-04-20"
+              - generic [ref=e553]: "时间范围:"
+              - combobox [ref=e554]:
+                - option "全天" [selected]
+                - option "最近 1 小时"
+                - option "最近 6 小时"
+                - option "最近 24 小时"
+                - option "自定义"
+            - generic [ref=e556]:
+              - checkbox "自动刷新" [ref=e557]
+              - text: 自动刷新
+            - combobox [disabled] [ref=e558]:
+              - option "10秒"
+              - option "30秒" [selected]
+              - option "1分钟"
+          - button " 刷新数据" [ref=e560] [cursor=pointer]:
+            - generic [ref=e561]: 
+            - text: 刷新数据
+        - generic [ref=e562]:
+          - button " 顺风车错误日志 36" [ref=e563] [cursor=pointer]:
+            - generic [ref=e564]: 
+            - text: 顺风车错误日志 36
+          - button " 网关错误日志 138" [ref=e565] [cursor=pointer]:
+            - generic [ref=e566]: 
+            - text: 网关错误日志 138
+          - button " 顺风车高耗时接口 297000" [ref=e567] [cursor=pointer]:
+            - generic [ref=e568]: 
+            - text: 顺风车高耗时接口 297000
+          - button " 顺风车服务商错误日志 1" [ref=e569] [cursor=pointer]:
+            - generic [ref=e570]: 
+            - text: 顺风车服务商错误日志 1
+          - button " 顺风车服务商错误汇总日志 189" [ref=e571] [cursor=pointer]:
+            - generic [ref=e572]: 
+            - text: 顺风车服务商错误汇总日志 189
+      - generic [ref=e573]:
+        - generic [ref=e574]:
+          - generic [ref=e576]:
+            - generic [ref=e577]:
+              - paragraph [ref=e578]: 记录总数
+              - heading "36" [level=3] [ref=e579]
+            - generic [ref=e580]: 
+          - generic [ref=e582]:
+            - generic [ref=e583]:
+              - paragraph [ref=e584]: 累计错误数
+              - heading "5712" [level=3] [ref=e585]
+            - generic [ref=e586]: 
+          - generic [ref=e588]:
+            - generic [ref=e589]:
+              - paragraph [ref=e590]: 错误码数
+              - heading "10" [level=3] [ref=e591]
+            - generic [ref=e592]: 
+          - generic [ref=e594]:
+            - generic [ref=e595]:
+              - paragraph [ref=e596]: 方法数
+              - heading "10" [level=3] [ref=e597]
+            - generic [ref=e598]: 
+        - generic [ref=e599]:
+          - heading " 错误趋势 （粒度：10分钟） " [level=4] [ref=e601]:
+            - generic [ref=e602]:
+              - generic [ref=e603]: 
+              - text: 错误趋势 （粒度：10分钟）
+            - button "" [ref=e605] [cursor=pointer]:
+              - generic [ref=e606]: 
+          - heading " 错误码分布 TOP10" [level=4] [ref=e611]:
+            - generic [ref=e612]: 
+            - text: 错误码分布 TOP10
+        - heading " 方法报错分布 TOP10" [level=4] [ref=e618]:
+          - generic [ref=e619]: 
+          - text: 方法报错分布 TOP10
+        - generic [ref=e623]:
+          - generic [ref=e624]:
+            - heading " 错误记录列表" [level=4] [ref=e625]:
+              - generic [ref=e626]: 
+              - text: 错误记录列表
+            - generic [ref=e627]: 共 36 条
+          - table [ref=e629]:
+            - rowgroup [ref=e630]:
+              - row "方法名 错误码 错误信息 本次数量  累计数量  更新时间 " [ref=e631]:
+                - columnheader "方法名" [ref=e632]
+                - columnheader "错误码" [ref=e633]
+                - columnheader "错误信息" [ref=e634]
+                - columnheader "本次数量 " [ref=e635] [cursor=pointer]:
+                  - text: 本次数量
+                  - generic [ref=e636]: 
+                - columnheader "累计数量 " [ref=e637] [cursor=pointer]:
+                  - text: 累计数量
+                  - generic [ref=e638]: 
+                - columnheader "更新时间 " [ref=e639] [cursor=pointer]:
+                  - text: 更新时间
+                  - generic [ref=e640]: 
+            - rowgroup [ref=e641]:
+              - row "orderStatusUpdate 700000 请求过于频繁 9 2875 2026/4/26 15:59:56" [ref=e642]:
+                - cell "orderStatusUpdate" [ref=e643]:
+                  - code [ref=e644]: orderStatusUpdate
+                - cell "700000" [ref=e645]
+                - cell "请求过于频繁" [ref=e646]
+                - cell "9" [ref=e647]
+                - cell "2875" [ref=e648]
+                - cell "2026/4/26 15:59:56" [ref=e649]
+              - row "orderDetail 28 订单与用户不匹配 2 693 2026/4/26 15:59:56" [ref=e650]:
+                - cell "orderDetail" [ref=e651]:
+                  - code [ref=e652]: orderDetail
+                - cell "28" [ref=e653]
+                - cell "订单与用户不匹配" [ref=e654]
+                - cell "2" [ref=e655]
+                - cell "693" [ref=e656]
+                - cell "2026/4/26 15:59:56" [ref=e657]
+              - row "bindRelatedOrder 700000 请求过于频繁 4 518 2026/4/26 15:59:56" [ref=e658]:
+                - cell "bindRelatedOrder" [ref=e659]:
+                  - code [ref=e660]: bindRelatedOrder
+                - cell "700000" [ref=e661]
+                - cell "请求过于频繁" [ref=e662]
+                - cell "4" [ref=e663]
+                - cell "518" [ref=e664]
+                - cell "2026/4/26 15:59:56" [ref=e665]
+              - row "orderDetail 500 system_error 3 297 2026/4/26 15:59:56" [ref=e666]:
+                - cell "orderDetail" [ref=e667]:
+                  - code [ref=e668]: orderDetail
+                - cell "500" [ref=e669]
+                - cell "system_error" [ref=e670]
+                - cell "3" [ref=e671]
+                - cell "297" [ref=e672]
+                - cell "2026/4/26 15:59:56" [ref=e673]
+              - row "blameAmount 26 服务商不匹配。 5 255 2026/4/26 15:59:56" [ref=e674]:
+                - cell "blameAmount" [ref=e675]:
+                  - code [ref=e676]: blameAmount
+                - cell "26" [ref=e677]
+                - cell "服务商不匹配。" [ref=e678]
+                - cell "5" [ref=e679]
+                - cell "255" [ref=e680]
+                - cell "2026/4/26 15:59:56" [ref=e681]
+              - row "spSendImMessage 101 已发送对方，请稍后再试 1 179 2026/4/26 15:59:56" [ref=e682]:
+                - cell "spSendImMessage" [ref=e683]:
+                  - code [ref=e684]: spSendImMessage
+                - cell "101" [ref=e685]
+                - cell "已发送对方，请稍后再试" [ref=e686]
+                - cell "1" [ref=e687]
+                - cell "179" [ref=e688]
+                - cell "2026/4/26 15:59:56" [ref=e689]
+              - row "payScoreAuthBuss 700000 请求过于频繁 8 125 2026/4/26 15:59:56" [ref=e690]:
+                - cell "payScoreAuthBuss" [ref=e691]:
+                  - code [ref=e692]: payScoreAuthBuss
+                - cell "700000" [ref=e693]
+                - cell "请求过于频繁" [ref=e694]
+                - cell "8" [ref=e695]
+                - cell "125" [ref=e696]
+                - cell "2026/4/26 15:59:56" [ref=e697]
+              - row "cancelOrder 700000 请求过于频繁 1 49 2026/4/26 15:59:56" [ref=e698]:
+                - cell "cancelOrder" [ref=e699]:
+                  - code [ref=e700]: cancelOrder
+                - cell "700000" [ref=e701]
+                - cell "请求过于频繁" [ref=e702]
+                - cell "1" [ref=e703]
+                - cell "49" [ref=e704]
+                - cell "2026/4/26 15:59:56" [ref=e705]
+              - row "userLocationReport 160002 暂无接单服务商 1 77 2026/4/26 15:56:29" [ref=e706]:
+                - cell "userLocationReport" [ref=e707]:
+                  - code [ref=e708]: userLocationReport
+                - cell "160002" [ref=e709]
+                - cell "暂无接单服务商" [ref=e710]
+                - cell "1" [ref=e711]
+                - cell "77" [ref=e712]
+                - cell "2026/4/26 15:56:29" [ref=e713]
+              - row "getUserCodeByUserId 500 system_error 1 25 2026/4/26 15:56:29" [ref=e714]:
+                - cell "getUserCodeByUserId" [ref=e715]:
+                  - code [ref=e716]: getUserCodeByUserId
+                - cell "500" [ref=e717]
+                - cell "system_error" [ref=e718]
+                - cell "1" [ref=e719]
+                - cell "25" [ref=e720]
+                - cell "2026/4/26 15:56:29" [ref=e721]
+          - generic [ref=e722]:
+            - generic [ref=e723]:
+              - generic [ref=e724]: 显示第 1 - 10 条， 共 36 条记录
+              - generic [ref=e725]:
+                - generic [ref=e726]: 每页显示
+                - combobox [ref=e727] [cursor=pointer]:
+                  - option "10" [selected]
+                  - option "20"
+                  - option "50"
+                  - option "100"
+                - generic [ref=e728]: 条
+            - generic [ref=e729]:
+              - button "" [disabled] [ref=e730]:
+                - generic [ref=e731]: 
+              - button "1" [ref=e732] [cursor=pointer]
+              - button "2" [ref=e733] [cursor=pointer]
+              - button "3" [ref=e734] [cursor=pointer]
+              - button "4" [ref=e735] [cursor=pointer]
+              - button "" [ref=e736] [cursor=pointer]:
+                - generic [ref=e737]: 

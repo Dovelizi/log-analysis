@@ -85,6 +85,15 @@ loganalysis:
     check-interval-seconds: 10
     # 调度器内部自调用的 base url
     base-url: http://127.0.0.1:8080
+  dashboard:
+    # Dashboard 接口内部并发 SQL 用的线程池（DashboardAsyncConfig）
+    async:
+      # 核心/最大线程数（容许 ~2-3 个 dashboard 接口并发，每个用 3 个线程）
+      core-pool-size: ${DASHBOARD_ASYNC_CORE_POOL_SIZE:8}
+      # 排队容量（短暂超过 max 时排队，防止任务被拒）
+      queue-capacity: ${DASHBOARD_ASYNC_QUEUE_CAPACITY:32}
+      # 线程空闲回收秒数
+      keep-alive-seconds: ${DASHBOARD_ASYNC_KEEP_ALIVE_SECONDS:60}
   # ============================== ClickHouse（OLAP 读路径 + 双写） ==============================
   # 默认 enabled=false：所有 CH 相关 bean 不激活，行为完全等同于未引入 CH（P2 末状态）。
   # 生产灰度启用时：

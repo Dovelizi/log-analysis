@@ -1,0 +1,23 @@
+{
+  "name": "web-revamp-global",
+  "leadAgentId": "87f61ebff4734e8b823f22c622c50b7c",
+  "workspacePath": "/data/workspace/log-analysis/logAnalysis-java",
+  "createdAt": "2026-04-26T08:30:40.871Z",
+  "options": {
+    "workspacePath": "/data/workspace/log-analysis/logAnalysis-java",
+    "isAutoTeam": false
+  },
+  "members": [
+    {
+      "memberId": "team-lead@web-revamp-global",
+      "name": "team-lead",
+      "role": "Team Lead - coordinates the team and interacts with the user"
+    },
+    {
+      "memberId": "tester@web-revamp-global",
+      "name": "tester",
+      "role": "全站UI盘扫"
+    }
+  ],
+  "isAutoTeam": false
+}

@@ -1,5 +1,6 @@
 package com.loganalysis.dashboard.infrastructure;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,9 +21,20 @@ import java.util.concurrent.atomic.AtomicInteger;
  *  - core/max=8: 容许同时 ~2~3 个 dashboard 接口并发，每个用 3 个线程
  *  - 队列 32: 短暂超过 max 时排队，防止任务被拒
  *  - CallerRunsPolicy: 队列满时调用线程自己跑（退化为串行，业务不报错只是变慢）
+ *
+ * 参数通过 {@code loganalysis.dashboard.async.*} 外置，默认值与原硬编码一致。
  */
 @Configuration
 public class DashboardAsyncConfig {
+
+    @Value("${loganalysis.dashboard.async.core-pool-size:8}")
+    private int corePoolSize;
+
+    @Value("${loganalysis.dashboard.async.queue-capacity:32}")
+    private int queueCapacity;
+
+    @Value("${loganalysis.dashboard.async.keep-alive-seconds:60}")
+    private long keepAliveSeconds;
 
     @Bean(name = "dashboardAsyncExecutor", destroyMethod = "shutdown")
     public ExecutorService dashboardAsyncExecutor() {
@@ -33,9 +45,9 @@ public class DashboardAsyncConfig {
             return t;
         };
         return new ThreadPoolExecutor(
-                8, 8,
-                60L, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(32),
+                corePoolSize, corePoolSize,
+                keepAliveSeconds, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(queueCapacity),
                 tf,
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );

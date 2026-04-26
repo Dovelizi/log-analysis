@@ -16,853 +16,1527 @@
     <!-- 导出PDF和图片 -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <!-- Google Fonts: 手绘复古纸质风格字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=IM+Fell+DW+Pica:ital@0;1&family=Caveat:wght@500;700&family=Noto+Serif+SC:wght@400;600;700&family=Ma+Shan+Zheng&display=swap">
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-            background: #0f1419;
-            color: #e6edf3;
-        }
-        .card {
-            background: #161b22;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-            border: 1px solid #30363d;
-        }
-        .card:hover {
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-            border-color: #484f58;
-        }
-        .stat-card {
-            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-            color: white;
-            border: 1px solid #4a5568;
-        }
-        .stat-card.purple { border-color: #8b5cf6; }
-        .stat-card.green { border-color: #48bb78; }
-        .stat-card.blue { border-color: #4299e1; }
-        .stat-card.orange { border-color: #ed8936; }
-        
-        /* 侧边栏 */
-        .sidebar {
-            background: #161b22;
-            border-right: 1px solid #30363d;
-            width: 240px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 100;
-            transition: transform 0.3s ease;
-        }
-        .sidebar-header {
-            padding: 1.25rem;
-            border-bottom: 1px solid #30363d;
-        }
-        .nav-group {
-            margin-bottom: 0.5rem;
-        }
-        .nav-group-title {
-            padding: 0.5rem 1.25rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #8b949e;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 0.75rem;
-        }
-        .nav-group-title:first-child {
-            margin-top: 0;
-        }
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1.25rem;
-            color: #8b949e;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-left: 3px solid transparent;
-        }
-        .nav-item:hover {
-            background: #21262d;
-            color: #e6edf3;
-        }
-        .nav-item.active {
-            background: rgba(88, 166, 255, 0.1);
-            color: #58a6ff;
-            border-left-color: #58a6ff;
-        }
-        .nav-item i {
-            width: 20px;
-            margin-right: 12px;
-            text-align: center;
-        }
-        
-        /* 主内容区 */
-        .main-content {
-            margin-left: 240px;
-            min-height: 100vh;
-        }
-        
-        /* 表单样式 */
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 0.625rem 0.875rem;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #e6edf3;
-            font-size: 0.875rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #58a6ff;
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
-        }
-        .form-input::placeholder, .form-textarea::placeholder {
-            color: #484f58;
-        }
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #e6edf3;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        /* 按钮样式 */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-        }
-        .btn i { margin-right: 0.5rem; }
-        .btn-primary {
-            background: #238636;
-            color: white;
-            border-color: #238636;
-        }
-        .btn-primary:hover {
-            background: #2ea043;
-            border-color: #2ea043;
-        }
-        .btn-secondary {
-            background: #21262d;
-            color: #c9d1d9;
-            border-color: #30363d;
-        }
-        .btn-secondary:hover {
-            background: #30363d;
-            border-color: #484f58;
-        }
-        .btn-danger {
-            background: #da3633;
-            color: white;
-            border-color: #da3633;
-        }
-        .btn-danger:hover {
-            background: #f85149;
-            border-color: #f85149;
-        }
-        .btn-info {
-            background: #1f6feb;
-            color: white;
-            border-color: #1f6feb;
-        }
-        .btn-info:hover {
-            background: #388bfd;
-            border-color: #388bfd;
-        }
-        .btn-success {
-            background: #238636;
-            color: white;
-            border-color: #238636;
-        }
-        .btn-success:hover {
-            background: #2ea043;
-            border-color: #2ea043;
-        }
-        .btn-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.75rem;
-        }
-        
-        /* 表格样式 */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .data-table th {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: #8b949e;
-            text-transform: uppercase;
-            background: #0d1117;
-            border-bottom: 1px solid #30363d;
-            vertical-align: middle;
-            line-height: 1.5;
-        }
-        .data-table td {
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            color: #c9d1d9;
-            border-bottom: 1px solid #21262d;
-            vertical-align: middle;
-            line-height: 1.5;
-        }
-        .data-table tr:hover td {
-            background: #161b22;
-        }
-        .data-table code {
-            vertical-align: middle;
-            display: inline-block;
-            line-height: 1.4;
-        }
-        .data-table .badge {
-            vertical-align: middle;
-        }
-        
-        /* 标签 */
-        .tag {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.625rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-        .tag-success { background: rgba(46, 160, 67, 0.2); color: #3fb950; }
-        .tag-info { background: rgba(56, 139, 253, 0.2); color: #58a6ff; }
-        .tag-warning { background: rgba(210, 153, 34, 0.2); color: #d29922; }
-        .tag-danger { background: rgba(248, 81, 73, 0.2); color: #f85149; }
-        
-        /* 模态框 */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(4px);
-        }
-        .modal {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 560px;
-            max-height: 90vh;
-            overflow: hidden;
-            animation: modalSlideIn 0.2s ease;
-        }
-        @keyframes modalSlideIn {
-            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .modal-header {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid #30363d;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #0d1117;
-        }
-        .modal-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #e6edf3;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            color: #8b949e;
-            font-size: 1.25rem;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-            transition: color 0.2s;
-        }
-        .modal-close:hover { color: #e6edf3; }
-        .modal-body {
-            padding: 1.25rem;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-        .modal-footer {
-            padding: 1rem 1.25rem;
-            border-top: 1px solid #30363d;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            background: #0d1117;
-        }
-        
-        /* 日志查看器 */
-        .log-viewer {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.8125rem;
-        }
-        .log-entry {
-            padding: 0.625rem 1rem;
-            border-bottom: 1px solid #21262d;
-            display: flex;
-            gap: 1rem;
-        }
-        .log-entry:last-child { border-bottom: none; }
-        .log-entry:hover { background: #161b22; }
-        .log-time {
-            color: #58a6ff;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .log-content {
-            color: #7ee787;
-            word-break: break-all;
-            flex: 1;
-        }
-        
-        /* 空状态 */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: #8b949e;
-        }
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        
-        /* Toast消息 */
-        .toast {
-            position: fixed;
-            top: 1.25rem;
-            right: 1.25rem;
-            padding: 0.875rem 1.25rem;
-            border-radius: 8px;
-            color: white;
-            font-size: 0.875rem;
-            font-weight: 500;
-            z-index: 2000;
-            animation: toastSlideIn 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
-        .toast-success { background: #238636; }
-        .toast-error { background: #da3633; }
-        .toast-info { background: #1f6feb; }
-        @keyframes toastSlideIn {
-            from { opacity: 0; transform: translateX(100%); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
-        /* 分页 */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
-        }
-        .pagination button {
-            padding: 0.5rem 0.875rem;
-            background: #21262d;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .pagination button:hover:not(:disabled) {
-            background: #30363d;
-            border-color: #484f58;
-        }
-        .pagination button.active {
-            background: #1f6feb;
-            border-color: #1f6feb;
-            color: white;
-        }
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        /* 滚动条 */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0d1117;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #30363d;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #484f58;
-        }
-        
-        /* 加载动画 */
-        .loading-spinner {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid #30363d;
-            border-top-color: #58a6ff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Flatpickr 深色主题定制 */
-        .flatpickr-calendar {
-            background: #161b22 !important;
-            border: 1px solid #30363d !important;
-            border-radius: 12px !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-            font-family: inherit !important;
-        }
-        .flatpickr-calendar.arrowTop:before,
-        .flatpickr-calendar.arrowTop:after {
-            border-bottom-color: #30363d !important;
-        }
-        .flatpickr-calendar.arrowBottom:before,
-        .flatpickr-calendar.arrowBottom:after {
-            border-top-color: #30363d !important;
-        }
-        .flatpickr-months {
-            background: #0d1117 !important;
-            border-radius: 12px 12px 0 0 !important;
-            padding: 8px 0 !important;
-        }
-        .flatpickr-months .flatpickr-month {
-            background: transparent !important;
-            color: #e6edf3 !important;
-            height: 36px !important;
-        }
-        .flatpickr-current-month {
-            color: #e6edf3 !important;
-            font-weight: 600 !important;
-        }
-        .flatpickr-current-month .flatpickr-monthDropdown-months {
-            background: #21262d !important;
-            color: #e6edf3 !important;
-            border: 1px solid #30363d !important;
-            border-radius: 6px !important;
-        }
-        .flatpickr-current-month input.cur-year {
-            color: #e6edf3 !important;
-            background: transparent !important;
-        }
-        .flatpickr-months .flatpickr-prev-month,
-        .flatpickr-months .flatpickr-next-month {
-            color: #8b949e !important;
-            fill: #8b949e !important;
-            padding: 8px 12px !important;
-        }
-        .flatpickr-months .flatpickr-prev-month:hover,
-        .flatpickr-months .flatpickr-next-month:hover {
-            color: #58a6ff !important;
-            fill: #58a6ff !important;
-            background: rgba(88, 166, 255, 0.1) !important;
-            border-radius: 6px !important;
-        }
-        .flatpickr-months .flatpickr-prev-month svg,
-        .flatpickr-months .flatpickr-next-month svg {
-            fill: currentColor !important;
-        }
-        .flatpickr-innerContainer {
-            background: #161b22 !important;
-        }
-        .flatpickr-weekdays {
-            background: #161b22 !important;
-        }
-        .flatpickr-weekday {
-            color: #8b949e !important;
-            font-weight: 500 !important;
-            font-size: 0.75rem !important;
-        }
-        .flatpickr-days {
-            background: #161b22 !important;
-            border: none !important;
-        }
-        .dayContainer {
-            background: #161b22 !important;
-        }
-        .flatpickr-day {
-            color: #c9d1d9 !important;
-            border-radius: 6px !important;
-            border: none !important;
-            font-size: 0.875rem !important;
-        }
-        .flatpickr-day:hover {
-            background: #21262d !important;
-            border-color: transparent !important;
-        }
-        .flatpickr-day.today {
-            border: 1px solid #58a6ff !important;
-            background: transparent !important;
-        }
-        .flatpickr-day.today:hover {
-            background: rgba(88, 166, 255, 0.1) !important;
-        }
-        .flatpickr-day.selected,
-        .flatpickr-day.startRange,
-        .flatpickr-day.endRange {
-            background: #238636 !important;
-            border-color: #238636 !important;
-            color: white !important;
-        }
-        .flatpickr-day.selected:hover,
-        .flatpickr-day.startRange:hover,
-        .flatpickr-day.endRange:hover {
-            background: #2ea043 !important;
-            border-color: #2ea043 !important;
-        }
-        .flatpickr-day.inRange {
-            background: rgba(35, 134, 54, 0.2) !important;
-            border-color: transparent !important;
-            box-shadow: none !important;
-        }
-        .flatpickr-day.prevMonthDay,
-        .flatpickr-day.nextMonthDay {
-            color: #484f58 !important;
-        }
-        .flatpickr-day.disabled {
-            color: #30363d !important;
-        }
-        .flatpickr-time {
-            background: #0d1117 !important;
-            border-top: 1px solid #30363d !important;
-            border-radius: 0 0 12px 12px !important;
-        }
-        .flatpickr-time input {
-            color: #e6edf3 !important;
-            background: #21262d !important;
-            border: 1px solid #30363d !important;
-            border-radius: 6px !important;
-            font-size: 0.875rem !important;
-        }
-        .flatpickr-time input:hover,
-        .flatpickr-time input:focus {
-            background: #30363d !important;
-            border-color: #58a6ff !important;
-        }
-        .flatpickr-time .flatpickr-time-separator,
-        .flatpickr-time .flatpickr-am-pm {
-            color: #8b949e !important;
-        }
-        .flatpickr-time .flatpickr-am-pm {
-            background: #21262d !important;
-            border: 1px solid #30363d !important;
-            border-radius: 6px !important;
-        }
-        .flatpickr-time .flatpickr-am-pm:hover {
-            background: #30363d !important;
-            border-color: #58a6ff !important;
-        }
-        .numInputWrapper span {
-            border-color: #30363d !important;
-        }
-        .numInputWrapper span:hover {
-            background: rgba(88, 166, 255, 0.1) !important;
-        }
-        .numInputWrapper span svg path {
-            fill: #8b949e !important;
-        }
-        .numInputWrapper span:hover svg path {
-            fill: #58a6ff !important;
-        }
-        
-        /* 时间选择器输入框样式 */
-        .datetime-picker-wrapper {
-            position: relative;
-        }
-        .datetime-picker-wrapper .form-input {
-            padding-left: 2.5rem;
-            cursor: pointer;
-        }
-        .datetime-picker-wrapper .datetime-icon {
-            position: absolute;
-            left: 0.875rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #58a6ff;
-            pointer-events: none;
-            font-size: 0.875rem;
-            z-index: 1;
-        }
-        .datetime-picker-wrapper .clear-btn {
-            position: absolute;
-            right: 0.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #8b949e;
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 4px;
-            opacity: 0;
-            transition: all 0.2s;
-            z-index: 1;
-        }
-        .datetime-picker-wrapper:hover .clear-btn {
-            opacity: 1;
-        }
-        .datetime-picker-wrapper .clear-btn:hover {
-            color: #f85149;
-            background: rgba(248, 81, 73, 0.1);
-        }
-        
-        /* 字段配置行样式 */
-        .field-row {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-start;
-            padding: 0.75rem;
-            background: #0d1117;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-        }
-        .field-row .form-input, .field-row .form-select {
-            padding: 0.5rem 0.625rem;
-            font-size: 0.8125rem;
-        }
-        
-        /* 快捷时间选择按钮 */
-        .time-shortcuts {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            flex-wrap: wrap;
-        }
-        .time-shortcut-btn {
-            padding: 0.25rem 0.625rem;
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            color: #8b949e;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .time-shortcut-btn:hover {
-            background: #30363d;
-            border-color: #58a6ff;
-            color: #58a6ff;
-        }
-        .time-shortcut-btn.active {
-            background: rgba(88, 166, 255, 0.15);
-            border-color: #58a6ff;
-            color: #58a6ff;
-        }
-        
-        /* 分页样式 */
-        .pagination-container {
-            padding: 1rem 0;
-            border-top: 1px solid #30363d;
-        }
-        
-        .pagination {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        
-        .pagination-btn {
-            min-width: 2rem;
-            height: 2rem;
-            padding: 0 0.5rem;
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            color: #e6edf3;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .pagination-btn:hover:not(:disabled) {
-            background: #30363d;
-            border-color: #58a6ff;
-            color: #58a6ff;
-        }
-        
-        .pagination-btn:disabled {
-            background: #161b22;
-            border-color: #21262d;
-            color: #6e7681;
-            cursor: not-allowed;
-        }
-        
-        .pagination-btn.pagination-active {
-            background: #58a6ff;
-            border-color: #58a6ff;
-            color: #ffffff;
-        }
-        
-        .pagination-btn.pagination-active:hover {
-            background: #4493f8;
-            border-color: #4493f8;
-        }
-        
-        .pagination-ellipsis {
-            background: transparent !important;
-            border: none !important;
-            cursor: default !important;
-            color: #6e7681 !important;
-        }
-        
-        /* 通用分页组件样式 */
-        .universal-pagination {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 0;
-            border-top: 1px solid #30363d;
-        }
-        
-        .pagination-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: #e6edf3;
-            font-size: 0.875rem;
-        }
-        
-        .page-size-selector {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .page-size-select {
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            color: #e6edf3;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-            cursor: pointer;
-        }
-        
-        .page-size-select:focus {
-            outline: none;
-            border-color: #58a6ff;
-        }
-        
-        .pagination-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        
-        .pagination-nav-btn {
-            min-width: 2.25rem;
-            height: 2.25rem;
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            color: #e6edf3;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        
-        .pagination-nav-btn:hover:not(:disabled) {
-            background: #30363d;
-            border-color: #58a6ff;
-            color: #58a6ff;
-        }
-        
-        .pagination-nav-btn:disabled {
-            background: #161b22;
-            border-color: #21262d;
-            color: #6e7681;
-            cursor: not-allowed;
-        }
-        
-        .pagination-nav-btn.active {
-            background: #58a6ff;
-            border-color: #58a6ff;
-            color: #ffffff;
-        }
-        
-        .pagination-nav-btn.active:hover {
-            background: #4493f8;
-            border-color: #4493f8;
-        }
-        
-        .pagination-ellipsis-btn {
-            background: transparent !important;
-            border: none !important;
-            cursor: default !important;
-            color: #6e7681 !important;
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .universal-pagination {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
-            
-            .pagination-info {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-            
-            .pagination-controls {
-                justify-content: center;
-            }
-        }
+/* =========================================================
+   Chiang Mai Heritage Theme - 手绘复古纸质风
+   Designer: web-revamp designer
+   Palette: paper cream + ink brown + sage mint + coral blush
+   ========================================================= */
+
+/* 设计令牌 */
+:root {
+    --paper-cream: #f5efe0;
+    --paper-cream-deep: #ece4d0;
+    --paper-warm: #faf5e8;
+    --paper-edge: #e5dcc3;
+    --ink-brown: #5b3a1e;
+    --ink-brown-soft: #8b5a3c;
+    --ink-brown-light: #a67c52;
+    --ink-sepia: #7a5a3e;
+    --mint-sage: #8fae8a;
+    --mint-sage-deep: #5f8a6a;
+    --coral-blush: #c76b5b;
+    --coral-blush-soft: #e09b8a;
+    --ochre-gold: #c79a3a;
+    --lotus-pink: #d69bae;
+    --river-blue: #7fa3b8;
+    --shadow-soft: 0 4px 18px rgba(91, 58, 30, 0.12), 0 1px 3px rgba(91, 58, 30, 0.08);
+    --shadow-paper: 0 2px 6px rgba(91, 58, 30, 0.08);
+    --shadow-lifted: 0 10px 30px rgba(91, 58, 30, 0.18), 0 2px 8px rgba(91, 58, 30, 0.10);
+    --border-ink: 1.5px solid var(--ink-brown-soft);
+    --border-ink-thin: 1px solid rgba(139, 90, 60, 0.35);
+    --radius-soft: 10px;
+    --radius-card: 14px;
+    --font-serif-zh: 'Noto Serif SC', 'Playfair Display', 'Songti SC', 'SimSun', serif;
+    --font-serif-en: 'Playfair Display', 'IM Fell DW Pica', Georgia, serif;
+    --font-hand: 'Caveat', 'Ma Shan Zheng', 'Kaiti', cursive;
+    --font-sans: 'Noto Serif SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+/* ================= 全局底色（纸张纹理） ================= */
+body {
+    font-family: var(--font-sans);
+    background: var(--paper-cream);
+    color: var(--ink-brown);
+    background-image:
+        /* 纸张斑点噪点 */
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.23 0 0 0 0 0.12 0 0 0 0.06 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>"),
+        /* 淡色斑块 */
+        radial-gradient(ellipse at 15% 20%, rgba(199, 154, 58, 0.06), transparent 50%),
+        radial-gradient(ellipse at 85% 80%, rgba(143, 174, 138, 0.07), transparent 55%),
+        linear-gradient(180deg, var(--paper-warm) 0%, var(--paper-cream) 100%);
+    background-attachment: fixed;
+    letter-spacing: 0.01em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif-zh);
+    color: var(--ink-brown);
+    letter-spacing: 0.02em;
+}
+
+/* ================= 卡片 ================= */
+.card {
+    background: var(--paper-warm);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s;
+    border: var(--border-ink-thin);
+    position: relative;
+    background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.23 0 0 0 0 0.12 0 0 0 0.04 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>"),
+        linear-gradient(135deg, var(--paper-warm) 0%, var(--paper-cream) 100%);
+}
+.card:hover {
+    box-shadow: var(--shadow-lifted);
+    border-color: var(--ink-brown-soft);
+    transform: translateY(-2px);
+}
+
+/* 统计卡片（复古邮票风） */
+.stat-card {
+    background: var(--paper-warm);
+    color: var(--ink-brown);
+    border: var(--border-ink);
+    position: relative;
+    overflow: hidden;
+}
+.stat-card.purple { border-color: var(--lotus-pink); }
+.stat-card.green  { border-color: var(--mint-sage-deep); }
+.stat-card.blue   { border-color: var(--river-blue); }
+.stat-card.orange { border-color: var(--coral-blush); }
+
+/* stat-card 图标：复古印章圆形徽章风格（符合清迈地图主题的圆点标注） */
+.stat-card i[class*="fa-"] {
+    color: #faf5e8 !important;           /* 米白字 */
+    opacity: 1 !important;
+    background: var(--ink-brown);        /* 棕褐底 */
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem !important;
+    box-shadow:
+        0 2px 4px rgba(91, 58, 30, 0.25),
+        inset 0 0 0 2px rgba(255, 250, 235, 0.18),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+}
+/* 不同 stat-card 变体的印章底色（对应边框色） */
+.stat-card.purple i[class*="fa-"] { background: var(--lotus-pink); }
+.stat-card.green  i[class*="fa-"] { background: var(--mint-sage-deep); }
+.stat-card.blue   i[class*="fa-"] { background: var(--river-blue); }
+.stat-card.orange i[class*="fa-"] { background: var(--coral-blush); }
+
+.stat-card .text-white.text-opacity-80 {
+    color: var(--ink-brown) !important;
+    opacity: 0.7 !important;
+}
+
+/* ================= 侧边栏 ================= */
+.sidebar {
+    background: linear-gradient(180deg, var(--paper-cream-deep) 0%, var(--paper-edge) 100%);
+    background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.23 0 0 0 0 0.12 0 0 0 0.05 0'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>"),
+        linear-gradient(180deg, var(--paper-cream-deep) 0%, var(--paper-edge) 100%);
+    border-right: 2px solid var(--ink-brown-soft);
+    width: 240px;
+    min-height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 8px rgba(91, 58, 30, 0.08);
+}
+.sidebar-header {
+    padding: 1.25rem;
+    border-bottom: 1.5px dashed rgba(139, 90, 60, 0.4);
+    font-family: var(--font-serif-zh);
+}
+.sidebar-header h1 {
+    color: var(--ink-brown) !important;
+    font-family: var(--font-serif-zh);
+    font-weight: 700;
+}
+.sidebar-header p {
+    color: var(--ink-brown-light) !important;
+    font-family: var(--font-hand);
+    font-size: 0.95rem !important;
+}
+.sidebar-header i {
+    color: var(--coral-blush) !important;
+}
+.nav-group { margin-bottom: 0.5rem; }
+.nav-group-title {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink-brown-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-top: 0.75rem;
+    font-family: var(--font-serif-en);
+    position: relative;
+}
+.nav-group-title::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(139,90,60,0.35), transparent);
+}
+.nav-group-title:first-child { margin-top: 0; }
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0.7rem 1.25rem;
+    color: var(--ink-sepia);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border-left: 3px solid transparent;
+    position: relative;
+    font-family: var(--font-serif-zh);
+}
+.nav-item:hover {
+    background: rgba(199, 107, 91, 0.08);
+    color: var(--ink-brown);
+}
+.nav-item.active {
+    background: rgba(199, 107, 91, 0.14);
+    color: var(--coral-blush);
+    border-left-color: var(--coral-blush);
+    font-weight: 600;
+}
+.nav-item.active::before {
+    content: "";
+    position: absolute;
+    left: -3px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background: var(--coral-blush);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(199, 107, 91, 0.25);
+}
+.nav-item i {
+    width: 20px;
+    margin-right: 12px;
+    text-align: center;
+    color: var(--ink-brown-light);
+}
+.nav-item.active i { color: var(--coral-blush); }
+
+/* 侧边栏签章 */
+.sidebar-seal {
+    margin: 1.5rem 1.25rem 1rem;
+    padding: 0.75rem;
+    border: 1.5px solid var(--ink-brown-soft);
+    border-radius: 8px;
+    text-align: center;
+    font-family: var(--font-serif-en);
+    color: var(--ink-brown-soft);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    background: rgba(255, 245, 220, 0.4);
+    transform: rotate(-1.2deg);
+    box-shadow: 1px 1px 0 rgba(139, 90, 60, 0.15);
+}
+.sidebar-seal .seal-title {
+    font-size: 0.82rem;
+    color: var(--coral-blush);
+    font-weight: 700;
+    font-family: var(--font-serif-en);
+    letter-spacing: 0.2em;
+}
+
+/* ================= 主内容区 ================= */
+.main-content {
+    margin-left: 240px;
+    min-height: 100vh;
+}
+
+/* ================= 表单 ================= */
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    background: var(--paper-warm);
+    border: var(--border-ink-thin);
+    border-radius: var(--radius-soft);
+    color: var(--ink-brown);
+    font-size: 0.875rem;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    font-family: var(--font-serif-zh);
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--coral-blush);
+    box-shadow: 0 0 0 3px rgba(199, 107, 91, 0.15);
+    background: #fff;
+}
+.form-input::placeholder, .form-textarea::placeholder {
+    color: var(--ink-brown-light);
+    opacity: 0.7;
+    font-style: italic;
+}
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--ink-brown);
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: var(--font-serif-zh);
+}
+.form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* ================= 按钮（复古印章风） ================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-soft);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    border: 1.5px solid transparent;
+    font-family: var(--font-serif-zh);
+    letter-spacing: 0.05em;
+    position: relative;
+    box-shadow: var(--shadow-paper);
+}
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+}
+.btn:active { transform: translateY(0); }
+.btn i { margin-right: 0.5rem; }
+
+.btn-primary {
+    background: var(--mint-sage-deep);
+    color: var(--paper-warm);
+    border-color: var(--mint-sage-deep);
+}
+.btn-primary:hover {
+    background: var(--mint-sage);
+    border-color: var(--mint-sage-deep);
+    color: #fff;
+}
+.btn-secondary {
+    background: var(--paper-warm);
+    color: var(--ink-brown);
+    border-color: var(--ink-brown-soft);
+}
+.btn-secondary:hover {
+    background: var(--paper-cream-deep);
+    border-color: var(--ink-brown);
+}
+.btn-danger {
+    background: var(--coral-blush);
+    color: #fff;
+    border-color: var(--coral-blush);
+}
+.btn-danger:hover {
+    background: #b85a4a;
+    border-color: #b85a4a;
+}
+.btn-info {
+    background: var(--river-blue);
+    color: #fff;
+    border-color: var(--river-blue);
+}
+.btn-info:hover {
+    background: #6b8fa3;
+    border-color: #6b8fa3;
+}
+.btn-success {
+    background: var(--mint-sage-deep);
+    color: #fff;
+    border-color: var(--mint-sage-deep);
+}
+.btn-success:hover {
+    background: var(--mint-sage);
+    border-color: var(--mint-sage);
+}
+.btn-warning {
+    background: var(--ochre-gold);
+    color: var(--ink-brown);
+    border-color: var(--ochre-gold);
+}
+.btn-warning:hover {
+    background: #b8892e;
+    border-color: #b8892e;
+    color: #fff;
+}
+.btn-sm {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+/* ========= 印章质感（所有主色按钮统一 stamp 纸质印记） =========
+   - 内描边双线（外 1.5 主色 + inset 纸纹白描）
+   - 右下角小三角角饰（印章盖章感）
+   - 轻微旋转式阴影，点击时陷入纸面
+   共性修饰作用于 .btn-info / .btn-success / .btn-danger / .btn-primary / .btn-warning，
+   btn-secondary 已是纸质浅底独立风，不再叠加角饰。
+*/
+.btn-info, .btn-success, .btn-danger, .btn-primary, .btn-warning {
+    font-family: var(--font-serif-zh);
+    letter-spacing: 0.06em;
+    box-shadow:
+        var(--shadow-paper),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.35),
+        inset 0 -2px 0 rgba(91, 58, 30, 0.10);
+    text-shadow: 0 1px 0 rgba(91, 58, 30, 0.18);
+    position: relative;
+    overflow: visible;
+}
+.btn-info:hover, .btn-success:hover, .btn-danger:hover,
+.btn-primary:hover, .btn-warning:hover {
+    box-shadow:
+        var(--shadow-soft),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.45),
+        inset 0 -2px 0 rgba(91, 58, 30, 0.14);
+    transform: translateY(-1px);
+}
+.btn-info:active, .btn-success:active, .btn-danger:active,
+.btn-primary:active, .btn-warning:active {
+    transform: translateY(0);
+    box-shadow:
+        inset 0 2px 4px rgba(91, 58, 30, 0.25),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.25);
+}
+
+/* ========= 图表设置浮层（纸质主题） =========
+   给组件 template 使用的自定义 class（替代 Tailwind [#xxx] 硬编码色）
+*/
+.paper-panel {
+    background: var(--paper-warm);
+    background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.23 0 0 0 0 0.12 0 0 0 0.05 0'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>"),
+        linear-gradient(135deg, var(--paper-warm) 0%, var(--paper-cream) 100%);
+    border: 1.5px solid var(--ink-brown-soft);
+    border-radius: var(--radius-soft);
+    box-shadow: var(--shadow-lifted);
+    color: var(--ink-brown);
+    font-family: var(--font-serif-zh);
+    position: relative;
+}
+.paper-panel::before,
+.paper-panel::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid var(--ink-brown-soft);
+    opacity: 0.7;
+    pointer-events: none;
+}
+.paper-panel::before {
+    top: -1px;
+    left: -1px;
+    border-right: none;
+    border-bottom: none;
+}
+.paper-panel::after {
+    bottom: -1px;
+    right: -1px;
+    border-left: none;
+    border-top: none;
+}
+.paper-label {
+    color: var(--ink-sepia);
+    font-family: var(--font-serif-zh);
+    letter-spacing: 0.04em;
+}
+.paper-hint {
+    color: var(--ink-brown-light);
+    font-family: var(--font-hand);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+}
+.paper-select {
+    background: var(--paper-cream);
+    border: 1px solid var(--ink-brown-soft);
+    border-radius: 6px;
+    color: var(--ink-brown);
+    font-family: var(--font-serif-zh);
+    padding: 0.3rem 0.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.paper-select:focus {
+    outline: none;
+    border-color: var(--coral-blush);
+    box-shadow: 0 0 0 3px rgba(199, 107, 91, 0.15);
+    background: #fff;
+}
+.paper-cog-btn {
+    color: var(--ink-brown-light);
+    transition: color 0.2s, transform 0.3s;
+}
+.paper-cog-btn:hover {
+    color: var(--ink-brown);
+    transform: rotate(60deg);
+}
+
+/* ================= 表格 ================= */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--paper-warm);
+    border-radius: var(--radius-soft);
+    overflow: hidden;
+}
+.data-table th {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-brown);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: var(--paper-cream-deep);
+    border-bottom: 2px solid var(--ink-brown-soft);
+    vertical-align: middle;
+    line-height: 1.5;
+    font-family: var(--font-serif-en);
+}
+.data-table td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--ink-brown);
+    border-bottom: 1px dashed rgba(139, 90, 60, 0.25);
+    vertical-align: middle;
+    line-height: 1.5;
+    font-family: var(--font-serif-zh);
+}
+.data-table tr:nth-child(even) td {
+    background: rgba(236, 228, 208, 0.3);
+}
+.data-table tr:hover td {
+    background: rgba(199, 107, 91, 0.08);
+}
+.data-table code {
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 1.4;
+    background: var(--paper-cream-deep);
+    color: var(--ink-brown);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.82rem;
+}
+.data-table .badge { vertical-align: middle; }
+
+/* ================= 标签 ================= */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: var(--font-serif-zh);
+    border: 1px solid currentColor;
+    letter-spacing: 0.03em;
+}
+.tag-success { background: rgba(143, 174, 138, 0.25); color: var(--mint-sage-deep); }
+.tag-info    { background: rgba(127, 163, 184, 0.25); color: #4a6b7e; }
+.tag-warning { background: rgba(199, 154, 58, 0.25); color: #8a6a1c; }
+.tag-danger  { background: rgba(199, 107, 91, 0.22); color: #9a3e2d; }
+
+/* ================= 模态框 ================= */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(91, 58, 30, 0.38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+}
+.modal {
+    background: var(--paper-warm);
+    border: 1.5px solid var(--ink-brown-soft);
+    border-radius: var(--radius-card);
+    width: 90%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: modalSlideIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: var(--shadow-lifted);
+    background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.23 0 0 0 0 0.12 0 0 0 0.04 0'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>"),
+        var(--paper-warm);
+}
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: scale(0.94) translateY(-12px) rotate(-0.5deg); }
+    to   { opacity: 1; transform: scale(1) translateY(0) rotate(0); }
+}
+.modal-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1.5px dashed rgba(139, 90, 60, 0.4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--paper-cream-deep);
+    font-family: var(--font-serif-zh);
+}
+.modal-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink-brown);
+    font-family: var(--font-serif-zh);
+    letter-spacing: 0.03em;
+}
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--ink-brown-soft);
+    font-size: 1.35rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s, transform 0.2s;
+}
+.modal-close:hover {
+    color: var(--coral-blush);
+    transform: rotate(90deg);
+}
+.modal-body {
+    padding: 1.25rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    color: var(--ink-brown);
+}
+.modal-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1.5px dashed rgba(139, 90, 60, 0.4);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    background: var(--paper-cream-deep);
+}
+
+/* ================= 日志查看器 ================= */
+.log-viewer {
+    background: #2b1d10;
+    border: 1.5px solid var(--ink-brown-soft);
+    border-radius: var(--radius-soft);
+    max-height: 400px;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.82rem;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.25);
+}
+.log-entry {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px dashed rgba(199, 154, 58, 0.2);
+    display: flex;
+    gap: 1rem;
+    color: #e8d9bf;
+}
+.log-entry:last-child { border-bottom: none; }
+.log-entry:hover { background: rgba(199, 154, 58, 0.08); }
+.log-time {
+    color: var(--ochre-gold);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.log-content {
+    color: var(--mint-sage);
+    word-break: break-all;
+    flex: 1;
+}
+
+/* ================= 空状态 ================= */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--ink-brown-soft);
+    font-family: var(--font-serif-zh);
+}
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.45;
+    color: var(--ink-brown-light);
+}
+.empty-state::before {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 20px;
+    margin: 0 auto 1rem;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 20' fill='none' stroke='%238b5a3c' stroke-width='1.2' opacity='0.5'><path d='M2 10 Q20 2 40 10 T78 10'/><circle cx='40' cy='10' r='2' fill='%23c76b5b'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* ================= Toast（手绘便签风） ================= */
+.toast {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    padding: 0.95rem 1.35rem;
+    border-radius: 4px 14px 4px 14px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    z-index: 2000;
+    animation: toastSlideIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 4px 5px 14px rgba(91, 58, 30, 0.35), 0 0 0 1.5px rgba(91, 58, 30, 0.2) inset;
+    transform: rotate(-1.2deg);
+    font-family: var(--font-serif-zh);
+    letter-spacing: 0.03em;
+    border-left: 4px solid rgba(91,58,30,0.3);
+}
+.toast-success { background: linear-gradient(135deg, var(--mint-sage-deep), #4a7556); }
+.toast-error   { background: linear-gradient(135deg, var(--coral-blush), #a84838); }
+.toast-info    { background: linear-gradient(135deg, var(--river-blue), #5e8093); }
+@keyframes toastSlideIn {
+    from { opacity: 0; transform: translateX(110%) rotate(4deg); }
+    to   { opacity: 1; transform: translateX(0) rotate(-1.2deg); }
+}
+
+/* ================= 分页（基础） ================= */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1.5rem;
+}
+.pagination button {
+    padding: 0.45rem 0.85rem;
+    background: var(--paper-warm);
+    border: 1.2px solid var(--ink-brown-soft);
+    color: var(--ink-brown);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-serif-en);
+}
+.pagination button:hover:not(:disabled) {
+    background: var(--paper-cream-deep);
+    border-color: var(--coral-blush);
+    color: var(--coral-blush);
+}
+.pagination button.active {
+    background: var(--coral-blush);
+    border-color: var(--coral-blush);
+    color: #fff;
+}
+.pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ================= 滚动条 ================= */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--paper-cream-deep);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--ink-brown-light);
+    border-radius: 6px;
+    border: 2px solid var(--paper-cream-deep);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-brown-soft);
+}
+
+/* ================= 加载动画 ================= */
+.loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2.5px solid rgba(139, 90, 60, 0.2);
+    border-top-color: var(--coral-blush);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ================= Flatpickr 复古纸质主题 ================= */
+.flatpickr-calendar {
+    background: var(--paper-warm) !important;
+    border: 1.5px solid var(--ink-brown-soft) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: var(--shadow-lifted) !important;
+    font-family: var(--font-serif-zh) !important;
+    color: var(--ink-brown) !important;
+}
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowTop:after {
+    border-bottom-color: var(--ink-brown-soft) !important;
+}
+.flatpickr-calendar.arrowBottom:before,
+.flatpickr-calendar.arrowBottom:after {
+    border-top-color: var(--ink-brown-soft) !important;
+}
+.flatpickr-months {
+    background: var(--paper-cream-deep) !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 8px 0 !important;
+    border-bottom: 1.5px dashed rgba(139, 90, 60, 0.4) !important;
+}
+.flatpickr-months .flatpickr-month {
+    background: transparent !important;
+    color: var(--ink-brown) !important;
+    height: 36px !important;
+}
+.flatpickr-current-month {
+    color: var(--ink-brown) !important;
+    font-weight: 700 !important;
+    font-family: var(--font-serif-en) !important;
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    background: var(--paper-warm) !important;
+    color: var(--ink-brown) !important;
+    border: 1px solid var(--ink-brown-soft) !important;
+    border-radius: 6px !important;
+}
+.flatpickr-current-month input.cur-year {
+    color: var(--ink-brown) !important;
+    background: transparent !important;
+}
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    color: var(--ink-brown-soft) !important;
+    fill: var(--ink-brown-soft) !important;
+    padding: 8px 12px !important;
+}
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+    color: var(--coral-blush) !important;
+    fill: var(--coral-blush) !important;
+    background: rgba(199, 107, 91, 0.1) !important;
+    border-radius: 6px !important;
+}
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+    fill: currentColor !important;
+}
+.flatpickr-innerContainer { background: var(--paper-warm) !important; }
+.flatpickr-weekdays       { background: var(--paper-warm) !important; }
+.flatpickr-weekday {
+    color: var(--ink-brown-soft) !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    font-family: var(--font-serif-en) !important;
+}
+.flatpickr-days   { background: var(--paper-warm) !important; border: none !important; }
+.dayContainer     { background: var(--paper-warm) !important; }
+.flatpickr-day {
+    color: var(--ink-brown) !important;
+    border-radius: 6px !important;
+    border: none !important;
+    font-size: 0.875rem !important;
+}
+.flatpickr-day:hover {
+    background: rgba(199, 107, 91, 0.12) !important;
+    border-color: transparent !important;
+}
+.flatpickr-day.today {
+    border: 1.5px solid var(--coral-blush) !important;
+    background: transparent !important;
+    color: var(--coral-blush) !important;
+}
+.flatpickr-day.today:hover {
+    background: rgba(199, 107, 91, 0.15) !important;
+}
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background: var(--coral-blush) !important;
+    border-color: var(--coral-blush) !important;
+    color: #fff !important;
+}
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover {
+    background: #b85a4a !important;
+    border-color: #b85a4a !important;
+}
+.flatpickr-day.inRange {
+    background: rgba(199, 107, 91, 0.18) !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: var(--ink-brown-light) !important;
+    opacity: 0.55;
+}
+.flatpickr-day.disabled {
+    color: var(--ink-brown-light) !important;
+    opacity: 0.35;
+}
+.flatpickr-time {
+    background: var(--paper-cream-deep) !important;
+    border-top: 1.5px dashed rgba(139, 90, 60, 0.4) !important;
+    border-radius: 0 0 12px 12px !important;
+}
+.flatpickr-time input {
+    color: var(--ink-brown) !important;
+    background: var(--paper-warm) !important;
+    border: 1px solid var(--ink-brown-soft) !important;
+    border-radius: 6px !important;
+    font-size: 0.875rem !important;
+}
+.flatpickr-time input:hover,
+.flatpickr-time input:focus {
+    background: #fff !important;
+    border-color: var(--coral-blush) !important;
+}
+.flatpickr-time .flatpickr-time-separator,
+.flatpickr-time .flatpickr-am-pm { color: var(--ink-brown-soft) !important; }
+.flatpickr-time .flatpickr-am-pm {
+    background: var(--paper-warm) !important;
+    border: 1px solid var(--ink-brown-soft) !important;
+    border-radius: 6px !important;
+}
+.flatpickr-time .flatpickr-am-pm:hover {
+    background: #fff !important;
+    border-color: var(--coral-blush) !important;
+}
+.numInputWrapper span { border-color: var(--ink-brown-soft) !important; }
+.numInputWrapper span:hover { background: rgba(199, 107, 91, 0.12) !important; }
+.numInputWrapper span svg path { fill: var(--ink-brown-soft) !important; }
+.numInputWrapper span:hover svg path { fill: var(--coral-blush) !important; }
+
+/* ================= 时间选择器输入框 ================= */
+.datetime-picker-wrapper { position: relative; }
+.datetime-picker-wrapper .form-input {
+    padding-left: 2.5rem;
+    cursor: pointer;
+}
+.datetime-picker-wrapper .datetime-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--coral-blush);
+    pointer-events: none;
+    font-size: 0.875rem;
+    z-index: 1;
+}
+.datetime-picker-wrapper .clear-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--ink-brown-soft);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.2s;
+    z-index: 1;
+}
+.datetime-picker-wrapper:hover .clear-btn { opacity: 1; }
+.datetime-picker-wrapper .clear-btn:hover {
+    color: var(--coral-blush);
+    background: rgba(199, 107, 91, 0.1);
+}
+
+/* ================= 字段配置行 ================= */
+.field-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    padding: 0.75rem;
+    background: var(--paper-cream-deep);
+    border-radius: var(--radius-soft);
+    margin-bottom: 0.5rem;
+    border: 1px dashed rgba(139, 90, 60, 0.3);
+}
+.field-row .form-input, .field-row .form-select {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+}
+
+/* ================= 快捷时间选择按钮 ================= */
+.time-shortcuts {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+.time-shortcut-btn {
+    padding: 0.28rem 0.75rem;
+    background: var(--paper-warm);
+    border: 1px solid var(--ink-brown-soft);
+    border-radius: 16px;
+    color: var(--ink-brown-soft);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-serif-zh);
+}
+.time-shortcut-btn:hover {
+    background: var(--paper-cream-deep);
+    border-color: var(--coral-blush);
+    color: var(--coral-blush);
+}
+.time-shortcut-btn.active {
+    background: rgba(199, 107, 91, 0.15);
+    border-color: var(--coral-blush);
+    color: var(--coral-blush);
+    font-weight: 600;
+}
+
+/* ================= 分页容器 ================= */
+.pagination-container {
+    padding: 1rem 0;
+    border-top: 1.5px dashed rgba(139, 90, 60, 0.4);
+}
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.pagination-btn {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    background: var(--paper-warm);
+    border: 1px solid var(--ink-brown-soft);
+    border-radius: 6px;
+    color: var(--ink-brown);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif-en);
+}
+.pagination-btn:hover:not(:disabled) {
+    background: var(--paper-cream-deep);
+    border-color: var(--coral-blush);
+    color: var(--coral-blush);
+}
+.pagination-btn:disabled {
+    background: var(--paper-cream-deep);
+    border-color: rgba(139, 90, 60, 0.2);
+    color: var(--ink-brown-light);
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+.pagination-btn.pagination-active {
+    background: var(--coral-blush);
+    border-color: var(--coral-blush);
+    color: #fff;
+}
+.pagination-btn.pagination-active:hover {
+    background: #b85a4a;
+    border-color: #b85a4a;
+}
+.pagination-ellipsis {
+    background: transparent !important;
+    border: none !important;
+    cursor: default !important;
+    color: var(--ink-brown-light) !important;
+}
+
+/* ================= 通用分页 ================= */
+.universal-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-top: 1.5px dashed rgba(139, 90, 60, 0.4);
+}
+.pagination-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--ink-brown);
+    font-size: 0.875rem;
+    font-family: var(--font-serif-zh);
+}
+.page-size-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.page-size-select {
+    background: var(--paper-warm);
+    border: 1px solid var(--ink-brown-soft);
+    border-radius: 6px;
+    color: var(--ink-brown);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+.page-size-select:focus {
+    outline: none;
+    border-color: var(--coral-blush);
+}
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.pagination-nav-btn {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    background: var(--paper-warm);
+    border: 1px solid var(--ink-brown-soft);
+    border-radius: 6px;
+    color: var(--ink-brown);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: var(--font-serif-en);
+}
+.pagination-nav-btn:hover:not(:disabled) {
+    background: var(--paper-cream-deep);
+    border-color: var(--coral-blush);
+    color: var(--coral-blush);
+}
+.pagination-nav-btn:disabled {
+    background: var(--paper-cream-deep);
+    border-color: rgba(139, 90, 60, 0.2);
+    color: var(--ink-brown-light);
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+.pagination-nav-btn.active {
+    background: var(--coral-blush);
+    border-color: var(--coral-blush);
+    color: #fff;
+}
+.pagination-nav-btn.active:hover {
+    background: #b85a4a;
+    border-color: #b85a4a;
+}
+.pagination-ellipsis-btn {
+    background: transparent !important;
+    border: none !important;
+    cursor: default !important;
+    color: var(--ink-brown-light) !important;
+}
+
+/* ================= 响应式 ================= */
+@media (max-width: 768px) {
+    .universal-pagination {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    .pagination-info { justify-content: center; flex-wrap: wrap; }
+    .pagination-controls { justify-content: center; }
+}
+
+/* ================= Tailwind 暗色 class 覆盖（深色文字改棕褐） ================= */
+.text-gray-100, .text-gray-200, .text-gray-300, .text-white {
+    color: var(--ink-brown) !important;
+}
+.text-gray-400, .text-gray-500, .text-gray-600 {
+    color: var(--ink-brown-soft) !important;
+}
+.text-indigo-400, .text-indigo-500, .text-blue-400, .text-blue-500 {
+    color: var(--coral-blush) !important;
+}
+.text-green-400, .text-green-500 { color: var(--mint-sage-deep) !important; }
+.text-red-400, .text-red-500 { color: var(--coral-blush) !important; }
+.text-yellow-400, .text-yellow-500 { color: var(--ochre-gold) !important; }
+.text-purple-400, .text-purple-500 { color: var(--lotus-pink) !important; }
+
+.bg-gray-700, .bg-gray-800, .bg-gray-900, .bg-slate-800, .bg-slate-900 {
+    background-color: var(--paper-warm) !important;
+    color: var(--ink-brown);
+}
+.bg-gray-100, .bg-gray-200, .bg-gray-50 {
+    background-color: var(--paper-cream-deep) !important;
+}
+.border-gray-700, .border-gray-800, .border-gray-600 {
+    border-color: var(--ink-brown-soft) !important;
+}
+
+/* ================= Tailwind 任意值暗色类全局纸质化（方案 A 兜底） =================
+   Tailwind 方括号任意值类（如 bg-[#0d1117]）无法被通用 gray-* 规则覆盖，
+   在此显式列举站内出现的全部 hex，映射到纸质主题。 */
+.bg-\[\#0d1117\],
+.bg-\[\#161b22\],
+.bg-\[\#21262d\] {
+    background-color: var(--paper-cream-deep) !important;
+    color: var(--ink-brown) !important;
+    background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.23 0 0 0 0 0.12 0 0 0 0.04 0'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>"),
+        linear-gradient(135deg, var(--paper-cream-deep) 0%, var(--paper-cream) 100%) !important;
+    border: 1px dashed rgba(139, 90, 60, 0.35);
+}
+.hover\:bg-\[\#30363d\]:hover {
+    background-color: rgba(139, 90, 60, 0.10) !important;
+    color: var(--ink-brown) !important;
+}
+.border-\[\#30363d\] {
+    border-color: rgba(139, 90, 60, 0.35) !important;
+}
+/* <code class="bg-[#0d1117]"> 类薄荷徽章（与 .query-config-edit code 规则同构） */
+code.bg-\[\#0d1117\],
+code.bg-\[\#161b22\],
+code.bg-\[\#21262d\] {
+    background: rgba(143, 174, 138, 0.18) !important;
+    background-image: none !important;
+    border: 1px solid rgba(95, 138, 106, 0.38) !important;
+    color: var(--mint-sage-deep) !important;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 0.78rem;
+}
+
+/* 全局 <code> 薄荷徽章工具类（MappingModal 字段名 code 使用，其余 code 按需加 class） */
+code.badge-code-mint {
+    background: rgba(143, 174, 138, 0.18) !important;
+    border: 1px solid rgba(95, 138, 106, 0.38) !important;
+    color: var(--mint-sage-deep) !important;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 0.78rem;
+}
+
+/* ================= 蓝色强调按钮/Tab 印章化（supplier tab 等） =================
+   站内大量使用 .bg-blue-600 表示激活 tab / 主按钮背景，这里统一重映射为印章朱红，
+   保持与米白纸质背景的对比度和印章风语义。 */
+.bg-blue-600 {
+    background-color: var(--coral-blush) !important;
+    color: var(--paper-warm) !important;
+    border-color: var(--coral-blush) !important;
+}
+.hover\:bg-blue-700:hover,
+.bg-blue-700 {
+    background-color: #b85a4a !important;
+    color: var(--paper-warm) !important;
+}
+.bg-blue-500 {
+    background-color: var(--river-blue) !important;
+    color: var(--paper-warm) !important;
+}
+
+/* ================= 报表导出标题（导出 PNG/PDF 时显示） =================
+   .report-export-title 内 h2/p 在米白底上需要棕褐文字才可见，
+   原 text-gray-100/text-gray-400 与新主题违和。 */
+.report-export-title h2 {
+    color: var(--ink-brown) !important;
+    font-family: 'Playfair Display', 'Noto Serif SC', 'Songti SC', serif;
+    letter-spacing: 0.04em;
+}
+.report-export-title p {
+    color: var(--ink-brown-light) !important;
+    font-family: var(--font-serif-zh);
+}
+
+/* ================= 页面标题装饰 ================= */
+.page-title {
+    font-family: var(--font-serif-zh);
+    color: var(--ink-brown);
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    position: relative;
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+.page-title::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' fill='none' stroke='%23c76b5b' stroke-width='2.4' stroke-linecap='round' opacity='0.9'><path d='M2 5 Q30 1 60 5 T118 5'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+/* ================= 统计数字翻牌 ================= */
+.counter-roll {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-serif-en);
+    color: var(--ink-brown);
+    font-weight: 700;
+    animation: numRoll 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes numRoll {
+    0%   { opacity: 0; transform: translateY(-14px) scale(0.85); filter: blur(4px); }
+    60%  { opacity: 1; filter: blur(0); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+/* 统计卡片里的大数字自动应用翻牌入场 */
+.stat-card .text-2xl, .stat-card .text-3xl, .stat-card .text-4xl,
+.stat-card [class*="text-"][class*="xl"] {
+    animation: numRoll 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-serif-en);
+    color: var(--ink-brown) !important;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* ================= 卡片入场动画 ================= */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.card, .stat-card {
+    animation: fadeInUp 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.card:nth-child(2), .stat-card:nth-child(2) { animation-delay: 0.05s; }
+.card:nth-child(3), .stat-card:nth-child(3) { animation-delay: 0.1s; }
+.card:nth-child(4), .stat-card:nth-child(4) { animation-delay: 0.15s; }
+.card:nth-child(5), .stat-card:nth-child(5) { animation-delay: 0.2s; }
+.card:nth-child(6), .stat-card:nth-child(6) { animation-delay: 0.25s; }
+
+/* ================= Tab 切换 ink-fade 过渡 ================= */
+.ink-fade-enter-active, .ink-fade-leave-active {
+    transition: opacity 0.45s ease, filter 0.45s ease, transform 0.45s ease;
+}
+.ink-fade-enter-from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(8px);
+}
+.ink-fade-leave-to {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(-4px);
+}
+
+/* ================= Tooltip/标注气泡（手绘墨水） ================= */
+.ink-tooltip {
+    position: relative;
+    display: inline-block;
+}
+.ink-tooltip[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--ink-brown);
+    color: var(--paper-warm);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: var(--shadow-soft);
+    font-family: var(--font-serif-zh);
+}
+.ink-tooltip[data-tip]::before {
+    content: "";
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    width: 1px;
+    height: 0;
+    border-left: 1px dashed var(--ink-brown);
+    opacity: 0;
+    transition: height 0.35s ease 0.1s, opacity 0.3s ease;
+}
+.ink-tooltip:hover[data-tip]::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+.ink-tooltip:hover[data-tip]::before {
+    opacity: 0.6;
+    height: 8px;
+}
+
+/* ================= 顶部 Header 横向花纹分隔 ================= */
+.thai-divider {
+    display: block;
+    width: 100%;
+    height: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' fill='none' stroke='%238b5a3c' stroke-width='1.2' opacity='0.55'><path d='M0 7 L70 7 M130 7 L200 7'/><circle cx='100' cy='7' r='3.5' fill='none'/><path d='M100 3.5 L100 0.5 M100 10.5 L100 13.5 M96.5 7 L93.5 7 M103.5 7 L106.5 7'/><path d='M85 7 Q92 2 100 7 Q108 12 115 7' opacity='0.7'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    margin: 0.5rem 0;
+}
+
+/* ================= 印章贴纸 ================= */
+.page-stamp {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    width: 88px;
+    height: 88px;
+    pointer-events: none;
+    opacity: 0.38;
+    transform: rotate(-8deg);
+    z-index: 50;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 88 88' fill='none' stroke='%23c76b5b' stroke-width='2'><circle cx='44' cy='44' r='36'/><circle cx='44' cy='44' r='28' stroke-dasharray='3 3'/><text x='44' y='40' text-anchor='middle' font-family='Playfair Display,serif' font-size='9' fill='%23c76b5b' stroke='none' font-weight='700'>LANNA</text><text x='44' y='52' text-anchor='middle' font-family='Playfair Display,serif' font-size='8' fill='%23c76b5b' stroke='none'>HERITAGE</text><text x='44' y='62' text-anchor='middle' font-family='Playfair Display,serif' font-size='6' fill='%23c76b5b' stroke='none' letter-spacing='2'>MMXXVI</text></svg>");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+/* ================= ECharts 容器背景 ================= */
+.chart-container, [id$="Chart"], [id*="chart"] {
+    background: transparent !important;
+}
+
+/* ================= 辅助: 选中文字颜色 ================= */
+::selection {
+    background: rgba(199, 107, 91, 0.3);
+    color: var(--ink-brown);
+}
+
+/* ================= Font Awesome 字体兜底（必须）：
+   全局衬线字体会级联到 <i class="fas/far/fab">，需要用 !important 恢复。
+   同时要覆盖更具体的 .stat-card .text-Xxl 规则（也用了 !important）。 */
+i[class*="fa-"],
+.fa, .fas, .far, .fal, .fad,
+.stat-card i[class*="fa-"] {
+    font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome" !important;
+    font-weight: 900 !important;
+    font-style: normal !important;
+}
+.far, i.far {
+    font-weight: 400 !important;
+}
+.fab, i.fab, i[class*="fa-brand"] {
+    font-family: "Font Awesome 6 Brands", "Font Awesome 5 Brands" !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+}
+
+/* ================= 编辑查询配置页（query-config-edit）纸质主题覆盖 =================
+   该页暗色 Tailwind 类较多，采用作用域覆盖一次性处理；
+   template 内只替换 5 处 bg-[#0d1117] 暗底容器为 .paper-inset。
+*/
+
+/* 1. 凹陷面板：替代暗底容器 bg-[#0d1117] */
+.paper-inset {
+    background: var(--paper-cream-deep);
+    background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.23 0 0 0 0 0.12 0 0 0 0.04 0'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>"),
+        linear-gradient(135deg, var(--paper-cream-deep) 0%, var(--paper-cream) 100%);
+    border: 1px dashed rgba(139, 90, 60, 0.40);
+    box-shadow: inset 0 1px 3px rgba(91, 58, 30, 0.08), inset 0 0 0 1px rgba(255, 250, 235, 0.30);
+    color: var(--ink-brown);
+}
+
+/* 2. 作用域覆盖：query-config-edit 内所有暗色 Tailwind 类 */
+.query-config-edit {
+    color: var(--ink-brown);
+}
+.query-config-edit .text-gray-100,
+.query-config-edit .text-gray-200,
+.query-config-edit .text-gray-300 {
+    color: var(--ink-brown) !important;
+}
+.query-config-edit .text-gray-400,
+.query-config-edit .text-gray-500,
+.query-config-edit .text-gray-600 {
+    color: var(--ink-brown-light) !important;
+}
+.query-config-edit .border-gray-700,
+.query-config-edit .border-gray-800 {
+    border-color: rgba(139, 90, 60, 0.35) !important;
+}
+.query-config-edit .border-\[\#30363d\] {
+    border-color: rgba(139, 90, 60, 0.35) !important;
+}
+
+/* 3. 彩色强调：统一为印章暖色系 */
+.query-config-edit .text-yellow-400,
+.query-config-edit .text-yellow-500 {
+    color: var(--ochre-gold) !important;   /* stamp amber */
+}
+.query-config-edit .text-blue-400 {
+    color: var(--river-blue) !important;   /* stamp river blue */
+}
+.query-config-edit .text-green-400,
+.query-config-edit .text-green-500 {
+    color: var(--mint-sage-deep) !important; /* stamp mint */
+}
+.query-config-edit .text-purple-400 {
+    color: var(--ink-brown-soft) !important; /* stamp walnut */
+}
+.query-config-edit .text-red-400,
+.query-config-edit .text-red-500 {
+    color: var(--coral-blush) !important;    /* stamp rust */
+}
+
+/* 4. paper-inset 内的 input/select 保持纸质一致 */
+.query-config-edit .paper-inset .form-input,
+.query-config-edit .paper-inset .form-select,
+.query-config-edit .paper-inset .form-textarea {
+    background: var(--paper-warm);
+}
+
+/* 5. <code> 片段：手写体配暖色（替代 text-green-400 在 code 上的效果） */
+.query-config-edit code {
+    background: rgba(143, 174, 138, 0.15);
+    border: 1px solid rgba(95, 138, 106, 0.35);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    color: var(--mint-sage-deep) !important;
+    font-size: 0.78rem;
+}
+
+/* 6. 转换测试结果区（template 内 bg-[#0d1117] border border-gray-700）= paper-inset */
+.query-config-edit .paper-inset .text-green-400 {
+    color: var(--mint-sage-deep) !important;
+    font-weight: 600;
+}
+
     </style>
 </head>
 <body>
     <div id="app">
+        <!-- 复古印章装饰（全局固定） -->
+        <div class="page-stamp" aria-hidden="true"></div>
         <!-- 侧边栏 -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="flex items-center">
-                    <i class="fas fa-cloud-download-alt text-2xl text-indigo-400 mr-3"></i>
-                    <div>
-                        <h1 class="text-lg font-bold text-gray-100">CLS日志分析</h1>
-                        <p class="text-xs text-gray-500">腾讯云日志服务</p>
+                    <i class="fas fa-cloud-download-alt text-2xl mr-3" style="color: var(--coral-blush);"></i>
+                    <div style="line-height: 1.15;">
+                        <h1 class="font-bold" style="font-family: var(--font-serif-zh); color: var(--ink-brown); font-size: 1.05rem; margin: 0;">CLS日志分析</h1>
+                        <p style="color: var(--ink-brown-soft); font-family: var(--font-hand); font-size: 0.85rem; margin: 2px 0 0; white-space: nowrap;">腾讯云 · 日志服务</p>
                     </div>
                 </div>
 
@@ -1154,9 +1828,15 @@
                 </div>
 
             </nav>
-            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-[#30363d]">
-                <div class="text-xs text-gray-500 text-center">
-                    <i class="fas fa-circle text-green-500 mr-1" style="font-size: 6px;"></i>
+            <!-- 复古签章装饰 -->
+            <div class="sidebar-seal" aria-hidden="true">
+                <div class="seal-title">LANNA · HERITAGE</div>
+                <div style="margin-top:4px;">THE ROSE OF THE NORTH</div>
+                <div style="margin-top:3px; font-family: var(--font-hand); font-size:0.95rem; color: var(--coral-blush);">est. MMXXVI</div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 p-4" style="border-top:1.5px dashed rgba(139,90,60,0.4);">
+                <div class="text-xs text-center" style="color: var(--ink-brown-soft); font-family: var(--font-serif-zh);">
+                    <i class="fas fa-circle mr-1" style="font-size: 6px; color: var(--mint-sage-deep);"></i>
                     系统运行中
                 </div>
             </div>
@@ -1165,11 +1845,11 @@
         <!-- 主内容区 -->
         <main class="main-content">
             <!-- 顶部导航 -->
-            <nav class="bg-[#161b22] border-b border-[#30363d] sticky top-0 z-50">
+            <nav class="sticky top-0 z-50" style="background: linear-gradient(180deg, var(--paper-warm) 0%, var(--paper-cream) 100%); border-bottom: 1.5px solid var(--ink-brown-soft); box-shadow: 0 2px 8px rgba(91,58,30,0.06);">
                 <div class="px-6 py-4 flex justify-between items-center">
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-100">{{ pageTitle }}</h2>
-                        <p class="text-sm text-gray-500 mt-0.5">{{ pageSubtitle }}</p>
+                        <h2 class="page-title" style="font-size: 1.4rem; margin: 0;">{{ pageTitle }}</h2>
+                        <p class="text-sm mt-1" style="color: var(--ink-brown-soft); font-family: var(--font-hand); font-size: 1rem;">{{ pageSubtitle }}</p>
                     </div>
                     <div class="flex items-center space-x-3">
                         <span class="text-sm text-gray-400">
@@ -3553,7 +4233,7 @@
 
                 
                 <!-- 查询配置编辑页面（独立页面） -->
-                <div v-if="currentPage === 'query-config-edit'">
+                <div v-if="currentPage === 'query-config-edit'" class="query-config-edit">
                     <div class="card">
                         <div class="p-4 border-b border-[#30363d] flex justify-between items-center">
                             <div class="flex items-center gap-3">
@@ -3662,7 +4342,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="mt-3 p-3 bg-[#0d1117] rounded-lg text-xs text-gray-400" v-if="queryConfigForm.schedule_enabled">
+                                <div class="mt-3 p-3 paper-inset rounded-lg text-xs text-gray-400" v-if="queryConfigForm.schedule_enabled">
                                     <p><i class="fas fa-lightbulb mr-1 text-yellow-500"></i>定时查询说明：</p>
                                     <ul class="list-disc list-inside mt-2 space-y-1">
                                         <li>查询时间范围：将使用上方配置的<b>时间范围</b>参数（当前: {{ formatTimeRange(queryConfigForm.time_range) }}）</li>
@@ -3705,7 +4385,7 @@
                                         <span class="text-sm text-gray-300">启用过滤</span>
                                     </label>
                                 </div>
-                                <div class="bg-[#0d1117] rounded-lg p-4" v-if="queryConfigForm.filter_config.enabled">
+                                <div class="paper-inset rounded-lg p-4" v-if="queryConfigForm.filter_config.enabled">
                                     <div class="mb-4">
                                         <label class="form-label text-xs">条件逻辑</label>
                                         <div class="flex gap-4">
@@ -3770,7 +4450,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="bg-[#0d1117] rounded-lg p-4" v-if="queryConfigForm.transform_config.length > 0">
+                                <div class="paper-inset rounded-lg p-4" v-if="queryConfigForm.transform_config.length > 0">
                                     <div class="flex gap-2 mb-3 text-xs text-gray-400 font-medium">
                                         <span style="flex: 2;">目标字段</span>
                                         <span style="flex: 2;">来源字段</span>
@@ -3798,7 +4478,7 @@
                                 <div class="text-xs text-gray-500 mt-2" v-if="queryConfigForm.transform_config.length === 0">
                                     <i class="fas fa-info-circle mr-1 text-blue-400"></i>请添加转换规则，将日志字段映射到目标表字段。
                                 </div>
-                                <div class="text-xs text-gray-500 mt-4 bg-[#0d1117] rounded p-3">
+                                <div class="text-xs text-gray-500 mt-4 paper-inset rounded p-3">
                                     <p class="mb-2"><i class="fas fa-lightbulb mr-1 text-yellow-500"></i>转换规则说明（多规则用 | 分隔）：</p>
                                     <ul class="list-disc list-inside space-y-1 text-gray-400">
                                         <li><code class="text-green-400">direct</code> - 直接使用来源字段值</li>
@@ -3838,7 +4518,7 @@
                                         </div>
                                         <div>
                                             <label class="text-xs text-gray-400 mb-1 block">转换结果</label>
-                                            <div class="bg-[#0d1117] border border-gray-700 rounded p-3 font-mono text-sm overflow-auto" style="height: 230px;">
+                                            <div class="paper-inset rounded p-3 font-mono text-sm overflow-auto" style="height: 230px;">
                                                 <div v-if="transformTestResult && transformTestResult.length > 0">
                                                     <div v-for="item in transformTestResult" :key="item.field" class="flex py-2 border-b border-gray-800 last:border-b-0">
                                                         <span class="text-green-400 w-40 flex-shrink-0">{{ item.field }}</span>
@@ -5193,7 +5873,7 @@
                                 <i class="fas fa-plus"></i>添加字段
                             </button>
                         </div>
-                        <div class="bg-[#0d1117] rounded-lg p-3 mb-2">
+                        <div class="paper-inset rounded-lg p-3 mb-2">
                             <div class="grid grid-cols-12 gap-2 text-xs text-gray-500 font-medium mb-2 px-2">
                                 <div class="col-span-5">字段名</div>
                                 <div class="col-span-5">数据类型</div>
@@ -5230,7 +5910,7 @@
                                 <i class="fas fa-plus mr-1"></i>新增列
                             </button>
                         </div>
-                        <div class="bg-[#0d1117] rounded-lg p-3 mb-2">
+                        <div class="paper-inset rounded-lg p-3 mb-2">
                             <div class="grid grid-cols-12 gap-2 text-xs text-gray-500 font-medium mb-2 px-2">
                                 <div class="col-span-5">数据库字段</div>
                                 <div class="col-span-5">类型</div>
@@ -5239,7 +5919,7 @@
                             <div v-for="(field, index) in mappingForm.field_config" :key="index" class="field-row">
                                 <template v-if="!field.isNew">
                                     <div class="text-sm text-green-400 flex items-center" style="flex: 5;">
-                                        <code class="bg-[#161b22] px-2 py-1 rounded">{{ field.name }}</code>
+                                        <code class="badge-code-mint px-2 py-1 rounded">{{ field.name }}</code>
                                     </div>
                                     <div class="text-sm text-blue-400 flex items-center" style="flex: 5;">
                                         {{ field.type }}
@@ -5988,9 +6668,11 @@
                     const titles = {
                         dashboard: '数据概览',
                         report: '报表汇总',
+                        push: '数据推送',
                         credentials: 'API密钥管理',
                         topics: 'Topic配置',
                         queries: '查询配置',
+                        'query-config-edit': '编辑查询配置',
                         search: '日志查询',
                         logs: '日志记录',
                         permission: '权限诊断',
@@ -6006,9 +6688,11 @@
                     const subtitles = {
                         dashboard: '查看系统整体运行状态和数据统计',
                         report: '查看报表汇总、新增错误对比，支持导出和推送',
+                        push: '配置定时推送规则与触达渠道',
                         credentials: '管理腾讯云API访问凭证（SecretId/SecretKey）',
                         topics: '配置CLS日志主题',
                         queries: '管理预设的日志查询语句',
+                        'query-config-edit': '编辑查询规则、入库条件与字段转换映射',
                         search: '实时查询腾讯云CLS日志数据',
                         logs: '查看已存储到本地的日志数据',
                         permission: 'CLS权限错误分析与修复工具',
@@ -6641,27 +7325,27 @@
                             if (timeChart) timeChart.dispose();
                             timeChart = echarts.init(timeChartDom);
                             timeChart.setOption({
-                                tooltip: { trigger: 'axis', backgroundColor: '#161b22', borderColor: '#30363d', textStyle: { color: '#e6edf3' } },
+                                tooltip: { trigger: 'axis', backgroundColor: 'rgba(91, 58, 30, 0.95)', borderColor: '#8b5a3c', textStyle: { color: '#f5efe0', fontFamily: 'Noto Serif SC, serif' } },
                                 grid: { left: '3%', right: '4%', bottom: '12%', containLabel: true },
                                 xAxis: {
                                     type: 'category',
                                     data: statistics.value.time_distribution.map(d => d.date).reverse(),
-                                    axisLine: { lineStyle: { color: '#30363d' } },
-                                    axisLabel: { color: '#8b949e', fontSize: 11 },
+                                    axisLine: { lineStyle: { color: '#8b5a3c' } },
+                                    axisLabel: { color: '#7a5a3e', fontSize: 11 },
                                     name: '日期',
                                     nameLocation: 'middle',
                                     nameGap: 25,
-                                    nameTextStyle: { color: '#8b949e', fontSize: 12 }
+                                    nameTextStyle: { color: '#7a5a3e', fontSize: 12 }
                                 },
                                 yAxis: {
                                     type: 'value',
-                                    axisLine: { lineStyle: { color: '#30363d' } },
-                                    axisLabel: { color: '#8b949e' },
-                                    splitLine: { lineStyle: { color: '#21262d' } },
+                                    axisLine: { lineStyle: { color: '#8b5a3c' } },
+                                    axisLabel: { color: '#7a5a3e' },
+                                    splitLine: { lineStyle: { color: 'rgba(139,90,60,0.18)' } },
                                     name: '记录数',
                                     nameLocation: 'middle',
                                     nameGap: 40,
-                                    nameTextStyle: { color: '#8b949e', fontSize: 12 }
+                                    nameTextStyle: { color: '#7a5a3e', fontSize: 12 }
                                 },
                                 series: [{
                                     data: statistics.value.time_distribution.map(d => d.count).reverse(),
@@ -6669,11 +7353,11 @@
                                     smooth: true,
                                     symbol: 'circle',
                                     symbolSize: 6,
-                                    lineStyle: { color: '#58a6ff', width: 2 },
-                                    itemStyle: { color: '#58a6ff' },
+                                    lineStyle: { color: '#c76b5b', width: 2 },
+                                    itemStyle: { color: '#c76b5b' },
                                     areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                        { offset: 0, color: 'rgba(88, 166, 255, 0.3)' },
-                                        { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }
+                                        { offset: 0, color: 'rgba(199, 107, 91, 0.28)' },
+                                        { offset: 1, color: 'rgba(199, 107, 91, 0.02)' }
                                     ])}
                                 }]
                             });
@@ -6688,18 +7372,18 @@
                         try {
                             if (topicChart) topicChart.dispose();
                             topicChart = echarts.init(topicChartDom);
-                            const colors = ['#58a6ff', '#3fb950', '#d29922', '#f85149', '#a371f7', '#8b949e'];
+                            const colors = ['#c76b5b', '#5f8a6a', '#c79a3a', '#7fa3b8', '#d69bae', '#8b5a3c'];
                             topicChart.setOption({
-                                tooltip: { trigger: 'item', backgroundColor: '#161b22', borderColor: '#30363d', textStyle: { color: '#e6edf3' } },
-                                legend: { orient: 'vertical', right: '5%', top: 'center', textStyle: { color: '#8b949e' } },
+                                tooltip: { trigger: 'item', backgroundColor: 'rgba(91, 58, 30, 0.95)', borderColor: '#8b5a3c', textStyle: { color: '#f5efe0', fontFamily: 'Noto Serif SC, serif' } },
+                                legend: { orient: 'vertical', right: '5%', top: 'center', textStyle: { color: '#7a5a3e' } },
                                 series: [{
                                     type: 'pie',
                                     radius: ['40%', '70%'],
                                     center: ['40%', '50%'],
                                     avoidLabelOverlap: false,
-                                    itemStyle: { borderRadius: 8, borderColor: '#161b22', borderWidth: 2 },
+                                    itemStyle: { borderRadius: 8, borderColor: '#faf5e8', borderWidth: 2 },
                                     label: { show: false },
-                                    emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold', color: '#e6edf3' } },
+                                    emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold', color: '#5b3a1e' } },
                                     data: statistics.value.topic_distribution.map((d, i) => ({
                                         value: d.count,
                                         name: d.topic_id?.substring(0, 12) || 'Unknown',
@@ -7296,9 +7980,9 @@
 
                 
                 // Dashboard图表公共配置
-                const chartTooltip = { backgroundColor: '#161b22', borderColor: '#30363d', textStyle: { color: '#e6edf3' } };
-                const chartAxisStyle = { axisLine: { lineStyle: { color: '#30363d' } }, axisLabel: { color: '#8b949e', fontSize: 10 }, splitLine: { lineStyle: { color: '#21262d' } } };
-                const chartColors = ['#58a6ff', '#3fb950', '#d29922', '#f85149', '#a371f7', '#8b949e', '#f0883e', '#56d4dd', '#db61a2', '#7ee787'];
+                const chartTooltip = { backgroundColor: '#5b3a1e', borderColor: '#8b5a3c', borderWidth: 1, textStyle: { color: '#f5efe0', fontFamily: 'Noto Serif SC, serif' }, extraCssText: 'box-shadow: 0 4px 12px rgba(91,58,30,0.3); border-radius: 8px;' };
+                const chartAxisStyle = { axisLine: { lineStyle: { color: '#8b5a3c' } }, axisLabel: { color: '#7a5a3e', fontSize: 10, fontFamily: 'Playfair Display, serif' }, splitLine: { lineStyle: { color: 'rgba(139,90,60,0.18)', type: 'dashed' } } };
+                const chartColors = ['#c76b5b', '#5f8a6a', '#c79a3a', '#7fa3b8', '#d69bae', '#8b5a3c', '#e09b8a', '#8fae8a', '#a67c52', '#c76b5b'];
                 
                 const initChart = (domId) => {
                     const dom = document.getElementById(domId);
@@ -7343,7 +8027,7 @@
                     // 如果没有数据，显示空状态
                     if (!data || data.length === 0) {
                         chart.setOption({
-                            title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#8b949e', fontSize: 14 } },
+                            title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#7a5a3e', fontSize: 14 } },
                             xAxis: { show: false },
                             yAxis: { show: false },
                             series: []
@@ -7372,18 +8056,22 @@
                         chart.setOption({
                             tooltip: { ...chartTooltip, trigger: 'axis' },
                             grid: { left: '3%', right: '4%', bottom: '14%', top: '10%', containLabel: true },
+                            animationDuration: 1600,
+                            animationEasing: 'cubicOut',
+                            animationDelay: (idx) => idx * 40,
                             xAxis: { type: 'category', data: labels.map(formatLabel), ...chartAxisStyle,
                                 name: xAxisName, nameLocation: 'middle', nameGap: 25,
-                                nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                                nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
                             yAxis: { type: 'value', ...chartAxisStyle,
                                 name: yAxisName, nameLocation: 'middle', nameGap: 35,
-                                nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                                nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
                             series: [{
                                 data: values, type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
-                                lineStyle: { color: '#58a6ff', width: 2 }, itemStyle: { color: '#58a6ff' },
+                                lineStyle: { color: '#8b5a3c', width: 2.2, shadowColor: 'rgba(139,90,60,0.25)', shadowBlur: 4, shadowOffsetY: 2 },
+                                itemStyle: { color: '#c76b5b', borderColor: '#5b3a1e', borderWidth: 1 },
                                 areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                    { offset: 0, color: 'rgba(88, 166, 255, 0.3)' },
-                                    { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }]) }
+                                    { offset: 0, color: 'rgba(199, 107, 91, 0.28)' },
+                                    { offset: 1, color: 'rgba(199, 107, 91, 0.02)' }]) }
                             }]
                         });
                         return;
@@ -7458,20 +8146,24 @@
                     chart.setOption({
                         tooltip: { ...chartTooltip, trigger: 'axis' },
                         grid: { left: '3%', right: '4%', bottom: '12%', top: '10%', containLabel: true },
-                        xAxis: { type: 'category', data: displayLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
-                        yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                        animationDuration: 1600,
+                        animationEasing: 'cubicOut',
+                        animationDelay: (idx) => idx * 40,
+                        xAxis: { type: 'category', data: displayLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
+                        yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
                         series: [{ data: displayValues, type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
-                            lineStyle: { color: '#58a6ff', width: 2 }, itemStyle: { color: '#58a6ff' },
-                            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(88, 166, 255, 0.3)' }, { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }]) }
+                            lineStyle: { color: '#8b5a3c', width: 2.2, shadowColor: 'rgba(139,90,60,0.25)', shadowBlur: 4, shadowOffsetY: 2 },
+                            itemStyle: { color: '#c76b5b', borderColor: '#5b3a1e', borderWidth: 1 },
+                            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(199, 107, 91, 0.28)' }, { offset: 1, color: 'rgba(199, 107, 91, 0.02)' }]) }
                         }]
                     });
                 };
 
                 
-                // 多供应商折线图（不同供应商不同颜色）
+                // 多供应商折线图（不同供应商不同颜色）- 复古手绘色板
                 const supplierColors = [
-                    '#58a6ff', '#f97316', '#22c55e', '#a855f7', '#ec4899', 
-                    '#14b8a6', '#eab308', '#ef4444', '#6366f1', '#84cc16'
+                    '#c76b5b', '#5f8a6a', '#c79a3a', '#7fa3b8', '#d69bae',
+                    '#8b5a3c', '#e09b8a', '#8fae8a', '#a67c52', '#c79a3a'
                 ];
                 
                 const renderMultiSupplierTrendChart = (domId, data, nameField = 'sp_name', xAxisName = '时间', yAxisName = '错误数', options = {}) => {
@@ -7480,7 +8172,7 @@
                     
                     if (!data || data.length === 0) {
                         chart.setOption({
-                            title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#8b949e', fontSize: 14 } },
+                            title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#7a5a3e', fontSize: 14 } },
                             xAxis: { show: false },
                             yAxis: { show: false },
                             series: [],
@@ -7514,15 +8206,15 @@
                             chart.setOption({
                                 tooltip: { ...chartTooltip, trigger: 'axis' },
                                 grid: { left: '3%', right: '4%', bottom: '12%', top: '10%', containLabel: true },
-                                xAxis: { type: 'category', data: xLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
-                                yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                                xAxis: { type: 'category', data: xLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
+                                yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
                                 series: [{
                                     data: buckets.map(b => bucketMap[b] || 0), type: 'line', smooth: true,
                                     symbol: 'circle', symbolSize: 6,
-                                    lineStyle: { color: '#58a6ff', width: 2 }, itemStyle: { color: '#58a6ff' },
+                                    lineStyle: { color: '#c76b5b', width: 2 }, itemStyle: { color: '#c76b5b' },
                                     areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                        { offset: 0, color: 'rgba(88, 166, 255, 0.3)' },
-                                        { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }]) }
+                                        { offset: 0, color: 'rgba(199, 107, 91, 0.28)' },
+                                        { offset: 1, color: 'rgba(199, 107, 91, 0.02)' }]) }
                                 }]
                             });
                             return;
@@ -7558,14 +8250,14 @@
                             tooltip: { ...chartTooltip, trigger: 'axis' },
                             legend: {
                                 data: suppliers,
-                                textStyle: { color: '#8b949e', fontSize: 10 },
+                                textStyle: { color: '#7a5a3e', fontSize: 10 },
                                 top: 0,
                                 type: 'scroll',
-                                pageTextStyle: { color: '#8b949e' }
+                                pageTextStyle: { color: '#7a5a3e' }
                             },
                             grid: { left: '3%', right: '4%', bottom: '12%', top: '15%', containLabel: true },
-                            xAxis: { type: 'category', data: xLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
-                            yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                            xAxis: { type: 'category', data: xLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
+                            yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
                             series: series
                         });
                         return;
@@ -7605,8 +8297,8 @@
                             yAxis: { type: 'value', ...chartAxisStyle },
                             series: [{ 
                                 data: hourValues, type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
-                                lineStyle: { color: '#58a6ff', width: 2 }, itemStyle: { color: '#58a6ff' },
-                                areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(88, 166, 255, 0.3)' }, { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }]) }
+                                lineStyle: { color: '#c76b5b', width: 2 }, itemStyle: { color: '#c76b5b' },
+                                areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(199, 107, 91, 0.28)' }, { offset: 1, color: 'rgba(199, 107, 91, 0.02)' }]) }
                             }]
                         });
                         return;
@@ -7699,14 +8391,14 @@
                         tooltip: { ...chartTooltip, trigger: 'axis' },
                         legend: { 
                             data: suppliers, 
-                            textStyle: { color: '#8b949e', fontSize: 10 },
+                            textStyle: { color: '#7a5a3e', fontSize: 10 },
                             top: 0,
                             type: 'scroll',
-                            pageTextStyle: { color: '#8b949e' }
+                            pageTextStyle: { color: '#7a5a3e' }
                         },
                         grid: { left: '3%', right: '4%', bottom: '12%', top: '15%', containLabel: true },
-                        xAxis: { type: 'category', data: displayLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
-                        yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                        xAxis: { type: 'category', data: displayLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
+                        yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
                         series: series
                     });
                 };
@@ -7719,7 +8411,7 @@
                     // 如果没有数据，显示空状态
                     if (!data || data.length === 0) {
                         chart.setOption({
-                            title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#8b949e', fontSize: 14 } },
+                            title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#7a5a3e', fontSize: 14 } },
                             xAxis: { show: false },
                             yAxis: { show: false },
                             series: []
@@ -7733,13 +8425,13 @@
                         tooltip: { ...chartTooltip, trigger: 'axis', axisPointer: { type: 'shadow' } },
                         grid: { left: horizontal ? '25%' : '3%', right: '4%', bottom: xAxisName ? '15%' : '3%', top: '10%', containLabel: true },
                         xAxis: horizontal 
-                            ? { type: 'value', ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#8b949e', fontSize: 12 } } 
-                            : { type: 'category', data: names, ...chartAxisStyle, axisLabel: { ...chartAxisStyle.axisLabel, rotate: 30 }, name: xAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                            ? { type: 'value', ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } } 
+                            : { type: 'category', data: names, ...chartAxisStyle, axisLabel: { ...chartAxisStyle.axisLabel, rotate: 30 }, name: xAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
                         yAxis: horizontal 
-                            ? { type: 'category', data: names.reverse(), ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 80, nameTextStyle: { color: '#8b949e', fontSize: 12 } } 
-                            : { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                            ? { type: 'category', data: names.reverse(), ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 80, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } } 
+                            : { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#7a5a3e', fontSize: 12 } },
                         series: [{ data: horizontal ? values.reverse() : values, type: 'bar', barWidth: '60%',
-                            itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#58a6ff' }, { offset: 1, color: '#1f6feb' }]), borderRadius: [4, 4, 0, 0] }
+                            itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#c76b5b' }, { offset: 1, color: '#8b5a3c' }]), borderRadius: [4, 4, 0, 0] }
                         }]
                     });
                 };
@@ -7752,7 +8444,7 @@
                     // 如果没有数据，显示空状态
                     if (!data || data.length === 0) {
                         chart.setOption({
-                            title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#8b949e', fontSize: 14 } },
+                            title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { color: '#7a5a3e', fontSize: 14 } },
                             series: []
                         });
                         return;
@@ -7760,10 +8452,10 @@
                     
                     chart.setOption({
                         tooltip: { ...chartTooltip, trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-                        legend: { orient: 'vertical', right: '5%', top: 'center', textStyle: { color: '#8b949e', fontSize: 10 } },
+                        legend: { orient: 'vertical', right: '5%', top: 'center', textStyle: { color: '#7a5a3e', fontSize: 10 } },
                         series: [{ type: 'pie', radius: ['35%', '65%'], center: ['35%', '50%'], avoidLabelOverlap: false,
-                            itemStyle: { borderRadius: 6, borderColor: '#161b22', borderWidth: 2 }, label: { show: false },
-                            emphasis: { label: { show: true, fontSize: 12, fontWeight: 'bold', color: '#e6edf3' } },
+                            itemStyle: { borderRadius: 6, borderColor: '#faf5e8', borderWidth: 2 }, label: { show: false },
+                            emphasis: { label: { show: true, fontSize: 12, fontWeight: 'bold', color: '#5b3a1e' } },
                             data: data.map((d, i) => ({ value: d[valueKey] || 0, name: String(d[nameKey] || '-').substring(0, 15), itemStyle: { color: chartColors[i % chartColors.length] } }))
                         }]
                     });
@@ -8607,11 +9299,49 @@
                                 
                                 await new Promise(resolve => setTimeout(resolve, 150));
                                 
+                                // 禁用卡片入场动画，防止 html2canvas 截到 opacity:0 的中间态
+                                const animElements = container.querySelectorAll('.card, .stat-card');
+                                const originalAnims = [];
+                                animElements.forEach((el, i) => {
+                                    originalAnims[i] = {
+                                        animation: el.style.animation,
+                                        opacity: el.style.opacity,
+                                        transform: el.style.transform
+                                    };
+                                    el.style.animation = 'none';
+                                    el.style.opacity = '1';
+                                    el.style.transform = 'none';
+                                });
+                                
+                                // 隐藏 stat-card Font Awesome 图标（html2canvas 不复制字体文件，会渲染为空方框）
+                                const iconElements = container.querySelectorAll('.stat-card i[class*="fa-"]');
+                                const origIconDisplay = [];
+                                iconElements.forEach((el, i) => {
+                                    origIconDisplay[i] = el.style.display;
+                                    el.style.display = 'none';
+                                });
+                                
+                                // 去除 card 的 SVG noise 背景纹理（html2canvas 会渲染为灰色块遮挡图表）
+                                const cardsWithNoise = container.querySelectorAll('.card');
+                                const origBgImage = [];
+                                cardsWithNoise.forEach((el, i) => {
+                                    origBgImage[i] = el.style.backgroundImage;
+                                    el.style.backgroundImage = 'none';
+                                });
+                                
+                                // 等待浏览器一次重绘，确保样式生效
+                                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                                
                                 const originalCanvas = await html2canvas(container, {
-                                    backgroundColor: '#0f1419',
+                                    backgroundColor: '#f5efe0',
                                     scale: 2,
                                     useCORS: true,
-                                    logging: false
+                                    logging: false,
+                                    // ⚠ 不要改成固定值！container.scrollHeight 自动反映完整内容高度
+                                    // 新增模块只要放入 reportContainer 内，导出会自动包含，无需改此处
+                                    // 完整复盘见 .codebuddy/memory/2026-04-26.md 导出调试轮次
+                                    height: container.scrollHeight,
+                                    windowHeight: container.scrollHeight
                                 });
                                 
                                 // 创建带边距的新 canvas
@@ -8620,9 +9350,26 @@
                                 canvas.width = originalCanvas.width + padding * 2;
                                 canvas.height = originalCanvas.height + padding * 2;
                                 const ctx = canvas.getContext('2d');
-                                ctx.fillStyle = '#0f1419';
+                                ctx.fillStyle = '#f5efe0';
                                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                                 ctx.drawImage(originalCanvas, padding, padding);
+                                
+                                // 恢复 card 背景纹理
+                                cardsWithNoise.forEach((el, i) => {
+                                    el.style.backgroundImage = origBgImage[i];
+                                });
+                                
+                                // 恢复 stat-card 图标显示
+                                iconElements.forEach((el, i) => {
+                                    el.style.display = origIconDisplay[i];
+                                });
+                                
+                                // 恢复动画样式（保持卫生）
+                                animElements.forEach((el, i) => {
+                                    el.style.animation = originalAnims[i].animation;
+                                    el.style.opacity = originalAnims[i].opacity;
+                                    el.style.transform = originalAnims[i].transform;
+                                });
                                 
                                 // 恢复样式
                                 tagElements.forEach((el, i) => {
@@ -8706,12 +9453,50 @@
                         // 等待样式生效和图表渲染完成
                         await new Promise(resolve => setTimeout(resolve, 150));
                         
+                        // 禁用卡片入场动画，防止 html2canvas 截到 opacity:0 的中间态
+                        const animElements = container.querySelectorAll('.card, .stat-card');
+                        const originalAnims = [];
+                        animElements.forEach((el, i) => {
+                            originalAnims[i] = {
+                                animation: el.style.animation,
+                                opacity: el.style.opacity,
+                                transform: el.style.transform
+                            };
+                            el.style.animation = 'none';
+                            el.style.opacity = '1';
+                            el.style.transform = 'none';
+                        });
+                        
+                        // 隐藏 stat-card Font Awesome 图标（html2canvas 不复制字体文件，会渲染为空方框）
+                        const iconElements = container.querySelectorAll('.stat-card i[class*="fa-"]');
+                        const origIconDisplay = [];
+                        iconElements.forEach((el, i) => {
+                            origIconDisplay[i] = el.style.display;
+                            el.style.display = 'none';
+                        });
+                        
+                        // 去除 card 的 SVG noise 背景纹理（html2canvas 会渲染为灰色块遮挡图表）
+                        const cardsWithNoise = container.querySelectorAll('.card');
+                        const origBgImage = [];
+                        cardsWithNoise.forEach((el, i) => {
+                            origBgImage[i] = el.style.backgroundImage;
+                            el.style.backgroundImage = 'none';
+                        });
+                        
+                        // 等待浏览器一次重绘，确保样式生效
+                        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                        
                         // 使用 html2canvas 截图
                         const originalCanvas = await html2canvas(container, {
-                            backgroundColor: '#0f1419',
+                            backgroundColor: '#f5efe0',
                             scale: 2,
                             useCORS: true,
-                            logging: false
+                            logging: false,
+                            // ⚠ 不要改成固定值！container.scrollHeight 自动反映完整内容高度
+                            // 新增模块只要放入 reportContainer 内，导出会自动包含，无需改此处
+                            // 完整复盘见 .codebuddy/memory/2026-04-26.md 导出调试轮次
+                            height: container.scrollHeight,
+                            windowHeight: container.scrollHeight
                         });
                         
                         // 创建带边距的新 canvas
@@ -8721,10 +9506,27 @@
                         canvas.height = originalCanvas.height + padding * 2;
                         const ctx = canvas.getContext('2d');
                         // 填充背景色
-                        ctx.fillStyle = '#0f1419';
+                        ctx.fillStyle = '#f5efe0';
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
                         // 将原始截图绘制到中间
                         ctx.drawImage(originalCanvas, padding, padding);
+                        
+                        // 恢复 card 背景纹理
+                        cardsWithNoise.forEach((el, i) => {
+                            el.style.backgroundImage = origBgImage[i];
+                        });
+                        
+                        // 恢复 stat-card 图标显示
+                        iconElements.forEach((el, i) => {
+                            el.style.display = origIconDisplay[i];
+                        });
+                        
+                        // 恢复动画样式（保持卫生）
+                        animElements.forEach((el, i) => {
+                            el.style.animation = originalAnims[i].animation;
+                            el.style.opacity = originalAnims[i].opacity;
+                            el.style.transform = originalAnims[i].transform;
+                        });
                         
                         // 恢复 tag 元素样式
                         tagElements.forEach((el, i) => {
@@ -8790,12 +9592,50 @@
                         // 等待样式生效和图表渲染完成
                         await new Promise(resolve => setTimeout(resolve, 150));
                         
+                        // 禁用卡片入场动画，防止 html2canvas 截到 opacity:0 的中间态
+                        const animElements = container.querySelectorAll('.card, .stat-card');
+                        const originalAnims = [];
+                        animElements.forEach((el, i) => {
+                            originalAnims[i] = {
+                                animation: el.style.animation,
+                                opacity: el.style.opacity,
+                                transform: el.style.transform
+                            };
+                            el.style.animation = 'none';
+                            el.style.opacity = '1';
+                            el.style.transform = 'none';
+                        });
+                        
+                        // 隐藏 stat-card Font Awesome 图标（html2canvas 不复制字体文件，会渲染为空方框）
+                        const iconElements = container.querySelectorAll('.stat-card i[class*="fa-"]');
+                        const origIconDisplay = [];
+                        iconElements.forEach((el, i) => {
+                            origIconDisplay[i] = el.style.display;
+                            el.style.display = 'none';
+                        });
+                        
+                        // 去除 card 的 SVG noise 背景纹理（html2canvas 会渲染为灰色块遮挡图表）
+                        const cardsWithNoise = container.querySelectorAll('.card');
+                        const origBgImage = [];
+                        cardsWithNoise.forEach((el, i) => {
+                            origBgImage[i] = el.style.backgroundImage;
+                            el.style.backgroundImage = 'none';
+                        });
+                        
+                        // 等待浏览器一次重绘，确保样式生效
+                        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                        
                         // 使用 html2canvas 截图
                         const originalCanvas = await html2canvas(container, {
-                            backgroundColor: '#0f1419',
+                            backgroundColor: '#f5efe0',
                             scale: 2,
                             useCORS: true,
-                            logging: false
+                            logging: false,
+                            // ⚠ 不要改成固定值！container.scrollHeight 自动反映完整内容高度
+                            // 新增模块只要放入 reportContainer 内，导出会自动包含，无需改此处
+                            // 完整复盘见 .codebuddy/memory/2026-04-26.md 导出调试轮次
+                            height: container.scrollHeight,
+                            windowHeight: container.scrollHeight
                         });
                         
                         // 创建带边距的新 canvas
@@ -8805,10 +9645,27 @@
                         canvas.height = originalCanvas.height + padding * 2;
                         const ctx = canvas.getContext('2d');
                         // 填充背景色
-                        ctx.fillStyle = '#0f1419';
+                        ctx.fillStyle = '#f5efe0';
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
                         // 将原始截图绘制到中间
                         ctx.drawImage(originalCanvas, padding, padding);
+                        
+                        // 恢复 card 背景纹理
+                        cardsWithNoise.forEach((el, i) => {
+                            el.style.backgroundImage = origBgImage[i];
+                        });
+                        
+                        // 恢复 stat-card 图标显示
+                        iconElements.forEach((el, i) => {
+                            el.style.display = origIconDisplay[i];
+                        });
+                        
+                        // 恢复动画样式（保持卫生）
+                        animElements.forEach((el, i) => {
+                            el.style.animation = originalAnims[i].animation;
+                            el.style.opacity = originalAnims[i].opacity;
+                            el.style.transform = originalAnims[i].transform;
+                        });
                         
                         // 恢复 tag 元素样式
                         tagElements.forEach((el, i) => {
@@ -10159,16 +11016,16 @@
             template: `
                 <div class="relative inline-block">
                     <button @click="openChartSettings = (openChartSettings === chartId ? null : chartId)"
-                            class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
+                            class="paper-cog-btn text-xs" title="图表设置">
                         <i class="fas fa-cog"></i>
                     </button>
                     <div v-if="openChartSettings === chartId"
-                         class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
+                         class="paper-panel absolute right-0 mt-2 w-56 z-[70] p-3">
                         <div>
-                            <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
+                            <label class="paper-label text-xs block mb-1">横坐标时间粒度</label>
                             <select :value="chartPrefs.time_chart.granularity"
                                     @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData(); openChartSettings = null;"
-                                    class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
+                                    class="paper-select w-full text-xs">
                                 <option value="5m">5 分钟</option>
                                 <option value="10m">10 分钟</option>
                                 <option value="30m">30 分钟</option>
@@ -10177,13 +11034,46 @@
                                 <option value="3h">3 小时</option>
                             </select>
                         </div>
-                        <div class="text-[10px] text-gray-500 mt-2">
+                        <div class="paper-hint mt-2">
                             数据统计维度跟随粒度变化
                         </div>
                     </div>
                 </div>
             `
         });
+
+        // 纯视觉：数字翻牌指令（不改任何数据，仅在元素挂载/值更新时把数值从 0 滚动到当前值）
+        // 用法 (非侵入)：对任何显示数字的元素追加 v-counter 属性，例如 <div v-counter>{{ stat.total }}</div>
+        // 若元素内不是纯数字，自动退化为不执行，不会影响原有文案。
+        app.directive('counter', {
+            mounted(el) { animateCounter(el, null); },
+            updated(el) { animateCounter(el, el.dataset.lastVal); }
+        });
+        function animateCounter(el, prev) {
+            const raw = (el.textContent || '').trim();
+            const match = raw.match(/^(-?[\d,]+(?:\.\d+)?)(.*)$/);
+            if (!match) return;
+            const target = parseFloat(match[1].replace(/,/g, ''));
+            if (isNaN(target)) return;
+            const suffix = match[2] || '';
+            const from = prev != null ? parseFloat(prev) : 0;
+            if (from === target) return;
+            el.dataset.lastVal = String(target);
+            const duration = 850;
+            const start = performance.now();
+            const fmt = (n) => {
+                if (Number.isInteger(target)) return Math.round(n).toLocaleString('en-US');
+                return n.toFixed(2);
+            };
+            function frame(now) {
+                const t = Math.min(1, (now - start) / duration);
+                const eased = 1 - Math.pow(1 - t, 3);
+                el.textContent = fmt(from + (target - from) * eased) + suffix;
+                if (t < 1) requestAnimationFrame(frame);
+                else el.textContent = fmt(target) + suffix;
+            }
+            requestAnimationFrame(frame);
+        }
 
         app.mount('#app');
     </script>
