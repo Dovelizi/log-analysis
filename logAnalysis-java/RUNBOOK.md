@@ -418,6 +418,59 @@ grep "解密失败" logs/loganalysis.log   # 密钥问题
 grep "CLS API错误" logs/loganalysis.log # CLS 权限或凭证问题
 ```
 
+### 接口性能观测（2026-04-26 接入）
+
+项目硬性红线：**每个 HTTP 接口耗时必须 < 1 秒**。新增接口需自测达标。
+
+**观测日志文件**：
+
+| 文件 | 内容 | 告警级别 |
+|---|---|---|
+| `logs/api.log` | 每个 HTTP 接口的 URI/method/status/耗时/Handler/IP | >1000ms WARN，>5000ms ERROR，其余 INFO |
+| `logs/slow-sql.log` | 耗时 >500ms 的 SQL（MyBatis + JdbcTemplate 双路径覆盖） | >500ms WARN，SQL 异常 ERROR |
+
+**阈值可配**（环境变量覆盖，无需改代码）：
+```
+PERF_HTTP_WARN_MS=1000        # HTTP WARN 阈值
+PERF_HTTP_ERROR_MS=5000       # HTTP ERROR 阈值
+PERF_SQL_WARN_MS=500          # SQL 慢查询阈值
+PERF_SQL_LOG_PARAMS=true      # 是否记录 SQL 参数（敏感数据场景可关）
+```
+
+**快速排查慢接口**：
+```bash
+# 当前慢接口 TOP 10
+grep SLOW-API logs/api.log | awk '{print $NF, $0}' | sort -rn | head -10
+
+# 某张表相关慢 SQL
+grep "FROM hitch_control_cost_time" logs/slow-sql.log | sort -u
+
+# 某 Handler 耗时统计
+grep "DashboardController#costTimeStats" logs/api.log | awk '/ -> [0-9]+ [0-9]+ms/ {for(i=1;i<=NF;i++) if ($i ~ /[0-9]+ms/) print $i}' | sort -n | tail -20
+```
+
+**实现入口**（不要直接改）：
+- `common/observability/HttpAccessLogInterceptor.java` —— HTTP 拦截器
+- `common/observability/SlowSqlInterceptor.java` —— MyBatis SQL 拦截器
+- `common/observability/JdbcTemplateSlowSqlAspect.java` —— JdbcTemplate CGLIB 子类代理
+- `common/observability/PerformanceProperties.java` —— 阈值配置类
+
+### Dashboard 接口 Redis 缓存（2026-04-26）
+
+`/api/dashboard/hitch-control-cost-time/statistics` 因数据倾斜（单日 29.3 万条）冷请求仍需 ~2s，接入 Redis 结果级缓存：
+
+- **Key 前缀**：`dash:costTime|<startTime>|<endTime>|<分页参数>`
+- **TTL**：30 秒
+- **实现**：`dashboard/infrastructure/DashboardResultCache.java`
+- **并发层**：`DashboardService#costTimeStatistics` 内 5 路 CompletableFuture 并发执行 SQL，专用线程池 `dashboardAsyncExecutor`（8 线程）
+
+**效果**：冷请求 2.5s，30s 内热缓存 7-32ms。
+
+**手动清缓存（发现数据不一致时）**：
+```bash
+redis-cli KEYS "dash:*" | xargs redis-cli DEL
+```
+
 ---
 
 ## 回滚

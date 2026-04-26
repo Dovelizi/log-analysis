@@ -3,6 +3,7 @@ package com.loganalysis.dashboard.interfaces.rest;
 import com.loganalysis.dashboard.application.DashboardService;
 import com.loganalysis.dashboard.application.DashboardService.DateRange;
 import com.loganalysis.dashboard.application.DashboardService.TableMissingException;
+import com.loganalysis.dashboard.infrastructure.DashboardResultCache;
 import com.loganalysis.search.infrastructure.InsertRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,9 @@ public class DashboardController {
 
     @Autowired
     private DashboardService dashboard;
+
+    @Autowired
+    private DashboardResultCache cache;
 
     // ==================== 通用 ====================
 
@@ -95,7 +99,12 @@ public class DashboardController {
             @RequestParam(value = "high_cost_page", defaultValue = "1") int hcPage,
             @RequestParam(value = "high_cost_page_size", defaultValue = "10") int hcPageSize) {
         DateRange dr = dashboard.parseDateRange(s, e);
-        return runOrNotFound(() -> dashboard.costTimeStatistics(dr, page, pageSize, hcPage, hcPageSize));
+        // 30s 结果级缓存：相同入参 30 秒内直接返回缓存
+        String cacheKey = "costTime|" + dr.startTime + "|" + dr.endTime
+                + "|p" + page + "|s" + pageSize + "|hp" + hcPage + "|hs" + hcPageSize;
+        return runOrNotFound(() ->
+                cache.computeIfAbsent(cacheKey,
+                        () -> dashboard.costTimeStatistics(dr, page, pageSize, hcPage, hcPageSize)));
     }
 
     // ==================== Supplier SP ====================

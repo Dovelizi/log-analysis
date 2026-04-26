@@ -1356,32 +1356,9 @@
                                 <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
                                     <span>
                                         <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
-                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'5m':'5分钟','10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
                                     </span>
-                                    <div class="relative inline-block">
-                                        <button @click="openChartSettings = (openChartSettings === 'controlHitchTrendChart' ? null : 'controlHitchTrendChart')"
-                                                class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
-                                            <i class="fas fa-cog"></i>
-                                        </button>
-                                        <div v-if="openChartSettings === 'controlHitchTrendChart'"
-                                             class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
-                                            <div>
-                                                <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
-                                                <select :value="chartPrefs.time_chart.granularity"
-                                                        @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
-                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
-                                                    <option value="10m">10 分钟</option>
-                                                    <option value="30m">30 分钟</option>
-                                                    <option value="1h">1 小时</option>
-                                                    <option value="2h">2 小时</option>
-                                                    <option value="3h">3 小时</option>
-                                                </select>
-                                            </div>
-                                            <div class="text-[10px] text-gray-500 mt-2">
-                                                数据统计维度跟随粒度变化
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <chart-granularity-settings chart-id="controlHitchTrendChart"></chart-granularity-settings>
                                 </h4>
                                 <div id="controlHitchTrendChart" style="height: 200px;"></div>
                             </div>
@@ -1550,32 +1527,9 @@
                                 <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
                                     <span>
                                         <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
-                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'5m':'5分钟','10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
                                     </span>
-                                    <div class="relative inline-block">
-                                        <button @click="openChartSettings = (openChartSettings === 'gwHitchTrendChart' ? null : 'gwHitchTrendChart')"
-                                                class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
-                                            <i class="fas fa-cog"></i>
-                                        </button>
-                                        <div v-if="openChartSettings === 'gwHitchTrendChart'"
-                                             class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
-                                            <div>
-                                                <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
-                                                <select :value="chartPrefs.time_chart.granularity"
-                                                        @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
-                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
-                                                    <option value="10m">10 分钟</option>
-                                                    <option value="30m">30 分钟</option>
-                                                    <option value="1h">1 小时</option>
-                                                    <option value="2h">2 小时</option>
-                                                    <option value="3h">3 小时</option>
-                                                </select>
-                                            </div>
-                                            <div class="text-[10px] text-gray-500 mt-2">
-                                                数据统计维度跟随粒度变化
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <chart-granularity-settings chart-id="gwHitchTrendChart"></chart-granularity-settings>
                                 </h4>
                                 <div id="gwHitchTrendChart" style="height: 200px;"></div>
                             </div>
@@ -1892,8 +1846,12 @@
                                 <div id="supplierSpDistChart" style="height: 250px;"></div>
                             </div>
                             <div class="card p-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-3">
-                                    <i class="fas fa-chart-line text-green-400 mr-2"></i>当日错误趋势（按供应商）
+                                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
+                                    <span>
+                                        <i class="fas fa-chart-line text-green-400 mr-2"></i>当日错误趋势（按供应商）
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'5m':'5分钟','10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
+                                    </span>
+                                    <chart-granularity-settings chart-id="supplierSpTrendChart"></chart-granularity-settings>
                                 </h4>
                                 <div id="supplierSpTrendChart" style="height: 250px;"></div>
                             </div>
@@ -2057,8 +2015,12 @@
                                 <div id="supplierTotalSummaryChart" style="height: 250px;"></div>
                             </div>
                             <div class="card p-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-3">
-                                    <i class="fas fa-chart-line text-green-400 mr-2"></i>当日趋势（按供应商）
+                                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
+                                    <span>
+                                        <i class="fas fa-chart-line text-green-400 mr-2"></i>当日趋势（按供应商）
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'5m':'5分钟','10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
+                                    </span>
+                                    <chart-granularity-settings chart-id="supplierTotalTrendChart"></chart-granularity-settings>
                                 </h4>
                                 <div id="supplierTotalTrendChart" style="height: 250px;"></div>
                             </div>
@@ -2327,32 +2289,9 @@
                                 <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
                                     <span>
                                         <i class="fas fa-chart-line text-blue-400 mr-2"></i>错误趋势
-                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'5m':'5分钟','10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
                                     </span>
-                                    <div class="relative inline-block">
-                                        <button @click="openChartSettings = (openChartSettings === 'reportErrorTrendChart' ? null : 'reportErrorTrendChart')"
-                                                class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
-                                            <i class="fas fa-cog"></i>
-                                        </button>
-                                        <div v-if="openChartSettings === 'reportErrorTrendChart'"
-                                             class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
-                                            <div>
-                                                <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
-                                                <select :value="chartPrefs.time_chart.granularity"
-                                                        @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData();"
-                                                        class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
-                                                    <option value="10m">10 分钟</option>
-                                                    <option value="30m">30 分钟</option>
-                                                    <option value="1h">1 小时</option>
-                                                    <option value="2h">2 小时</option>
-                                                    <option value="3h">3 小时</option>
-                                                </select>
-                                            </div>
-                                            <div class="text-[10px] text-gray-500 mt-2">
-                                                数据统计维度跟随粒度变化
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <chart-granularity-settings chart-id="reportErrorTrendChart"></chart-granularity-settings>
                                 </h4>
                                 <div id="reportErrorTrendChart" style="height: 200px;"></div>
                             </div>
@@ -2381,8 +2320,12 @@
                         
                         <div class="grid grid-cols-1 gap-6 mb-6">
                             <div class="card p-4">
-                                <h4 class="text-sm font-semibold text-gray-300 mb-3">
-                                    <i class="fas fa-truck text-cyan-400 mr-2"></i>供应商错误当日趋势（按供应商）
+                                <h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-between">
+                                    <span>
+                                        <i class="fas fa-truck text-cyan-400 mr-2"></i>供应商错误当日趋势（按供应商）
+                                        <span class="text-xs text-gray-500 ml-1">（粒度：{{ {'5m':'5分钟','10m':'10分钟','30m':'30分钟','1h':'1小时','2h':'2小时','3h':'3小时'}[chartPrefs.time_chart.granularity] || '1小时' }}）</span>
+                                    </span>
+                                    <chart-granularity-settings chart-id="reportSupplierTrendChart"></chart-granularity-settings>
                                 </h4>
                                 <div id="reportSupplierTrendChart" style="height: 250px;"></div>
                             </div>
@@ -5501,9 +5444,9 @@
     </div>
     
     <script>
-        const { createApp, ref, reactive, computed, onMounted, watch, nextTick } = Vue;
+        const { createApp, ref, reactive, computed, onMounted, watch, nextTick, provide, inject } = Vue;
         
-        createApp({
+        const app = createApp({
             setup() {
                 const currentPage = ref('dashboard');
                 const currentDate = ref(new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }));
@@ -6817,7 +6760,7 @@
                 };
 
                 // 通用分页组件逻辑
-                const createPagination = (initialPageSize = 10) => {
+                var createPagination = (initialPageSize = 10) => {
                     const pagination = ref({
                         current_page: 1,
                         page_size: initialPageSize,
@@ -6912,7 +6855,7 @@
                 };
                 
                 // 通用分页组件模板函数
-                const createPaginationTemplate = (paginationData, loadDataFn, changePageSizeFn, goToPageFn, prevPageFn, nextPageFn, getPageNumbersFn) => {
+                var createPaginationTemplate = (paginationData, loadDataFn, changePageSizeFn, goToPageFn, prevPageFn, nextPageFn, getPageNumbersFn) => {
                     return {
                         template: `
                             <div class="universal-pagination" v-if="paginationData.total > 0">
@@ -7179,6 +7122,7 @@
                 const loadSupplierSpStats = async (page = 1, forceRefresh = false, pageSize = 10) => {
                     try {
                         const params = { page, page_size: pageSize, ...getDashboardDateParams() };
+                        params.granularity = chartPrefs.time_chart.granularity || '1h';
                         if (forceRefresh) params.force_refresh = 'true';
                         const res = await axios.get('/api/dashboard/hitch-supplier-error-sp/statistics', { params });
                         supplierSpStats.value = res.data;
@@ -7207,6 +7151,7 @@
                 const loadSupplierTotalStats = async (page = 1, forceRefresh = false, pageSize = 10) => {
                     try {
                         const params = { page, page_size: pageSize, ...getDashboardDateParams() };
+                        params.granularity = chartPrefs.time_chart.granularity || '1h';
                         if (forceRefresh) params.force_refresh = 'true';
                         const res = await axios.get('/api/dashboard/hitch-supplier-error-total/statistics', { params });
                         supplierTotalStats.value = res.data;
@@ -7340,6 +7285,11 @@
 
                 
                 const refreshDashboardData = async () => {
+                    // 根据当前页面分发刷新：report 页走 loadReportData；否则走 dashboard 刷新
+                    if (currentPage.value === 'report') {
+                        await loadReportData();
+                        return;
+                    }
                     await loadDashboardOverview();
                     await loadDashboardTabData(dashboardActiveTab.value);
                 };
@@ -7524,7 +7474,7 @@
                     '#14b8a6', '#eab308', '#ef4444', '#6366f1', '#84cc16'
                 ];
                 
-                const renderMultiSupplierTrendChart = (domId, data, nameField = 'sp_name', xAxisName = '时间', yAxisName = '错误数') => {
+                const renderMultiSupplierTrendChart = (domId, data, nameField = 'sp_name', xAxisName = '时间', yAxisName = '错误数', options = {}) => {
                     const chart = initChart(domId);
                     if (!chart) return;
                     
@@ -7538,7 +7488,89 @@
                         });
                         return;
                     }
-                    
+
+                    // 二期：显式传 granularity 时走新路径（直接用后端返回的 time_bucket 作 X 轴）
+                    // 与 renderTrendChart 保持一致的新路径风格
+                    if (options.granularity) {
+                        const hasSupplier = data.some(d => d.sp_name || d.sp_id !== undefined);
+                        // 生成按 time_bucket 排序的完整 X 轴（使用后端桶，不自行补 0~23 小时）
+                        const allBucketsSet = new Set();
+                        data.forEach(d => { if (d.time_bucket) allBucketsSet.add(d.time_bucket); });
+                        const buckets = Array.from(allBucketsSet).sort();
+                        const formatLabel = (s) => {
+                            const parts = s.split(' ');
+                            if (parts.length < 2) return s;
+                            return parts[1].substring(0, 5);
+                        };
+                        const xLabels = buckets.map(formatLabel);
+
+                        if (!hasSupplier) {
+                            // 单条折线（兼容无 sp_name/sp_id 的旧数据）
+                            const bucketMap = {};
+                            data.forEach(d => {
+                                const k = d.time_bucket || '';
+                                bucketMap[k] = (bucketMap[k] || 0) + (d.count || 0);
+                            });
+                            chart.setOption({
+                                tooltip: { ...chartTooltip, trigger: 'axis' },
+                                grid: { left: '3%', right: '4%', bottom: '12%', top: '10%', containLabel: true },
+                                xAxis: { type: 'category', data: xLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                                yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                                series: [{
+                                    data: buckets.map(b => bucketMap[b] || 0), type: 'line', smooth: true,
+                                    symbol: 'circle', symbolSize: 6,
+                                    lineStyle: { color: '#58a6ff', width: 2 }, itemStyle: { color: '#58a6ff' },
+                                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                        { offset: 0, color: 'rgba(88, 166, 255, 0.3)' },
+                                        { offset: 1, color: 'rgba(88, 166, 255, 0.05)' }]) }
+                                }]
+                            });
+                            return;
+                        }
+
+                        // 多供应商：按供应商分组
+                        const supplierMap = {};
+                        data.forEach(d => {
+                            let spKey;
+                            if (nameField === 'sp_name' && d.sp_name) {
+                                spKey = d.sp_name;
+                            } else if (d.sp_id !== null && d.sp_id !== undefined) {
+                                spKey = 'SP: ' + d.sp_id;
+                            } else {
+                                spKey = 'Unknown';
+                            }
+                            if (!supplierMap[spKey]) supplierMap[spKey] = {};
+                            const k = d.time_bucket || '';
+                            supplierMap[spKey][k] = (supplierMap[spKey][k] || 0) + (d.count || 0);
+                        });
+                        const suppliers = Object.keys(supplierMap);
+                        const series = suppliers.map((sp, idx) => ({
+                            name: sp,
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'circle',
+                            symbolSize: 5,
+                            data: buckets.map(b => supplierMap[sp][b] || 0),
+                            lineStyle: { color: supplierColors[idx % supplierColors.length], width: 2 },
+                            itemStyle: { color: supplierColors[idx % supplierColors.length] }
+                        }));
+                        chart.setOption({
+                            tooltip: { ...chartTooltip, trigger: 'axis' },
+                            legend: {
+                                data: suppliers,
+                                textStyle: { color: '#8b949e', fontSize: 10 },
+                                top: 0,
+                                type: 'scroll',
+                                pageTextStyle: { color: '#8b949e' }
+                            },
+                            grid: { left: '3%', right: '4%', bottom: '12%', top: '15%', containLabel: true },
+                            xAxis: { type: 'category', data: xLabels, ...chartAxisStyle, name: xAxisName, nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                            yAxis: { type: 'value', ...chartAxisStyle, name: yAxisName, nameLocation: 'middle', nameGap: 35, nameTextStyle: { color: '#8b949e', fontSize: 12 } },
+                            series: series
+                        });
+                        return;
+                    }
+
                     // 检查数据是否有供应商字段（兼容旧格式）
                     const hasSupplierField = data.some(d => d.sp_name || d.sp_id !== undefined);
                     
@@ -7743,7 +7775,8 @@
                     if (!stats.exists) return;
                     // 使用 trend_hourly（历史趋势）
                     const trendData = stats.trend_hourly || [];
-                    renderTrendChart('controlHitchTrendChart', trendData, '时间', '错误数');
+                    renderTrendChart('controlHitchTrendChart', trendData, '时间', '错误数',
+                        { granularity: chartPrefs.time_chart.granularity, chartType: chartPrefs.time_chart.chart_type });
                     renderBarChart('controlHitchErrorCodeChart', stats.error_code_distribution || [], 'error_code', 'count', false, '错误码', '数量');
                     renderBarChart('controlHitchMethodChart', stats.method_distribution || [], 'method_name', 'count', true, '数量', '方法名');
                 };
@@ -7754,7 +7787,8 @@
                     if (!stats.exists) return;
                     // 使用 trend_hourly（历史趋势）
                     const trendData = stats.trend_hourly || [];
-                    renderTrendChart('gwHitchTrendChart', trendData, '时间', '错误数');
+                    renderTrendChart('gwHitchTrendChart', trendData, '时间', '错误数',
+                        { granularity: chartPrefs.time_chart.granularity, chartType: chartPrefs.time_chart.chart_type });
                     renderBarChart('gwHitchErrorCodeChart', stats.error_code_distribution || [], 'error_code', 'count', false, '错误码', '数量');
                     renderBarChart('gwHitchMethodChart', stats.method_distribution || [], 'method_name', 'count', true, '数量', '方法名');
                 };
@@ -7779,11 +7813,13 @@
                         loadSupplierSpStats(1, true).then(() => {
                             nextTick(() => {
                                 const newTrendData = supplierSpStats.value.trend_hourly || [];
-                                renderMultiSupplierTrendChart('supplierSpTrendChart', newTrendData, 'sp_id', '时间', '错误数');
+                                renderMultiSupplierTrendChart('supplierSpTrendChart', newTrendData, 'sp_id', '时间', '错误数',
+                                    { granularity: chartPrefs.time_chart.granularity, chartType: chartPrefs.time_chart.chart_type });
                             });
                         });
                     } else {
-                        renderMultiSupplierTrendChart('supplierSpTrendChart', trendData, 'sp_id', '时间', '错误数');
+                        renderMultiSupplierTrendChart('supplierSpTrendChart', trendData, 'sp_id', '时间', '错误数',
+                            { granularity: chartPrefs.time_chart.granularity, chartType: chartPrefs.time_chart.chart_type });
                     }
                 };
 
@@ -7799,11 +7835,13 @@
                         loadSupplierTotalStats(1, true).then(() => {
                             nextTick(() => {
                                 const newTrendData = supplierTotalStats.value.hourly_trend || supplierTotalStats.value.daily_trend || [];
-                                renderMultiSupplierTrendChart('supplierTotalTrendChart', newTrendData, 'sp_id', '时间', '错误数');
+                                renderMultiSupplierTrendChart('supplierTotalTrendChart', newTrendData, 'sp_id', '时间', '错误数',
+                                    { granularity: chartPrefs.time_chart.granularity, chartType: chartPrefs.time_chart.chart_type });
                             });
                         });
                     } else {
-                        renderMultiSupplierTrendChart('supplierTotalTrendChart', trendData, 'sp_id', '时间', '错误数');
+                        renderMultiSupplierTrendChart('supplierTotalTrendChart', trendData, 'sp_id', '时间', '错误数',
+                            { granularity: chartPrefs.time_chart.granularity, chartType: chartPrefs.time_chart.chart_type });
                     }
                 };
 
@@ -7851,19 +7889,20 @@
                     reportLoading.value = true;
                     try {
                         const dateParam = reportSelectedDate.value;
+                        const gran = chartPrefs.time_chart.granularity || '1h';
                         // 复用数据概览的现有API接口
                         const [controlRes, gwRes, costTimeRes, supplierRes] = await Promise.all([
                             axios.get('/api/dashboard/control-hitch/statistics', {
-                                params: { start_date: dateParam, end_date: dateParam }
+                                params: { start_date: dateParam, end_date: dateParam, granularity: gran }
                             }),
                             axios.get('/api/dashboard/gw-hitch/statistics', {
-                                params: { start_date: dateParam, end_date: dateParam }
+                                params: { start_date: dateParam, end_date: dateParam, granularity: gran }
                             }),
                             axios.get('/api/dashboard/hitch-control-cost-time/statistics', {
-                                params: { start_date: dateParam, end_date: dateParam }
+                                params: { start_date: dateParam, end_date: dateParam, granularity: gran }
                             }),
                             axios.get('/api/dashboard/hitch-supplier-error-sp/statistics', {
-                                params: { start_date: dateParam, end_date: dateParam }
+                                params: { start_date: dateParam, end_date: dateParam, granularity: gran }
                             })
                         ]);
                         
@@ -8873,7 +8912,8 @@
                     renderBarChart('reportHighCostChart', highCostData, 'method_name', 'count', true, '最大耗时(ms)', '方法名');
                     
                     // 供应商趋势
-                    renderMultiSupplierTrendChart('reportSupplierTrendChart', data.supplier_trend || [], 'sp_id', '时间', '错误数');
+                    renderMultiSupplierTrendChart('reportSupplierTrendChart', data.supplier_trend || [], 'sp_id', '时间', '错误数',
+                        { granularity: chartPrefs.time_chart.granularity, chartType: chartPrefs.time_chart.chart_type });
                 };
 
                 
@@ -9055,7 +9095,7 @@
                             queryConfigForm.transform_config = fieldConfig.map(field => {
                                 const existingRule = existingRules[field.name] || {};
                                 // 通用分页组件逻辑
-                const createPagination = (initialPageSize = 10) => {
+                var createPagination = (initialPageSize = 10) => {
                     const pagination = ref({
                         current_page: 1,
                         page_size: initialPageSize,
@@ -9150,7 +9190,7 @@
                 };
                 
                 // 通用分页组件模板函数
-                const createPaginationTemplate = (paginationData, loadDataFn, changePageSizeFn, goToPageFn, prevPageFn, nextPageFn, getPageNumbersFn) => {
+                var createPaginationTemplate = (paginationData, loadDataFn, changePageSizeFn, goToPageFn, prevPageFn, nextPageFn, getPageNumbersFn) => {
                     return {
                         template: `
                             <div class="universal-pagination" v-if="paginationData.total > 0">
@@ -9842,7 +9882,7 @@
                 });
                 
                 // 通用分页组件逻辑
-                const createPagination = (initialPageSize = 10) => {
+                var createPagination = (initialPageSize = 10) => {
                     const pagination = ref({
                         current_page: 1,
                         page_size: initialPageSize,
@@ -9937,7 +9977,7 @@
                 };
                 
                 // 通用分页组件模板函数
-                const createPaginationTemplate = (paginationData, loadDataFn, changePageSizeFn, goToPageFn, prevPageFn, nextPageFn, getPageNumbersFn) => {
+                var createPaginationTemplate = (paginationData, loadDataFn, changePageSizeFn, goToPageFn, prevPageFn, nextPageFn, getPageNumbersFn) => {
                     return {
                         template: `
                             <div class="universal-pagination" v-if="paginationData.total > 0">
@@ -10007,6 +10047,12 @@
                         }
                     };
                 };
+
+                // provide 给全局组件 chart-granularity-settings 使用
+                provide('openChartSettings', openChartSettings);
+                provide('chartPrefs', chartPrefs);
+                provide('saveChartPref', saveChartPref);
+                provide('refreshDashboardData', refreshDashboardData);
 
                 return {
                     currentPage, currentDate, pageTitle, pageSubtitle, toast,
@@ -10093,7 +10139,53 @@
 
 
             }
-        }).mount('#app');
+        });
+
+        // 全局组件：折线图粒度设置面板（齿轮按钮 + 下拉面板）
+        // 用法：<chart-granularity-settings chart-id="xxxTrendChart"></chart-granularity-settings>
+        // 依赖通过 inject 从根 setup 的 provide 获取：openChartSettings / chartPrefs / saveChartPref / refreshDashboardData
+        // 新增折线图时，只需在图表标题旁插一行本组件即可，无需重复 20 行 HTML。
+        app.component('chart-granularity-settings', {
+            props: {
+                chartId: { type: String, required: true }
+            },
+            setup() {
+                const openChartSettings = inject('openChartSettings');
+                const chartPrefs = inject('chartPrefs');
+                const saveChartPref = inject('saveChartPref');
+                const refreshDashboardData = inject('refreshDashboardData');
+                return { openChartSettings, chartPrefs, saveChartPref, refreshDashboardData };
+            },
+            template: `
+                <div class="relative inline-block">
+                    <button @click="openChartSettings = (openChartSettings === chartId ? null : chartId)"
+                            class="text-gray-400 hover:text-gray-200 text-xs" title="图表设置">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <div v-if="openChartSettings === chartId"
+                         class="absolute right-0 mt-2 w-56 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg z-[70] p-3">
+                        <div>
+                            <label class="text-xs text-gray-500 block mb-1">横坐标时间粒度</label>
+                            <select :value="chartPrefs.time_chart.granularity"
+                                    @change="saveChartPref('time_chart', { granularity: $event.target.value }); refreshDashboardData && refreshDashboardData(); openChartSettings = null;"
+                                    class="w-full bg-[#0d1117] border border-[#30363d] text-gray-200 rounded px-2 py-1 text-xs">
+                                <option value="5m">5 分钟</option>
+                                <option value="10m">10 分钟</option>
+                                <option value="30m">30 分钟</option>
+                                <option value="1h">1 小时</option>
+                                <option value="2h">2 小时</option>
+                                <option value="3h">3 小时</option>
+                            </select>
+                        </div>
+                        <div class="text-[10px] text-gray-500 mt-2">
+                            数据统计维度跟随粒度变化
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        app.mount('#app');
     </script>
 </body>
 </html>

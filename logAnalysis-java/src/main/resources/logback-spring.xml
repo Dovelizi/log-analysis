@@ -26,8 +26,22 @@
         <encoder><pattern>${LOG_PATTERN}</pattern></encoder>
     </appender>
 
+    <appender name="SLOW_SQL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/slow-sql.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/slow-sql.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder><pattern>${LOG_PATTERN}</pattern></encoder>
+    </appender>
+
     <logger name="api" level="INFO" additivity="false">
         <appender-ref ref="API_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="slow-sql" level="WARN" additivity="false">
+        <appender-ref ref="SLOW_SQL_FILE"/>
         <appender-ref ref="CONSOLE"/>
     </logger>
 

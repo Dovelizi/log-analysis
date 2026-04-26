@@ -13,6 +13,7 @@ PORT=8080
 
 # 环境变量（可被外部覆盖）
 : "${JAVA_HOME:=/data/home/lemolli/.local/opt/jdk-11.0.24+8}"
+: "${MAVEN_HOME:=/data/home/lemolli/.local/opt/apache-maven-3.9.15}"
 : "${MYSQL_HOST:=127.0.0.1}"
 : "${MYSQL_PORT:=3306}"
 : "${MYSQL_USER:=root}"
@@ -20,9 +21,10 @@ PORT=8080
 : "${MYSQL_DATABASE:=cls_logs}"
 : "${JAVA_OPTS:=-Xms512m -Xmx1g -XX:+UseG1GC}"
 
-export JAVA_HOME MYSQL_HOST MYSQL_PORT MYSQL_USER MYSQL_PASSWORD MYSQL_DATABASE
+export JAVA_HOME MAVEN_HOME MYSQL_HOST MYSQL_PORT MYSQL_USER MYSQL_PASSWORD MYSQL_DATABASE
 
 JAVA="$JAVA_HOME/bin/java"
+BUILD_LOG="$APP_DIR/logs/build.log"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -61,12 +63,52 @@ check_port() {
     fi
 }
 
+# 解析可用的 mvn 命令：优先 $MAVEN_HOME/bin/mvn，其次 PATH 上的 mvn
+resolve_mvn() {
+    if [ -x "$MAVEN_HOME/bin/mvn" ]; then
+        echo "$MAVEN_HOME/bin/mvn"
+        return 0
+    fi
+    if command -v mvn > /dev/null 2>&1; then
+        command -v mvn
+        return 0
+    fi
+    return 1
+}
+
+# 调用 Maven 打包，日志写入 $BUILD_LOG；成功返回 0，失败返回非 0 并打印提示
+build_jar() {
+    local mvn_bin
+    mvn_bin=$(resolve_mvn) || {
+        echo -e "${RED}未找到 mvn：请设置 MAVEN_HOME 或将 mvn 加入 PATH${NC}"
+        return 1
+    }
+    echo -e "${YELLOW}开始执行打包：$mvn_bin -DskipTests package${NC}"
+    echo -e "${YELLOW}构建日志: $BUILD_LOG${NC}"
+    (
+        cd "$APP_DIR" && \
+        JAVA_HOME="$JAVA_HOME" "$mvn_bin" -DskipTests package
+    ) > "$BUILD_LOG" 2>&1
+    local rc=$?
+    if [ $rc -ne 0 ]; then
+        echo -e "${RED}Maven 打包失败 (exit=$rc)，详见: $BUILD_LOG${NC}"
+        tail -n 20 "$BUILD_LOG" 2>/dev/null
+        return $rc
+    fi
+    if [ ! -f "$JAR_FILE" ]; then
+        echo -e "${RED}Maven 构建完成但未生成 $JAR_FILE，请检查 pom.xml finalName 配置${NC}"
+        return 1
+    fi
+    echo -e "${GREEN}打包成功: $JAR_FILE${NC}"
+    return 0
+}
+
 start() {
     echo -e "${YELLOW}正在启动 $APP_NAME ...${NC}"
 
     local pid=$(get_pid)
     if [ -n "$pid" ]; then
-        echo -e "${YELLOW}服务已在运行中 (PID: $pid)${NC}"
+        echo -e "${YELLOW}服务已在运行中 (PID: $pid)，未执行打包；如需重新打包请使用: $0 restart${NC}"
         return 0
     fi
 
@@ -75,9 +117,15 @@ start() {
         return 1
     fi
 
-    if [ ! -f "$JAR_FILE" ]; then
-        echo -e "${RED}未找到 $JAR_FILE，请先执行: mvn -DskipTests package${NC}"
-        return 1
+    # 每次启动都重新打包；restart 已预先打包时通过 _SKIP_BUILD_ONCE=1 跳过本次
+    if [ "$_SKIP_BUILD_ONCE" = "1" ]; then
+        unset _SKIP_BUILD_ONCE
+        if [ ! -f "$JAR_FILE" ]; then
+            echo -e "${RED}内部错误: 预打包标记已置但 $JAR_FILE 不存在${NC}"
+            return 1
+        fi
+    else
+        build_jar || return 1
     fi
 
     if [ ! -x "$JAVA" ]; then
@@ -130,9 +178,15 @@ stop() {
 }
 
 restart() {
+    # 先打包：打包失败时旧服务继续运行，避免停机
+    build_jar || {
+        echo -e "${RED}打包失败，旧服务未停止，重启中止${NC}"
+        return 1
+    }
     stop
     sleep 1
-    start
+    # 告诉 start 跳过本次打包（已由 restart 预打包完成）
+    _SKIP_BUILD_ONCE=1 start
 }
 
 status() {
@@ -216,9 +270,9 @@ usage() {
 用法: $0 {start|stop|restart|status|logs|clean|init-db|migrate-key}
 
 命令说明:
-  start       启动服务
+  start       启动服务（每次都会重新执行 mvn -DskipTests package 打包）
   stop        停止服务
-  restart     重启服务
+  restart     重启服务（先打包；打包成功后再停止旧进程并启动新进程，打包失败时旧服务保持运行）
   status      查看服务状态
   logs        查看实时日志
   clean       清理日志
@@ -227,6 +281,7 @@ usage() {
 
 环境变量（可覆盖）:
   JAVA_HOME                   默认: $JAVA_HOME
+  MAVEN_HOME                  默认: $MAVEN_HOME（start/restart 每次都会调用 mvn 打包）
   MYSQL_HOST/PORT/USER/PASSWORD/DATABASE
   JAVA_OPTS                   默认: $JAVA_OPTS
   ENCRYPTION_FORBID_AUTO_GEN  设为 true 可防止自动生成新密钥（生产推荐）

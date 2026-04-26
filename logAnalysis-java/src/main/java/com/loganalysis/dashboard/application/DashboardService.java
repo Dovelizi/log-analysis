@@ -1,6 +1,7 @@
 package com.loganalysis.dashboard.application;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import com.loganalysis.dashboard.infrastructure.DashboardQueryExecutor;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Dashboard 统计服务，对齐 routes/dashboard_routes.py。
@@ -42,6 +45,10 @@ public class DashboardService {
 
     @Autowired
     private DashboardQueryExecutor jdbc;
+
+    @Autowired
+    @Qualifier("dashboardAsyncExecutor")
+    private ExecutorService asyncExecutor;
 
     /**
      * 解析日期范围参数，返回 {startDate, endDate, startTime, endTime}。
@@ -140,23 +147,53 @@ public class DashboardService {
         Map<String, Object> ret = new LinkedHashMap<>();
         ret.put("start_date", dr.startDate);
         ret.put("end_date", dr.endDate);
+
+        // 性能优化：先一次性筛选存在的表，再用 UNION ALL 单条 SQL 拿到所有 COUNT
+        // 原实现：每张表 1 条 COUNT(*) × 5 = 5 次串行扫表
+        // 现实现：UNION ALL 单条 SQL 1 次往返，MySQL 内部并行扫描多张表
+        List<String> existing = new ArrayList<>();
+        for (String t : ALLOWED_TABLES) {
+            if (tableExists(t)) existing.add(t);
+        }
+
+        Map<String, Long> counts = new HashMap<>();
+        if (!existing.isEmpty()) {
+            try {
+                StringBuilder sb = new StringBuilder();
+                List<Object> args = new ArrayList<>();
+                for (int i = 0; i < existing.size(); i++) {
+                    if (i > 0) sb.append(" UNION ALL ");
+                    sb.append("SELECT '").append(existing.get(i)).append("' AS t, COUNT(*) AS cnt FROM ")
+                      .append(existing.get(i))
+                      .append(" WHERE create_time BETWEEN ? AND ?");
+                    args.add(dr.startTime);
+                    args.add(dr.endTime);
+                }
+                List<Map<String, Object>> rows = jdbc.queryForList(sb.toString(), args.toArray());
+                for (Map<String, Object> r : rows) {
+                    counts.put((String) r.get("t"), toLongDefaultZero(r.get("cnt")));
+                }
+            } catch (Exception ignored) {
+                // UNION ALL 失败则降级为逐表查询，保持稳定
+                for (String t : existing) {
+                    try {
+                        Long cnt = jdbc.queryForObject(
+                                "SELECT COUNT(*) FROM " + t + " WHERE create_time BETWEEN ? AND ?",
+                                Long.class, dr.startTime, dr.endTime);
+                        counts.put(t, cnt == null ? 0L : cnt);
+                    } catch (Exception ignored2) {}
+                }
+            }
+        }
+
         for (String t : ALLOWED_TABLES) {
             Map<String, Object> sub = new LinkedHashMap<>();
-            if (!tableExists(t)) {
+            if (!existing.contains(t)) {
                 sub.put("exists", false);
                 sub.put("total", 0);
             } else {
-                try {
-                    Long cnt = jdbc.queryForObject(
-                            "SELECT COUNT(*) FROM " + t + " WHERE create_time BETWEEN ? AND ?",
-                            Long.class, dr.startTime, dr.endTime);
-                    sub.put("exists", true);
-                    sub.put("total", cnt == null ? 0L : cnt);
-                } catch (Exception e) {
-                    sub.put("exists", false);
-                    sub.put("total", 0);
-                    sub.put("error", e.getMessage());
-                }
+                sub.put("exists", true);
+                sub.put("total", counts.getOrDefault(t, 0L));
             }
             ret.put(t, sub);
         }
@@ -181,33 +218,39 @@ public class DashboardService {
         result.put("start_date", dr.startDate);
         result.put("end_date", dr.endDate);
 
-        Long totalCount = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM " + table + " WHERE create_time BETWEEN ? AND ?",
-                Long.class, dr.startTime, dr.endTime);
-        result.put("total_count", totalCount == null ? 0L : totalCount);
+        // 性能优化：原实现 control_hitch 4 条 / gw_hitch 3 条标量统计 SQL → 合并为 1 条单次扫表
+        // 等价性说明：
+        //   total_count             : COUNT(*)
+        //   total_error_count       : COALESCE(SUM(total_count), 0)
+        //   unique_error_code_count : COUNT(error_code)（control_hitch 专用）
+        //   unique_method_count_distinct : COUNT(DISTINCT method_name) WHERE method_name 非空（control_hitch 专用）
+        //   gw_unique_method_count  : COALESCE(SUM(total_count), 0) WHERE total_count 非空（gw 专用）
+        boolean isControl = "control_hitch_error_mothod".equals(table);
+        Map<String, Object> agg = jdbc.queryForMap(
+                "SELECT " +
+                " COUNT(*) AS total_count, " +
+                " COALESCE(SUM(total_count), 0) AS total_error_count" +
+                (isControl
+                        ? ", COUNT(error_code) AS unique_error_code_count" +
+                          ", COUNT(DISTINCT CASE WHEN method_name IS NOT NULL AND method_name != '' THEN method_name END) AS unique_method_count_d"
+                        : ", COALESCE(SUM(CASE WHEN total_count IS NOT NULL THEN total_count ELSE 0 END), 0) AS gw_unique_method_count") +
+                " FROM " + table + " WHERE create_time BETWEEN ? AND ?",
+                dr.startTime, dr.endTime);
 
-        Long totalError = jdbc.queryForObject(
-                "SELECT COALESCE(SUM(total_count), 0) FROM " + table + " WHERE create_time BETWEEN ? AND ?",
-                Long.class, dr.startTime, dr.endTime);
+        Long totalCount = toLong(agg.get("total_count"));
+        if (totalCount == null) totalCount = 0L;
+        result.put("total_count", totalCount);
+
+        Long totalError = toLong(agg.get("total_error_count"));
         result.put("total_error_count", totalError == null ? 0L : totalError);
 
-        if ("control_hitch_error_mothod".equals(table)) {
-            Long cnt = jdbc.queryForObject(
-                    "SELECT COUNT(error_code) FROM " + table +
-                    " WHERE error_code IS NOT NULL AND create_time BETWEEN ? AND ?",
-                    Long.class, dr.startTime, dr.endTime);
+        if (isControl) {
+            Long cnt = toLong(agg.get("unique_error_code_count"));
             result.put("unique_error_code_count", cnt == null ? 0L : cnt);
-            Long mCnt = jdbc.queryForObject(
-                    "SELECT COUNT(DISTINCT method_name) FROM " + table +
-                    " WHERE method_name IS NOT NULL AND method_name != '' AND create_time BETWEEN ? AND ?",
-                    Long.class, dr.startTime, dr.endTime);
+            Long mCnt = toLong(agg.get("unique_method_count_d"));
             result.put("unique_method_count", mCnt == null ? 0L : mCnt);
         } else {
-            // gw_hitch: unique_method_count = SUM(total_count)
-            Long cnt = jdbc.queryForObject(
-                    "SELECT COALESCE(SUM(total_count), 0) FROM " + table +
-                    " WHERE total_count IS NOT NULL AND create_time BETWEEN ? AND ?",
-                    Long.class, dr.startTime, dr.endTime);
+            Long cnt = toLong(agg.get("gw_unique_method_count"));
             result.put("unique_method_count", cnt == null ? 0L : cnt);
         }
 
@@ -337,14 +380,15 @@ public class DashboardService {
         result.put("start_date", dr.startDate);
         result.put("end_date", dr.endDate);
 
-        Long tc = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM " + table + " WHERE create_time BETWEEN ? AND ?",
-                Long.class, dr.startTime, dr.endTime);
-        result.put("total_count", tc == null ? 0L : tc);
-
-        Long te = jdbc.queryForObject(
-                "SELECT COALESCE(SUM(total_count), 0) FROM " + table + " WHERE create_time BETWEEN ? AND ?",
-                Long.class, dr.startTime, dr.endTime);
+        // 性能优化：原 2 条标量统计 SQL 合并为 1 条
+        Map<String, Object> agg = jdbc.queryForMap(
+                "SELECT COUNT(*) AS total_count, COALESCE(SUM(total_count), 0) AS total_error_count " +
+                "FROM " + table + " WHERE create_time BETWEEN ? AND ?",
+                dr.startTime, dr.endTime);
+        Long tc = toLong(agg.get("total_count"));
+        if (tc == null) tc = 0L;
+        result.put("total_count", tc);
+        Long te = toLong(agg.get("total_error_count"));
         result.put("total_error_count", te == null ? 0L : te);
 
         result.put("supplier_distribution", jdbc.queryForList(
@@ -390,14 +434,15 @@ public class DashboardService {
         result.put("start_date", dr.startDate);
         result.put("end_date", dr.endDate);
 
-        Long tc = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM " + table + " WHERE create_time BETWEEN ? AND ?",
-                Long.class, dr.startTime, dr.endTime);
-        result.put("total_count", tc == null ? 0L : tc);
-
-        Long te = jdbc.queryForObject(
-                "SELECT COALESCE(SUM(total_count), 0) FROM " + table + " WHERE create_time BETWEEN ? AND ?",
-                Long.class, dr.startTime, dr.endTime);
+        // 性能优化：原 2 条标量统计 SQL 合并为 1 条
+        Map<String, Object> agg = jdbc.queryForMap(
+                "SELECT COUNT(*) AS total_count, COALESCE(SUM(total_count), 0) AS total_error_count " +
+                "FROM " + table + " WHERE create_time BETWEEN ? AND ?",
+                dr.startTime, dr.endTime);
+        Long tc = toLong(agg.get("total_count"));
+        if (tc == null) tc = 0L;
+        result.put("total_count", tc);
+        Long te = toLong(agg.get("total_error_count"));
         result.put("total_error_count", te == null ? 0L : te);
 
         result.put("supplier_error_summary", jdbc.queryForList(
@@ -456,61 +501,73 @@ public class DashboardService {
         labels.put("create_time", "记录入库时间");
         result.put("column_labels", labels);
 
-        Long tc = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM " + table + " WHERE create_time BETWEEN ? AND ?",
-                Long.class, dr.startTime, dr.endTime);
-        result.put("total_count", tc == null ? 0L : tc);
+        // 性能优化（阶段 2 - 并发）：原串行 5 条 SQL 共 ~3s
+        //   agg(标量统计 ~800ms) | high_cost_list(~50ms) | method_avg_cost(~1400ms)
+        //   | recent_records(~50ms) | cost_time_distribution(~700ms,依赖 agg.maxCost)
+        // 改为并发后总耗时 ≈ max(agg, method_avg_cost, distribution_after_agg) ≈ 1.5s
+        // 配合外层 30s Redis 缓存，第二次起 < 50ms
 
-        Long um = jdbc.queryForObject(
-                "SELECT COUNT(DISTINCT method_name) FROM " + table +
-                " WHERE method_name IS NOT NULL AND method_name != '' AND create_time BETWEEN ? AND ?",
-                Long.class, dr.startTime, dr.endTime);
-        result.put("unique_method_count", um == null ? 0L : um);
+        final int hcOffset = Math.max(0, (highCostPage - 1) * highCostPageSize);
+        final int offset = Math.max(0, (page - 1) * pageSize);
 
-        Map<String, Object> stats = jdbc.queryForMap(
-                "SELECT AVG(time_cost) as avg_cost, MAX(time_cost) as max_cost, MIN(time_cost) as min_cost " +
-                "FROM " + table + " WHERE time_cost IS NOT NULL AND time_cost > 0 AND create_time BETWEEN ? AND ?",
-                dr.startTime, dr.endTime);
-        Double avg = toDouble(stats.get("avg_cost"));
-        result.put("avg_cost_time", avg == null ? 0 : Math.round(avg * 100.0) / 100.0);
-        Long max = toLong(stats.get("max_cost"));
-        Long min = toLong(stats.get("min_cost"));
-        result.put("max_cost_time", max == null ? 0L : max);
-        result.put("min_cost_time", min == null ? 0L : min);
+        // 任务 1：合并的标量统计 SQL（含 cost_max_for_dist 给耗时分布用）
+        CompletableFuture<Map<String, Object>> aggFuture = CompletableFuture.supplyAsync(() ->
+                jdbc.queryForMap(
+                        "SELECT " +
+                        " COUNT(*) AS total_count, " +
+                        " COUNT(DISTINCT CASE WHEN method_name IS NOT NULL AND method_name != '' THEN method_name END) AS unique_method_count, " +
+                        " AVG(CASE WHEN time_cost IS NOT NULL AND time_cost > 0 THEN time_cost END) AS avg_cost, " +
+                        " MAX(CASE WHEN time_cost IS NOT NULL AND time_cost > 0 THEN time_cost END) AS max_cost, " +
+                        " MIN(CASE WHEN time_cost IS NOT NULL AND time_cost > 0 THEN time_cost END) AS min_cost, " +
+                        " MAX(CASE WHEN time_cost IS NOT NULL THEN time_cost END) AS cost_max_for_dist " +
+                        "FROM " + table + " WHERE create_time BETWEEN ? AND ?",
+                        dr.startTime, dr.endTime),
+                asyncExecutor);
 
-        int hcOffset = Math.max(0, (highCostPage - 1) * highCostPageSize);
-        result.put("high_cost_list", jdbc.queryForList(
-                "SELECT * FROM " + table +
-                " WHERE time_cost IS NOT NULL AND create_time BETWEEN ? AND ? " +
-                "ORDER BY time_cost DESC LIMIT ? OFFSET ?",
-                dr.startTime, dr.endTime, highCostPageSize, hcOffset));
-        result.put("high_cost_page", highCostPage);
-        result.put("high_cost_page_size", highCostPageSize);
-        result.put("high_cost_total_pages", totalPages(tc, highCostPageSize));
+        // 任务 2：high_cost_list（按 time_cost DESC 取前 N 条）
+        CompletableFuture<List<Map<String, Object>>> highCostFuture = CompletableFuture.supplyAsync(() ->
+                jdbc.queryForList(
+                        "SELECT * FROM " + table +
+                        " WHERE time_cost IS NOT NULL AND create_time BETWEEN ? AND ? " +
+                        "ORDER BY time_cost DESC LIMIT ? OFFSET ?",
+                        dr.startTime, dr.endTime, highCostPageSize, hcOffset),
+                asyncExecutor);
 
-        result.put("method_avg_cost", jdbc.query(
-                "SELECT method_name, COUNT(*) as count, AVG(time_cost) as avg_cost, MAX(time_cost) as max_cost " +
-                "FROM " + table +
-                " WHERE method_name IS NOT NULL AND method_name != '' AND create_time BETWEEN ? AND ? " +
-                "GROUP BY method_name ORDER BY avg_cost DESC LIMIT 15",
-                (rs, i) -> {
-                    Map<String, Object> r = new LinkedHashMap<>();
-                    r.put("method_name", rs.getString("method_name"));
-                    r.put("count", rs.getLong("count"));
-                    double av = rs.getDouble("avg_cost");
-                    r.put("avg_cost", rs.wasNull() ? 0d : Math.round(av * 100.0) / 100.0);
-                    r.put("max_cost", rs.getLong("max_cost"));
-                    return r;
-                },
-                dr.startTime, dr.endTime));
+        // 任务 3：method_avg_cost（按 method_name 分组，最慢，~1.4s）
+        CompletableFuture<List<Map<String, Object>>> methodAvgFuture = CompletableFuture.supplyAsync(() ->
+                jdbc.query(
+                        "SELECT method_name, COUNT(*) as count, AVG(time_cost) as avg_cost, MAX(time_cost) as max_cost " +
+                        "FROM " + table +
+                        " WHERE method_name IS NOT NULL AND method_name != '' AND create_time BETWEEN ? AND ? " +
+                        "GROUP BY method_name ORDER BY avg_cost DESC LIMIT 15",
+                        (rs, i) -> {
+                            Map<String, Object> r = new LinkedHashMap<>();
+                            r.put("method_name", rs.getString("method_name"));
+                            r.put("count", rs.getLong("count"));
+                            double av = rs.getDouble("avg_cost");
+                            r.put("avg_cost", rs.wasNull() ? 0d : Math.round(av * 100.0) / 100.0);
+                            r.put("max_cost", rs.getLong("max_cost"));
+                            return r;
+                        },
+                        dr.startTime, dr.endTime),
+                asyncExecutor);
 
-        // 耗时分布
-        Long maxCost = jdbc.queryForObject(
-                "SELECT COALESCE(MAX(time_cost), 0) FROM " + table +
-                " WHERE time_cost IS NOT NULL AND create_time BETWEEN ? AND ?",
-                Long.class, dr.startTime, dr.endTime);
-        int maxSeconds = maxCost == null ? 0 : (int) (maxCost / 1000) + 1;
-        if (maxSeconds > 0 && maxSeconds < 3600) {
+        // 任务 4：recent_records
+        CompletableFuture<List<Map<String, Object>>> recentFuture = CompletableFuture.supplyAsync(() ->
+                jdbc.queryForList(
+                        "SELECT * FROM " + table + " WHERE create_time BETWEEN ? AND ? " +
+                        "ORDER BY create_time DESC LIMIT ? OFFSET ?",
+                        dr.startTime, dr.endTime, pageSize, offset),
+                asyncExecutor);
+
+        // 任务 5：cost_time_distribution，依赖 agg 的 cost_max_for_dist
+        // 用 thenComposeAsync 串到 agg 后面，整体仍并发
+        CompletableFuture<List<Map<String, Object>>> distFuture = aggFuture.thenComposeAsync(aggResult -> {
+            Long maxCost = toLong(aggResult.get("cost_max_for_dist"));
+            int maxSeconds = maxCost == null ? 0 : (int) (maxCost / 1000) + 1;
+            if (maxSeconds <= 0 || maxSeconds >= 3600) {
+                return CompletableFuture.completedFuture(Collections.emptyList());
+            }
             StringBuilder caseParts = new StringBuilder();
             StringBuilder orderParts = new StringBuilder();
             for (int i = 0; i < maxSeconds; i++) {
@@ -525,17 +582,44 @@ public class DashboardService {
                     " WHERE time_cost IS NOT NULL AND create_time BETWEEN ? AND ?" +
                     ") t WHERE time_range IS NOT NULL GROUP BY time_range " +
                     "ORDER BY CASE" + orderParts + " ELSE 999 END";
-            result.put("cost_time_distribution",
-                    jdbc.queryForList(sql, dr.startTime, dr.endTime));
-        } else {
-            result.put("cost_time_distribution", Collections.emptyList());
-        }
+            return CompletableFuture.supplyAsync(
+                    () -> jdbc.queryForList(sql, dr.startTime, dr.endTime),
+                    asyncExecutor);
+        }, asyncExecutor);
 
-        int offset = Math.max(0, (page - 1) * pageSize);
-        result.put("recent_records", jdbc.queryForList(
-                "SELECT * FROM " + table + " WHERE create_time BETWEEN ? AND ? " +
-                "ORDER BY create_time DESC LIMIT ? OFFSET ?",
-                dr.startTime, dr.endTime, pageSize, offset));
+        // 等所有任务完成；任意一个抛异常 join() 会传播 CompletionException，外层报错
+        CompletableFuture.allOf(aggFuture, highCostFuture, methodAvgFuture, recentFuture, distFuture).join();
+
+        // 标量统计回填
+        Map<String, Object> agg = aggFuture.join();
+        Long tc = toLong(agg.get("total_count"));
+        if (tc == null) tc = 0L;
+        result.put("total_count", tc);
+
+        Long um = toLong(agg.get("unique_method_count"));
+        result.put("unique_method_count", um == null ? 0L : um);
+
+        Double avg = toDouble(agg.get("avg_cost"));
+        result.put("avg_cost_time", avg == null ? 0 : Math.round(avg * 100.0) / 100.0);
+        Long max = toLong(agg.get("max_cost"));
+        Long min = toLong(agg.get("min_cost"));
+        result.put("max_cost_time", max == null ? 0L : max);
+        result.put("min_cost_time", min == null ? 0L : min);
+
+        // high_cost_list 回填
+        result.put("high_cost_list", highCostFuture.join());
+        result.put("high_cost_page", highCostPage);
+        result.put("high_cost_page_size", highCostPageSize);
+        result.put("high_cost_total_pages", totalPages(tc, highCostPageSize));
+
+        // method_avg_cost 回填
+        result.put("method_avg_cost", methodAvgFuture.join());
+
+        // cost_time_distribution 回填
+        result.put("cost_time_distribution", distFuture.join());
+
+        // recent_records 回填
+        result.put("recent_records", recentFuture.join());
         result.put("page", page);
         result.put("page_size", pageSize);
         result.put("total_pages", totalPages(tc, pageSize));
@@ -579,6 +663,7 @@ public class DashboardService {
      * 安全性：SQL 拼接，granularity 必须严格白名单化，不可接受任意用户输入。
      *
      * 支持的粒度：
+     *   "5m"  → 5 分钟桶（yyyy-MM-dd HH:mm:00）
      *   "10m" → 10 分钟桶（yyyy-MM-dd HH:mm:00）
      *   "30m" → 30 分钟桶
      *   "1h"  → 小时桶（默认，向后兼容；格式 yyyy-MM-dd HH:00:00）
@@ -592,6 +677,10 @@ public class DashboardService {
     private static String buildTimeBucketSql(String granularity) {
         String g = granularity == null ? "1h" : granularity.trim().toLowerCase();
         switch (g) {
+            case "5m":
+                return "DATE_FORMAT(" +
+                       "DATE_SUB(create_time, INTERVAL MINUTE(create_time) % 5 MINUTE), " +
+                       "'%Y-%m-%d %H:%i:00')";
             case "10m":
                 return "DATE_FORMAT(" +
                        "DATE_SUB(create_time, INTERVAL MINUTE(create_time) % 10 MINUTE), " +
@@ -618,6 +707,10 @@ public class DashboardService {
     private static Long toLong(Object v) {
         if (v instanceof Number) return ((Number) v).longValue();
         return null;
+    }
+    private static long toLongDefaultZero(Object v) {
+        if (v instanceof Number) return ((Number) v).longValue();
+        return 0L;
     }
     private static Double toDouble(Object v) {
         if (v instanceof Number) return ((Number) v).doubleValue();

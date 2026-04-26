@@ -35,6 +35,15 @@ spring:
     time-zone: Asia/Shanghai
     # 输出所有字段（包括 null），对齐 Python jsonify 行为
     default-property-inclusion: always
+  # 静态资源缓存控制：
+  # 默认 Spring Boot 对 static/* 不发 Cache-Control，浏览器会用启发式策略缓存数小时，
+  # 导致改完 HTML/JS 要硬刷才能生效。发 "no-cache" 后浏览器每次请求都会带 If-Modified-Since
+  # 让服务器判断是否变更，未变更返回 304（几乎零成本），变更则拉新内容。
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          no-cache: true
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -58,6 +67,19 @@ loganalysis:
     key-file: ${ENCRYPTION_KEY_FILE:.encryption_key}
     # 生产上线前务必设为 true：防止 Java 启动时自动生成新密钥导致历史加密数据解不开
     forbid-auto-generate: ${ENCRYPTION_FORBID_AUTO_GEN:false}
+  # ============================== 性能观测阈值 ==============================
+  # 项目硬性红线：每个 HTTP 接口耗时必须 < 1000ms。新增接口需自测达标。
+  # 拦截器位置：common/observability/{HttpAccessLogInterceptor, SlowSqlInterceptor}
+  # 输出文件：logs/api.log（HTTP 接口）、logs/slow-sql.log（慢 SQL）
+  performance:
+    # HTTP 耗时 WARN 阈值（ms），超过即视为违反 <1s 红线
+    http-warn-ms: ${PERF_HTTP_WARN_MS:1000}
+    # HTTP 耗时 ERROR 阈值（ms），严重违反需立即排查
+    http-error-ms: ${PERF_HTTP_ERROR_MS:5000}
+    # 单条 SQL 慢查询 WARN 阈值（ms），给接口红线留余量
+    sql-warn-ms: ${PERF_SQL_WARN_MS:500}
+    # 慢 SQL 是否打印参数（关闭可避免敏感数据落盘）
+    sql-log-params: ${PERF_SQL_LOG_PARAMS:true}
   scheduler:
     # 定时查询轮询间隔（秒），对齐 scheduler.py 的 time.sleep(10)
     check-interval-seconds: 10
