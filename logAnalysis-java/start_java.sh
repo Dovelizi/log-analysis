@@ -39,7 +39,8 @@ get_pid() {
             return 0
         fi
     fi
-    local pid=$(pgrep -f "loganalysis.jar" | head -1)
+    # 严格匹配当前目录下的 JAR 绝对路径，避免跨目录同名 jar 误识别
+    local pid=$(pgrep -f "$JAR_FILE" | head -1)
     if [ -n "$pid" ]; then
         echo "$pid"
         return 0
@@ -48,12 +49,13 @@ get_pid() {
 }
 
 check_port() {
+    # 严格只检测 LISTEN 状态，避免把出站连接到对端 :8080 的进程误判为本地占用
     if command -v lsof > /dev/null 2>&1; then
-        lsof -i:$PORT > /dev/null 2>&1
+        lsof -iTCP:$PORT -sTCP:LISTEN > /dev/null 2>&1
     elif command -v ss > /dev/null 2>&1; then
-        ss -tuln | grep ":$PORT " > /dev/null 2>&1
+        ss -tln | grep ":$PORT " > /dev/null 2>&1
     elif command -v netstat > /dev/null 2>&1; then
-        netstat -tuln | grep ":$PORT " > /dev/null 2>&1
+        netstat -tln | grep ":$PORT " > /dev/null 2>&1
     else
         return 1
     fi
